@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Name=VirtualBox
+GenericName=Virtualization Software
+Comment=Run several virtual systems on a single host computer
+Type=Application
+Exec=VirtualBox %U
+TryExec=VirtualBox
+Icon=virtualbox
+Keywords=virtualization;
+MimeType=application/x-virtualbox-vbox;application/x-virtualbox-vbox-extpack;application/x-virtualbox-ovf;application/x-virtualbox-ova;
+Categories=Emulator;System;
+Actions=Manager;
+StartupWMClass=VirtualBox Manager
+
+[Desktop Action Manager]
+Exec=VirtualBox
+Name=Open VM Manager
