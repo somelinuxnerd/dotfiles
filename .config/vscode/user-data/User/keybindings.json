@@ -1,0 +1,47 @@
+// Place your key bindings in this file to override the defaultsauto[]
+[
+	{
+		"key": "ctrl+alt+,",
+		"command": "workbench.action.openSettingsJson"
+	},
+	{
+	  "key": "ctrl+j",
+	  "command": "workbench.action.focusActiveEditorGroup",
+	  "when": "terminalFocus"
+	},
+	{
+	  "key": "ctrl+j",
+	  "command": "workbench.action.terminal.focus",
+	  "when": "!terminalFocus"
+	},
+	{
+		"key": "alt+b",
+		"command": "bookmarks.toggle",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "ctrl+alt+k",
+		"command": "-bookmarks.toggle",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "alt+j",
+		"command": "bookmarks.jumpToPrevious",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "ctrl+alt+j",
+		"command": "-bookmarks.jumpToPrevious",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "alt+l",
+		"command": "bookmarks.jumpToNext",
+		"when": "editorTextFocus"
+	},
+	{
+		"key": "ctrl+alt+l",
+		"command": "-bookmarks.jumpToNext",
+		"when": "editorTextFocus"
+	}
+]

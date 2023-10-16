@@ -1,0 +1,16 @@
+[
+	{
+		"name": "Shells",
+		"rootPath": "/home/matt/projects/workspaces/shells.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	},
+	{
+		"name": "Fonts",
+		"rootPath": "/home/matt/projects/workspaces/fonts.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	}
+]
