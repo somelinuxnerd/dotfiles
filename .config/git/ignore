@@ -1,0 +1,30 @@
+# Compiled
+*.pyc
+*.zwc
+
+# Log Files
+*.log
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Vim
+*.swp
+
+# VSCode
+.vscode
+
+# Python
+.cache
+__pycache__
+
+# Environments
+.env
+.envrc
+.direnv
+venv
+
+# JavaScript
+node_modules
+package-lock.json

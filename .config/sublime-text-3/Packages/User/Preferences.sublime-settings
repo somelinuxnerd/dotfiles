@@ -1,0 +1,19 @@
+{
+	"close_windows_when_empty": true,
+	"color_scheme": "Packages/User/Dracula Dark.tmTheme",
+	"font_face": "JetBrainsMono Nerd Font",
+	"font_size": 11,
+	"ignored_packages":
+	[
+		"Vintage"
+	],
+	"line_padding_bottom": 1,
+	"line_padding_top": 1,
+	"scroll_past_end": false,
+	"theme": "Adaptive.sublime-theme",
+	"trim_trailing_white_space_on_save": true,
+	"ui_scale": 1.2,
+	"update_check": false,
+	"word_wrap": "false",
+    "highlight_modified_tabs": true
+}

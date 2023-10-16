@@ -1,0 +1,111 @@
+# Activate quiet mode. If used with --verbose, print the log to stderr
+# --quiet
+
+# Show progress bar, even if in quiet mode
+--progress
+
+# Resume partially downloaded files/fragments (default)
+--continue
+
+# Download only the video, if the URL refers to a video and a playlist
+--no-playlist
+
+# Embed metadata to the video file. Also embeds chapters/infojson if present unless --no-embed-chapters/--no-embed-info-json are used (Alias: --add-metadata)
+--embed-metadata
+
+# Add chapter markers to the video file (Alias: --add-chapters)
+--embed-chapters
+
+# Embed thumbnail in the video as cover art
+--embed-thumbnail
+
+# Embed the infojson as an attachment to mkv/mka video files
+--embed-info-json
+
+# Convert the thumbnails to another format (currently supported: jpg, png, webp). You can specify multiple rules using similar syntax as --remux-video
+--convert-thumbnails "webp>jpg"
+
+# Video format code, see "FORMAT SELECTION" for more details
+--format "bestvideo*+bestaudio/best"
+
+# native downloader for dash and m3u8
+--downloader "dash,m3u8:native"
+
+# Path to temporary download directory
+--paths "temp:$HOME/.cache/yt-dlp"
+
+# Path to download directory
+--paths "home:$HOME/downloads/videos"
+
+# Output filename template
+--output-na-placeholder "NULL"
+
+# domain/uploader/upload_date - title [id].extension
+--output "%(webpage_url_domain&{} __ |)s%(uploader,channel,creator,artist,uploader_id,channel_id&{} __ |)s%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d&{} __ |)s%(title,fulltitle,alt_title&{} __ |)s%(id,display_id,filename)s.%(ext)s"
+
+# Limit the filename length (excluding extension) to the specified number of characters
+--trim-filenames 175
+
+# Force filenames to be Windows-compatible
+# --windows-filenames
+
+# Restrict filenames to only ASCII characters, and avoid "&" and spaces in filenames
+# --restrict-filenames
+
+# Aliases
+# -------
+
+# Save video in mp4 format
+--alias mp4          "--merge-output-format mp4"
+# Save video in mkv format
+--alias mkv          "--merge-output-format mkv"
+# Save video in webm format
+--alias webm         "--merge-output-format webm"
+# Save video in mov format
+--alias mov          "--merge-output-format mov"
+# Save video in avi format
+--alias avi          "--merge-output-format avi"
+# Save video in flv format
+--alias flv          "--merge-output-format flv"
+
+# Save audio in best available audio format
+--alias audio        "--no-embed-thumbnail --extract-audio --format 'bestaudio/best'"
+# Save audio in flac format
+--alias flac         "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format flac"
+# Save audio in m4a format
+--alias m4a          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a"
+# Save audio in wav format
+--alias wav          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format wav"
+
+# Save audio in mp3 format
+--alias mp3          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3"
+# Save audio in mp3 (96kbps) format
+--alias mp3-96       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 96k"
+# Save audio in mp3 (128kbps) format
+--alias mp3-128      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 128k"
+# Save audio in mp3 (192kbps) format
+--alias mp3-192      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 192k"
+# Save audio in mp3 (256kbps) format
+--alias mp3-256      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 256k"
+# Save audio in mp3 (320kbps) format
+--alias mp3-320      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 320k"
+
+# Download the entire playlist if the url points to one
+--alias playlist     "--yes-playlist --output '%(webpage_url_domain&{} __ |)s%(playlist_uploader,uploader,channel,creator,artist,uploader_id,channel_id&{} __ |)s%(playlist&{} __ |)ss%(playlist_id&{} __ |)s%(playlist_index,playlist_autonumber&{} __ |)02d%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d&{} __ |)s%(title,fulltitle,alt_title&{} __ |)s%(id,display_id,filename)s.%(ext)s'"
+# Download local or remote m3u8 playlists
+--alias m3u8		 "--enable-file-urls --no-part --live-from-start"
+
+# Download the livestream from the beginning
+--alias live         "--no-warnings --concurrent-fragments 4 --live-from-start"
+# Download the livestream from the current time
+--alias livenow      "--no-warnings --concurrent-fragments 4"
+
+# Download the json metadata file for the video
+--alias info         "--write-info-json"
+# Download the livestream chat
+--alias chat         "--write-subs --sub-langs live_chat"
+# Download video comments to the json metadata file for the video
+--alias comments     "--write-comments"
+
+# Skip the video download
+--alias nodl      	 "--skip-download"
