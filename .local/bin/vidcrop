@@ -1,0 +1,32 @@
+#!/bin/sh
+
+in_file=$1
+width=${2:-1920}
+height=${3:-1080}
+start_x=${4:-0}
+start_y=${5:-0}
+
+if [ -z "${in_file}" ]; then
+    echo "error: no path specified"
+    exit 1
+elif [ -d "${in_file}" ]; then
+    echo "error: ${in_file}: is a directory"
+    exit 1
+elif [ ! -f "${in_file}" ]; then
+    echo "error: ${in_file}: file not found"
+    exit 1
+fi
+
+filename=$(basename "${in_file}")
+out_file="$(dirname "${in_file}")/$(echo "$filename" | sed 's/\(.*\)\..*/\1/')_crop.$(echo "$filename" | sed 's/^.*\.//')"
+
+ffmpeg \
+    -y \
+    -hide_banner \
+    -stats \
+    -loglevel error \
+    -i "${in_file}" \
+    -movflags use_metadata_tags \
+    -acodec copy \
+    -filter:v "crop=$width:$height:$start_x:$start_y" \
+    "${out_file}"

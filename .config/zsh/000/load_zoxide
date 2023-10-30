@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+# shellcheck disable=all
+
+emulate -L zsh
+
+local _cache_dir _init_file
+
+_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"/zoxide
+_init_file="${_cache_dir}"/init-zsh
+
+if [ "$(command -v zoxide)" -nt "${_init_file}" ] || [ ! -s "${_init_file}" ]; then
+    mkdir -p "${_cache_dir}"
+    zoxide init zsh >| "${_init_file}"
+fi
+
+source "${_init_file}"

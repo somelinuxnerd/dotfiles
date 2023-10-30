@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash disable=SC2001
+
+set -euo pipefail
+
+SCRIPT_NAME=$(basename "$0")
+PID_FILE="/var/run/user/$(id -u)/${SCRIPT_NAME}.pid"
+
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+
+readonly SCRIPT_NAME
+readonly PID_FILE
+
+error() {
+	echo "${RED}${SCRIPT_NAME}:${RESET} $1" >&2
+	exit 1
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [OPTION]"
+    echo
+    echo "Options:"
+    echo " -d  Recursion depth from 0 to 2 (default: 2)"
+    echo " -q  Suppress non-error messages"
+	echo " -h  Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+    declare -g QUIET=false
+	declare -g DEPTH=
+
+	while getopts "d:qh" OPT; do
+		case "${OPT}" in
+			d)
+				if [ -n "${DEPTH}" ]; then
+					error "option -d can only be set once"
+				fi
+				case "${OPTARG}" in
+					0|1|2)
+						DEPTH=${OPTARG}
+						;;
+					*)
+						error "invalid depth ${OPTARG}"
+						;;
+				esac
+				;;
+			q)
+				if ${QUIET}; then
+					error "option -q can only be set once"
+				fi
+				QUIET=true
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPT} requires an argument"
+				;;
+			?)
+				error "invalid option -${OPTARG:-}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -gt 0 ]; then
+		error "too many arguments specified"
+	fi
+
+	if [ -z "${DEPTH}" ]; then
+		DEPTH=2
+	fi
+
+	# If not suppressing output but terminal is not
+	# interactive then suppress output anyway
+	if ! ${QUIET} && [ ! -t 1 ]; then
+		QUIET=true
+	fi
+
+}
+
+abort_message() {
+	if ! ${QUIET}; then
+		printf '\033[1A\033[K:: %sMPD Update Cancelled%s\n' "${YELLOW}" "${RESET}"
+	fi
+}
+
+update_database() {
+
+	if ! ${QUIET}; then
+		echo ":: ${GREEN}Updating MPD Database${RESET}"
+	fi
+
+	IFS=$'\n'
+
+	if [ "${DEPTH}" -eq "0" ]; then
+
+		mpc --quiet --wait update
+
+	elif [ "${DEPTH}" -eq "1" ]; then
+
+		for subdir in $(mpc ls); do
+
+			if ! ${QUIET}; then
+				echo ":: ${BOLD}${subdir}${RESET}"
+			fi
+
+			mpc --quiet --wait update "${subdir}"
+
+			# Move cursor up one line and clear the line
+			printf '\033[1A\033[K'
+
+		done
+
+	else
+
+		for subdir1 in $(mpc ls); do
+			for subdir2 in $(mpc ls "${subdir1}"); do
+
+				if ! ${QUIET}; then
+					echo ":: ${BOLD}${subdir2}${RESET}"
+				fi
+
+				mpc --quiet --wait update "${subdir2}"
+
+				# Move cursor up one line and clear the line
+				printf '\033[1A\033[K'
+
+			done
+		done
+
+	fi
+
+	mpc --quiet --wait update
+
+}
+
+main() {
+
+	# Hide keyboard output
+	stty -echo
+
+	# Test that all dependencies are installed and throw an error if any are missing
+	for cmd in mpd mpc; do
+		if ! command -v "${cmd}" >/dev/null; then
+			error "${cmd} is not installed"
+		fi
+	done
+
+	# If the MPD service is not running then start it
+	if ! systemctl --user --quiet is-active mpd.service; then
+		systemctl --user --quiet start mpd.service
+	fi
+
+	# Test the MPD connection and throw an error if connection fails
+	if ! mpc --quiet >/dev/null 2>&1; then
+		error "Could not connect to MPD"
+	fi
+
+	# Exit script if pidfile already exists
+	if [ -f "${PID_FILE}" ]; then
+		error "script is already running"
+	fi
+
+	# Set global variable values from command line options
+	parse_options "$@"
+
+	# Create trap for script interruption
+	trap 'abort_message' QUIT TERM INT
+
+	# Create trap to remove pidfile when script is is aborted or completed
+	trap 'rm -f "${PID_FILE}"' EXIT
+
+	# Create PID file
+	echo $$ > "${PID_FILE}"
+
+	update_database
+
+	if ! ${QUIET}; then
+		printf ':: %sMPD Update Complete%s\n' "${GREEN}" "${RESET}"
+	fi
+
+}
+
+main "$@"

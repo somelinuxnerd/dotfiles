@@ -1,0 +1,116 @@
+# shellcheck disable=all
+
+emulate -L zsh
+
+_warn() {
+	printf 'plug: %s\n' "$1" >&2
+}
+
+_source_dir() {
+
+	local _plugin_dir=$1
+	local _plugin_name=${_plugin_dir##*/}
+
+	local -a _init_files=(
+		$_plugin_dir/*.plugin.{z,}sh(N)
+		$_plugin_dir/*.{z,}sh{-theme,}(N)
+	)
+
+	if ! (( "${#_init_files}" )); then
+		_warn "${_plugin_name}: no init file found"
+		return 1
+	fi
+
+	if ! source ${_init_files[1]} 2>/dev/null; then
+		_warn "${_plugin_name}: failed to load"
+		return 1
+	fi
+
+	return 0
+
+}
+
+_from_git() {
+
+	local _git_path=${1%.git}
+	local _plugin_name=${_git_path##*/}
+	local _plugin_dir="${ZSH_PLUGIN_DIR}/${_plugin_name}"
+
+	if [ ! -d "${_plugin_dir}" ]; then
+
+		tput civis; printf 'Installing: \e[1m%-30s\e[0m' "${_plugin_name}"
+
+		local _repo_url="https://github.com/${_git_path}.git"
+
+		if ! git clone --quiet --depth 1 "${_repo_url}" "${_plugin_dir}" >/dev/null 2>&1; then
+			printf ' \e[31mFAIL\e[0m\n'
+			return 1
+		fi
+
+		printf ' \e[32mDONE\e[0m\n'
+
+	fi
+
+	if _source_dir "${_plugin_dir}"; then
+		ZSH_PLUGINS+=( "${_plugin_name}" )
+	fi
+
+}
+
+_from_dir() {
+
+	local _plugin_dir=$1
+	local _plugin_name=${_plugin_dir##*/}
+
+	if [ ! -d "${_plugin_dir}" ]; then
+		_warn "${_plugin_name}: local plugin not found"
+		return 1
+	fi
+
+	if _source_dir "${_plugin_dir}"; then
+		ZSH_PLUGINS+=( "${_plugin_name}" )
+	fi
+
+}
+
+_from_file() {
+
+	local _init_path=$1
+	local _plugin_name=${_init_path:h:t}
+
+	if ! source "$_init_path" 2>/dev/null; then
+		_warn "${_plugin_name}: plugin source failed to loaded"
+		return 1
+	fi
+
+	ZSH_PLUGINS+=( "${_plugin_name}" )
+
+}
+
+if (( ! ${+ZSH_PLUGIN_DIR} )); then
+	typeset -g ZSH_PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+fi
+
+if (( ! ${+ZSH_PLUGINS} )); then
+	typeset -gaU ZSH_PLUGINS=()
+fi
+
+mkdir -p "${ZSH_PLUGIN_DIR}"
+
+trap 'tput cnorm' EXIT
+
+typeset _regex_git='^[A-Za-z0-9-]+/[A-Za-z0-9-]+$'
+# typeset _regex_path='^\.?(/[A-Za-z0-9.-]+)+$'
+
+if [[ $1 =~ $_regex_git ]]; then
+	_from_git $1
+elif [[ -d $1 ]]; then
+	_from_dir $1
+elif [[ -f $1 ]]; then
+	_from_file $1
+else
+	_warn "$1: invalid plugin"
+	return 1
+fi
+
+# unfunction _from_git _from_dir _from_file

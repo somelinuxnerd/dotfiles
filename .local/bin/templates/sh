@@ -1,0 +1,10 @@
+#!/bin/sh
+
+SCRIPT_DIR=$( CDPATH= cd -- "$(dirname -- "$0")" && pwd -P )
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit 1
+}
+

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mpv --volume=85 --ytdl-format="bestvideo[height<=?1080]*/best" "$1" >/dev/null 2>&1 &

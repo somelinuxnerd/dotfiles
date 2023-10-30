@@ -1,0 +1,210 @@
+#!/bin/sh
+# Use the termpad.com pastebin website
+# Dependencies: curl
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit 1
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [OPTION]"
+	echo ""
+	echo "Options:"
+	echo " -g ID    Get a pasted document"
+	echo " -o ID    Open a pasted document in a browser"
+	echo " -p PATH  Paste an existing file"
+	echo " -n       Create and paste a new file"
+	echo " -c       Copy paste url to clipboard"
+	echo " -h       Show this message"
+
+	exit 0
+
+}
+
+parse_options() {
+
+	ACTION=
+	PASTE_ID=
+	FILE_PATH=
+	TO_CLIPBOARD=false
+
+	while getopts ":g:o:p:nch" OPT; do
+		case "${OPT}" in
+			g)
+				if [ -n "${ACTION}" ]; then
+					error "only one action can be specified"
+				fi
+				ACTION="get"
+				PASTE_ID=$(basename "$OPTARG")
+				;;
+			o)
+				if [ -n "${ACTION}" ]; then
+					error "only one action can be specified"
+				fi
+				ACTION="open"
+				PASTE_ID=$(basename "$OPTARG")
+				;;
+			p)
+				if [ -n "${ACTION}" ]; then
+					error "only one action can be specified"
+				fi
+				ACTION="post"
+				FILE_PATH=$OPTARG
+				;;
+			n)
+				if [ -n "${ACTION}" ]; then
+					error "only one action can be specified"
+				fi
+				ACTION="new"
+				;;
+			c)
+				if ${TO_CLIPBOARD}; then
+					error "-c can only be set once"
+				else
+					TO_CLIPBOARD=true
+				fi
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -gt 0 ]; then
+		error "too many arguments specified"
+	fi
+
+	if [ -z "${ACTION}" ]; then
+		error "no action specified"
+	fi
+
+}
+
+get_paste() {
+
+	paste_url="https://termpad.com/raw/${PASTE_ID}"
+
+	paste_text=$(curl --silent "${paste_url}")
+
+	if [ -z "${paste_text}" ]; then
+		error "paste '${PASTE_ID}' not found"
+	fi
+
+	if command -v bat >/dev/null; then
+		echo "${paste_text}" | bat --style auto --file-name "https://termpad.com/${PASTE_ID}"
+	elif [ -n "${PAGER}" ]; then
+		echo "${paste_text}" | $PAGER
+	else
+		echo "${paste_text}"
+	fi
+
+	unset paste_url paste_text
+
+}
+
+open_paste() {
+
+	if ! command -v xdg-open >/dev/null; then
+		error "xdg-open is not installed"
+	fi
+
+	paste_url="https://termpad.com/${PASTE_ID}"
+
+	status_code=$(curl --output /dev/null --silent --write-out "%{http_code}" "${paste_url}")
+
+	if [ "${status_code}" != "200" ]; then
+		error "paste '${PASTE_ID}' not found"
+	fi
+
+	xdg-open "https://termpad.com/${PASTE_ID}" >/dev/null 2>&1 &
+
+	unset paste_url status_code
+
+}
+
+post_file() {
+
+	file_path=$1
+
+	if [ ! -f "${file_path}" ]; then
+		error "file not found"
+	fi
+
+	paste_url=$(curl --silent --data-binary @"${file_path}" termpad.com)
+
+	if ${TO_CLIPBOARD}; then
+		echo "$paste_url" | xclip -selection clipboard -in
+	fi
+
+	echo "${paste_url}"
+
+	unset paste_url
+
+}
+
+choose_editor() {
+
+    for cmd in "${VISUAL:-}" "${EDITOR:-}" vim vi nano; do
+        if command -v "${cmd}" >/dev/null; then
+            echo "${cmd}"
+            return 0
+        fi
+    done
+
+    return 1
+
+}
+
+post_new() {
+
+	editor=$(choose_editor || error "no editor found")
+
+	tempfile=$(mktemp)
+
+	"${editor}" -- "${tempfile}"
+
+	if [ ! -s "${tempfile}" ]; then
+		rm -f "${tempfile}"
+		error "nothing to paste"
+	fi
+
+	post_file "${tempfile}"
+
+	rm -f "${tempfile}"
+
+	unset editor tempfile
+
+}
+
+main() {
+
+	if ! command -v curl >/dev/null; then
+		error "curl is not installed"
+	fi
+
+	parse_options "$@"
+
+	case "${ACTION}" in
+		get) 	get_paste                ;;
+		open) 	open_paste               ;;
+		post) 	post_file "${FILE_PATH}" ;;
+		new)    post_new                 ;;
+	esac
+
+}
+
+main "$@"

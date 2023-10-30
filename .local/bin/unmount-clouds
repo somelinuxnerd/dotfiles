@@ -1,0 +1,43 @@
+#!/bin/sh
+# Unmount all non-encrypted rclone remotes
+
+SCRIPT_NAME=$(basename "${0}")
+
+error_exit() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit "${2:-1}"
+}
+
+if [ "$(id -u)" -eq 0 ]; then
+	error_exit "must not run as root"
+fi
+
+if ! command -v rclone >/dev/null; then
+	error_exit "rclone is not installed"
+fi
+
+if ! command -v fusermount >/dev/null; then
+	error_exit "fusermount is not installed"
+fi
+
+# Get list of all non-encrypted rclone remotes
+remote_list=$(rclone listremotes | grep -v 'crypt:$' | sed 's/:$//' | sed ':a;N;$!ba;s/\n/ /g')
+
+# Loop remotes list and unmount each
+for remote in ${remote_list}; do
+
+    # If remote is not mounted then skip to the next
+    if ! grep -qE "^${remote}:\s" /proc/mounts; then
+        continue
+    fi
+
+    mountpoint=$(grep -E "^${remote}:\s" /proc/mounts | cut -d' ' -f2)
+
+    fusermount -u "${mountpoint}"
+
+    echo "Unmounted ${remote} at ${mountpoint}"
+
+    # Remove mountpoint
+    rmdir "${mountpoint}"
+
+done

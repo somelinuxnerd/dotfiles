@@ -1,0 +1,33 @@
+# ------------------------------------------
+#  Startup File - bash_profile
+# ------------------------------------------
+echo "bash_profile"
+
+# XDG base directories
+export XDG_CACHE_HOME="${HOME}"/.cache
+export XDG_CONFIG_HOME="${HOME}"/.config
+export XDG_DATA_HOME="${HOME}"/.local/share
+export XDG_STATE_HOME="${HOME}"/.local/state
+
+# XDG user directories
+if [ -f "${XDG_CONFIG_HOME}"/user-dirs.dirs ]; then
+	source "${XDG_CONFIG_HOME}"/user-dirs.dirs
+fi
+
+export DOTFILES_DIR="${HOME}"/dotfiles
+export SCRIPTS_DIR="${HOME}"/scripts
+
+# Inter-Client Exchange (ICE) Protocol
+export ICEAUTHORITY="${XDG_CACHE_HOME}"/ICEauthority
+
+# X.Org
+export XAUTHORITY="${XDG_RUNTIME_DIR}"/Xauthority
+export ERRFILE="${XDG_CACHE_HOME}"/X11/xsession-errors
+export XINITRC="${XDG_CONFIG_HOME}"/X11/xinitrc
+
+
+if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+	exec startx "${XINITRC}" >/dev/null 2>&1
+elif [[ $- = *i* ]]; then
+	source "${XDG_CONFIG_HOME}/bash/bashrc"
+fi

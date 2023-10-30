@@ -1,0 +1,51 @@
+#!/bin/sh
+# Mount all non-encrypted rclone remotes
+
+SCRIPT_NAME=$(basename "$0")
+
+error_exit() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit "${2:-1}"
+}
+
+if [ "$(id -u)" -eq 0 ]; then
+	error_exit "must not run as root"
+fi
+
+if ! command -v rclone >/dev/null; then
+	error_exit "rclone is not installed"
+fi
+
+# Prepare /media folder for new mountpoints
+if [ ! -d /media ]; then
+	sudo mkdir -p /media
+fi
+
+sudo chmod +rx /media
+
+# Get list of all non-encrypted rclone remotes
+remote_list=$(rclone listremotes | grep -v 'crypt:$' | sed 's/:$//' | sed ':a;N;$!ba;s/\n/ /g')
+
+# Loop remotes list and mount each
+for remote in ${remote_list}; do
+
+	mountpoint="/media/${remote}"
+
+	# Create mountpoint
+	if [ ! -d "${mountpoint}" ]; then
+		sudo mkdir -p "${mountpoint}"
+	fi
+
+	# Set permissions for mountpoint
+	sudo chown "$(id -u)":"$(id -g)" "${mountpoint}"
+	sudo chmod +rx "${mountpoint}"
+
+	# Attempt to mount remote to mountpoint
+	if rclone mount "${remote}": "${mountpoint}" --vfs-cache-mode writes --daemon; then
+		echo "Mounted ${remote} at ${mountpoint}"
+	else
+		sudo rmdir "${mountpoint}"
+		echo "Failed to mount ${remote} at ${mountpoint}"
+	fi
+
+done

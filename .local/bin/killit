@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2001,SC2317
+# Select processes with fzf sorted by cpu or memory usage and
+# kill those processes as well as any sibling processes and
+# their parent processes if the parent is the same executable.
+# Dependencies: fzf
+
+set -euo pipefail
+
+readonly SCRIPT_NAME=${0##*/}
+
+error() {
+	echo "${SCRIPT_NAME}: $1" >&2
+	exit 1
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [OPTION]"
+    echo
+    echo "Options:"
+    echo " -a  Show processes for all users"
+    echo " -m  Sort by memory usage instead of cpu usage"
+	echo " -h  Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+	declare -g SHOW_ALL_USERS=false
+	declare -g SORT_BY_MEMORY=false
+
+	while getopts ":amh" OPT; do
+		case "${OPT}" in
+			a)
+				if ${SHOW_ALL_USERS}; then
+					error "option -${OPT} can only be set once"
+				else
+					SHOW_ALL_USERS=true
+				fi
+				;;
+			m)
+				if ${SORT_BY_MEMORY}; then
+					error "option -${OPT} can only be set once"
+				else
+					SORT_BY_MEMORY=true
+				fi
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+ 	CMDLIST=$(sed -e 's/ /,/g' <<< "$@")
+
+	declare -g SORT_BY
+
+	if ${SORT_BY_MEMORY}; then
+		SORT_BY="-pmem"
+	else
+		SORT_BY="-pcpu"
+	fi
+
+}
+
+choose_pids() {
+
+	local ps_args=(
+		"--no-headers"
+		"--format"
+		"pid,ppid,pgrp,user,pcpu,pmem,time,exe"
+		"--sort"
+		"${SORT_BY}"
+	)
+
+	if ${SHOW_ALL_USERS}; then
+		ps_args+=( "-a" )
+	else
+		ps_args+=( "-U" "${SUDO_USER:-$USER}" "-u" "${SUDO_USER:-$USER}" )
+	fi
+
+	local fzf_args=(
+		"-i"
+		"--multi"
+		"--no-sort"
+		"--border=rounded"
+		"--height=100%"
+		"--layout=reverse"
+		"--prompt=Filter: "
+		"--info=default"
+		"--header=    PID    PPID    PGRP USER      CPU  MEM     TIME COMMAND"
+		"--preview="
+		"--nth=8,4,1,2,3"
+ 		"--bind=enter:execute(echo {+1})+abort"
+	)
+
+	if [ -n "${CMDLIST}" ]; then
+		fzf_args+=( "--query=${CMDLIST}" )
+	fi
+
+	if ${SHOW_ALL_USERS}; then
+		user="root"
+	else
+		user=$(id -un)
+	fi
+
+	sudo -u "${user}" -- ps "${ps_args[@]}" | sed -E 's:(/.+)?/::' | fzf "${fzf_args[@]}" | sort -nr
+
+}
+
+get_base_pid() {
+
+	pid=$1
+
+	exe=$(ps -o exe --no-headers --pid "${pid}")
+
+	while true; do
+
+		parent_pid=$(ps -o ppid --no-headers --pid "${pid}" | tr -d ' ')
+		parent_exe=$(ps -o exe --no-headers --pid "${parent_pid}")
+
+		if [ "${parent_exe}" != "${exe}" ]; then
+			echo "${pid} $(basename "${exe}")"
+			return 0
+		elif [ "${parent_pid}" == "1" ]; then
+			echo "${pid} $(basename "${exe}")"
+			return 0
+		fi
+
+		pid=$parent_pid
+		exe=$parent_exe
+
+	done
+
+}
+
+kill_tree() {
+
+    local pid=$1
+
+	# Prevent main process from creating new child processes
+    kill -STOP "${pid}"
+
+	local child
+    for child in $(ps -o pid --no-headers --ppid "${pid}" | sort -nr); do
+        kill_tree "${child}"
+    done
+
+    echo "Killing Process: ${pid}"
+
+	kill -KILL "${pid}"
+
+}
+
+main() {
+
+	if ! command -v fzf >/dev/null; then
+		error "fzf is not installed"
+	fi
+
+	parse_options "$@"
+
+	for pid in $(choose_pids); do
+
+		read -r pid cmd < <(get_base_pid "${pid}")
+
+		echo "Killing: ${cmd} (${pid})"
+
+		kill_tree "${pid}"
+
+	done
+
+}
+
+main "$@"

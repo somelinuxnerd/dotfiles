@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly SCRIPT_NAME=${0##*/}
+readonly SHRED_PASSES=2
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit 1
+}
+
+warning() {
+    echo "${SCRIPT_NAME}: $1" >&2
+}
+
+quote_string() {
+	grep -q "'" <<< "$1" && printf '"%s"\n' "$1" || printf "'%s'\n" "$1"
+}
+
+main() {
+
+	if ! command -v shred >/dev/null; then
+		error "shred is not installed"
+	fi
+
+	# If user is not root rerun script with the sudo command
+	if [ "$(id -u)" -ne 0 ]; then
+		sudo "$0" "$@"
+		exit $?
+	fi
+
+	for arg in "$@"; do
+
+		if [ ! -e "${arg}" ]; then
+			warning "cannot shred $(quote_string "${arg}"): no such device, file or directory"
+			continue
+		fi
+
+		if [ "${arg:0:5}" = "/dev/" ]; then
+			echo "Shredding device $(quote_string "${arg}").."
+			umount --quiet --force --recursive "${arg}"
+			echo "shred -n ${SHRED_PASSES} -vfz ${arg}"
+		elif [ -d "${arg}" ]; then
+			echo "Shredding folder $(quote_string "${arg}").."
+			find "${arg}" -type f -exec shred -n "${SHRED_PASSES}" -fuvz {} \;
+			sync
+		else
+			echo "Shredding file $(quote_string "${arg}").."
+			shred -n "${SHRED_PASSES}" -fuvz "${arg}"
+			sync
+		fi
+
+	done
+
+	exit "${return_code:-0}"
+
+}
+
+main "$@"

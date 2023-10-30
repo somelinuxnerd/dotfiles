@@ -1,0 +1,324 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import readline
+import shutil
+import subprocess
+import sys
+from typing import Optional
+
+SCRIPT_NAME = os.path.basename(sys.argv[0])
+BIN_DIR = os.path.join(os.getenv('HOME', ''), '.local/bin')
+
+
+# Helper Functions
+
+def error(message: Optional[str] = None) -> None:
+    if message:
+        sys.exit(f"{SCRIPT_NAME}: {message}")
+    sys.exit(1)
+
+
+def is_command(name: str) -> bool:
+    return shutil.which(name) is not None
+
+
+def is_script(name: str) -> bool:
+    try:
+        with open(name, 'r') as file:
+            return file.readline().strip().startswith("#!/")
+    except UnicodeDecodeError:
+        return False
+
+
+def change_working_directory() -> None:
+
+    if not os.path.isdir(BIN_DIR):
+        os.mkdir(BIN_DIR)
+
+    os.chdir(BIN_DIR)
+
+
+def get_editor_binary() -> str | None:
+
+    for editor in (os.getenv("VISUAL"), os.getenv("EDITOR")):
+        if editor is not None and is_command(editor):
+            return editor
+
+    for editor in ('nvim', 'vim', 'helix', 'kak', 'micro', 'vi', 'nano'):
+        if is_command(editor):
+            return editor
+
+    return None
+
+
+def get_script_names() -> list[str]:
+    scripts = [item for item in os.listdir() if os.path.isfile(item) and is_script(item)]
+    scripts.sort()
+    return scripts
+
+
+def create_script_file(name: str) -> str:
+
+    type_ = 'sh'
+
+    if ':' in name:
+        type_, name = name.split(':')[:2]
+
+    if os.path.exists(name):
+        error(f"script {name!r} already exists")
+
+    if shutil.which(type_) is None:
+        error(f"script type {type_!r} is not valid")
+
+    shebang = "#!/bin/sh" if type_ == 'sh' else f"#!/usr/bin/env {type_}"
+
+    with open(name, 'w') as file:
+        file.write(shebang + '\n\n\n')
+
+    os.chmod(name, 0o755)
+
+    return name
+
+
+def select_script() -> str:
+
+    if not is_command('fzf'):
+        error("fzf is not installed")
+
+    scripts = get_script_names()
+
+    terminal_columns, terminal_rows = os.get_terminal_size()
+    list_columns = max([len(val) for val in scripts]) + 2
+    preview_columns = min(terminal_columns - (list_columns + 7), 120)
+    preview_rows = terminal_rows - 2
+
+    preview_command = ''
+    if preview_columns > 60:
+        if is_command('bat'):
+            preview_command = f"bat --color=always --tabs=4 --style=numbers --line-range=':{preview_rows}' {{}}"
+        else:
+            preview_command = f"head -n {preview_rows} {{}}"
+
+    os.environ['FZF_DEFAULT_OPTS'] = ''
+
+    fzf_command = (
+        "fzf",
+        "-i",
+        "--exact",
+        "--layout=reverse",
+        "--info=inline-right",
+        "--keep-right",
+        "--height=100%",
+        "--border=none",
+        "--prompt=: ",
+        "--color=16,gutter:0,border:8,scrollbar:7,prompt:14,info:1",
+        f"--preview-window={preview_columns}",
+        f"--preview={preview_command}"
+    )
+
+    fzf_input = '\n'.join(scripts).encode('utf-8')
+
+    result = subprocess.run(fzf_command, input=fzf_input, stdout=subprocess.PIPE)
+
+    if result.returncode != 0:
+        error('no script selected')
+
+    return result.stdout.decode('utf-8').strip()
+
+
+def get_script_name(initial_value: Optional[str] = None) -> str:
+
+    if initial_value:
+        readline.set_startup_hook(lambda: readline.insert_text(initial_value))
+
+    try:
+        name = input("Enter script name: ")
+    except KeyboardInterrupt:
+        sys.exit('')
+
+    if name == '':
+        error("no script name specified")
+
+    return name
+
+
+# Command Functions
+
+def list_scripts() -> None:
+    scripts = get_script_names()
+    result = "No scripts found" if len(scripts) == 0 else '\n'.join(scripts)
+    print(result)
+
+
+def search_scripts(keyword: str) -> None:
+    scripts = [item for item in get_script_names() if keyword in item]
+    result = "No matching scripts found" if len(scripts) == 0 else '\n'.join(scripts)
+    print(result)
+
+
+def view_script(name: str) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    if is_command('bat'):
+        subprocess.run(['bat', '--paging=always', name])
+    else:
+        subprocess.run(['less', name])
+
+
+def cat_script(name: str) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    if is_command('bat'):
+        subprocess.run(['bat', '--style=plain', '--paging=never', name])
+    else:
+        subprocess.run(['cat', name])
+
+
+def touch_script(name: str) -> None:
+    name = create_script_file(name)
+    print(f"script {name!r} created")
+
+
+def add_script(name: str) -> None:
+    name = create_script_file(name)
+    edit_script(name, go_to_end=True)
+
+
+def edit_script(name: str, go_to_end: Optional[bool] = False) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    editor_binary = get_editor_binary()
+
+    if editor_binary is None:
+        sys.exit("no editor found")
+
+    edit_command = [editor_binary]
+
+    if go_to_end and editor_binary in ('nvim', 'vim', 'nano'):
+        edit_command.append('+')
+
+    edit_command.append(name)
+
+    subprocess.run(edit_command)
+
+
+def duplicate_script(name: str, new_name: str) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    if os.path.exists(new_name):
+        error(f"script {new_name!r} already exists")
+
+    shutil.copy2(name, new_name)
+
+    print(f"script {name!r} copied to {new_name!r}")
+
+
+def rename_script(name: str, new_name: str) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    if os.path.exists(new_name):
+        error(f"script {new_name!r} already exists")
+
+    shutil.move(name, new_name)
+
+    print(f"script {name!r} renamed {new_name!r}")
+
+
+def remove_script(name: str) -> None:
+
+    if not os.path.exists(name):
+        error(f"script {name!r} does not exist")
+
+    if input("Are you sure? [Y/n] ").lower() not in ('y', ''):
+        sys.exit(0)
+
+    os.remove(name)
+
+    print(f"script {name!r} deleted")
+
+
+def get_arguments() -> argparse.Namespace:
+
+    global_parser = argparse.ArgumentParser(
+        description='Manage scripts', formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=32, indent_increment=4))
+
+    subparsers = global_parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
+
+    add_parser = subparsers.add_parser("add", aliases=['a'], help="Add a new script and begin editing")
+    add_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    add_parser.set_defaults(func=add_script)
+
+    view_parser = subparsers.add_parser("cat", aliases=['c'], help="Concatenate script")
+    view_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    view_parser.set_defaults(func=cat_script)
+
+    duplicate_parser = subparsers.add_parser("duplicate", aliases=['dup', 'd'], help="Copy an existing script to a new file", formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=300, width=3000))
+    duplicate_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="SOURCE", help="Current script name")
+    duplicate_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="DEST", help="New script name")
+    duplicate_parser.set_defaults(func=duplicate_script)
+
+    edit_parser = subparsers.add_parser("edit", aliases=['e'], help="Edit an existing script")
+    edit_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    edit_parser.set_defaults(func=edit_script)
+
+    list_parser = subparsers.add_parser("list", aliases=['l'], help="List existing scripts")
+    list_parser.set_defaults(func=list_scripts, func_args=[])
+
+    move_parser = subparsers.add_parser("move", aliases=['mv', 'm'], help="Rename an existing script")
+    move_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="SOURCE", help="Current script name")
+    move_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="DEST", help="New script name")
+    move_parser.set_defaults(func=rename_script)
+
+    remove_parser = subparsers.add_parser("remove", aliases=['rm', 'r'], help="Delete an existing script")
+    remove_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    remove_parser.set_defaults(func=remove_script)
+
+    search_parser = subparsers.add_parser("search", aliases=['s'], help="Search existing scripts for keyword")
+    search_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="KEYWORD", help="Keyword")
+    search_parser.set_defaults(func=search_scripts)
+
+    touch_parser = subparsers.add_parser("touch", aliases=['t'], help="Create a new script but do not open the editor")
+    touch_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    touch_parser.set_defaults(func=touch_script)
+
+    view_parser = subparsers.add_parser("view", aliases=['v'], help="View an existing script")
+    view_parser.add_argument(dest="func_args", nargs='?', action='append', metavar="NAME", help="Script name")
+    view_parser.set_defaults(func=view_script)
+
+    return global_parser.parse_args()
+
+
+def main() -> int | None:
+
+    change_working_directory()
+
+    args = get_arguments()
+
+    if args.command in ('add', 'a', 'touch', 't'):
+        args.func_args[0] = get_script_name() if args.func_args[0] is None else args.func_args[0]
+    elif args.command in ('view', 'v', 'edit', 'e', 'delete', 'd', 'copy', 'c', 'rename', 'r'):
+        args.func_args[0] = select_script() if args.func_args[0] is None else args.func_args[0]
+    elif args.command in ('search', 's'):
+        if args.func_args[0] is None:
+            error("no search keyword specified")
+
+    if args.command in ('duplicate', 'dup', 'd', 'move', 'mv', 'm'):
+        args.func_args[1] = get_script_name(args.func_args[0]) if not args.func_args[1] else args.func_args[1]
+
+    args.func(*args.func_args)
+
+
+if __name__ == "__main__":
+    main()

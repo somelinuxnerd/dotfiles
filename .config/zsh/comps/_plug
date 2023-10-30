@@ -1,0 +1,11 @@
+#compdef plug
+
+local -a subcmds=(
+	"clean:Remove unused plugins"
+	"help:Show help informations"
+	"list:List plugins"
+	"load:Load or install a plugin"
+	"update:Update plugins"
+)
+
+_describe 'plug' subcmds

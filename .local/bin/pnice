@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -eu
+
+nice=$1
+
+shift
+
+for process in "$@"; do
+
+	pids=$(pgrep --exact --ignore-case "${process}" | sort -n)
+
+	if [ -z "${pids}" ]; then
+		echo "Process ${process} not found" >&2
+		exit 1
+	fi
+
+	for pid in ${pids}; do
+		sudo renice -n "${nice}" -p "${pid}"
+	done
+
+done

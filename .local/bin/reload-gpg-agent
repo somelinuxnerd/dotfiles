@@ -1,0 +1,4 @@
+#!/bin/sh
+# Reload the GPG agent.
+
+gpgconf --reload gpg-agent

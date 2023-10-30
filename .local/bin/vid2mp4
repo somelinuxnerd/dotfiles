@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -o nounset
+set -o errexit
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+	echo "${SCRIPT_NAME}: $1" >&2
+	exit 1
+}
+
+if [ "$#" -eq 0 ]; then
+	error "no filename specified"
+fi
+
+if [ "$#" -gt 1 ]; then
+	error "too many arguments specified"
+fi
+
+in_file=$1
+
+if [ ! -f "$1" ]; then
+	error "${in_file}: file not found"
+fi
+
+mimetype=$(file --brief --mime-type "${in_file}")
+
+if [ "$(echo "${mimetype}" | cut -d '/' -f1)" != "video" ]; then
+	error "${in_file}: not a valid video file"
+fi
+
+if [ "${mimetype}" = "video/mp4" ]; then
+	error "${in_file}: already an MP4 file"
+fi
+
+out_file="${in_file%.*}.mp4"
+
+ffmpeg -hide_banner -loglevel error -stats -i "${in_file}" -vcodec libx264 -acodec copy "${out_file}"

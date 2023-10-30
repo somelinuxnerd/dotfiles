@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Name=Signal
+Comment=Signal - Private Messenger
+Icon=signal-desktop
+Exec=signal-desktop --use-tray-icon -- %u
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupWMClass=Signal
+MimeType=x-scheme-handler/sgnl;x-scheme-handler/signalcaptcha;
+Keywords=sgnl;chat;im;messaging;messenger;sms;security;privat;
+X-GNOME-UsesNotifications=true
+NoDisplay=false
+PrefersNonDefaultGPU=false
+X-GNOME-Autostart-enabled=false
+Hidden=false
+Name[en_US]=Signal
+Comment[en_US]=Signal - Private Messenger
+X-GNOME-Autostart-Delay=10

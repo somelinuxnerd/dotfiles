@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ "$#" -eq 0 ]; then
+	echo "No arguments specified" >&2
+	exit 1
+fi
+
+column_width=0
+
+for arg in "$@"; do
+    if [ "${#arg}" -gt "${column_width}" ]; then
+		column_width=${#arg}
+	fi
+done
+
+for arg in "$@"; do
+	printf "%${column_width}s: %s\n" "${arg}" "$(file --brief --mime-type "${arg}")"
+done

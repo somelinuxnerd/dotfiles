@@ -1,0 +1,104 @@
+#!/bin/sh
+# Load custom keymap or reset keymap to default.
+# Dependencies: xmodmap, setxkbmap
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+    echo "${SCRIPT_NAME}: xmodmap is not installed" >&2
+    exit "${2:-1}"
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [OPTION]"
+    echo
+    echo "Options:"
+    echo "  -s  Set keymap to mapfile settings"
+    echo "  -r  Reset keymap to default settings"
+	echo "  -h  Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+	while getopts ":srh" OPT; do
+		case "${OPT}" in
+			s)
+				if [ "${ACTION:-}" = "set" ]; then
+					error "option -s can only be set once"
+				elif [ "${ACTION:-}" = "reset" ]; then
+					error "option -s conflicts with option -r"
+				fi
+				ACTION="set"
+				;;
+			r)
+				if [ "${ACTION:-}" = "reset" ]; then
+					error "option -r can only be set once"
+				elif [ "${ACTION:-}" = "set" ]; then
+					error "option -r conflicts with option -s"
+				fi
+				ACTION="reset"
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -gt 0 ]; then
+		error "too many arguments specified"
+	fi
+
+    if [ -z "${ACTION:-}" ]; then
+        usage
+    fi
+
+}
+
+set_keymap() {
+
+    if command -v setxkbmap >/dev/null; then
+    	setxkbmap -option caps:escape_shifted_capslock
+    elif command -v xmodmap >/dev/null; then
+		xmodmap "${XDG_CONFIG_HOME:-$HOME/.config}/X11/xmodmap"
+	else
+		error "setxkbmap and xmodmap are not installed"
+    fi
+
+}
+
+reset_keymap() {
+
+    if ! command -v setxkbmap >/dev/null; then
+        error "setxkbmap is not installed"
+    fi
+
+    setxkbmap -option
+
+}
+
+main() {
+
+    parse_options "$@"
+
+    case "${ACTION}" in
+        set)   set_keymap   ;;
+        reset) reset_keymap ;;
+    esac
+
+}
+
+main "$@"

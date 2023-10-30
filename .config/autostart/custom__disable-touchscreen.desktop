@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Script - Disable Touchscreen
+Comment=Run the touchscreen disable script
+Exec=/home/matt/.local/bin/touchscreen -d
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=5
+Name[en_US]=Script - Disable Touchscreen

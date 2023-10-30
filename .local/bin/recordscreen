@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+RESOLUTION_IN=$(xdpyinfo | grep dimensions | awk '{print $2}')
+RESOLUTION_OUT='1280x720'
+
+FRAMES_PER_SECOND=30
+
+AUDIO_CODEC='libmp3lame'
+AUDIO_BITRATE=128
+AUDIO_SAMPLE_RATE=44100
+
+VIDEO_CODEC='libx264'
+VIDEO_FORMAT='mp4'
+
+input_id=$(pactl list sources short | grep alsa_input | awk '{print $1}')
+output_id=$(pactl list sources short | grep alsa_output | awk '{print $1}')
+
+if [ "$#" -gt 0 ]; then
+	filename=$1
+else
+	filename="screen-recording_$(date '+%F_%H%M%S').${VIDEO_FORMAT}"
+fi
+
+# ffmpeg -hide_banner -stats -loglevel error \
+# 	-f x11grab \
+# 	-s "${RESOLUTION_IN}" \
+# 	-r "${FRAMES_PER_SECOND}" \
+# 	-i :0.0 \
+# 	-f alsa \
+# 	-ac 2 \
+# 	-i default \
+# 	-vcodec "${VIDEO_CODEC}" \
+# 	-s "${RESOLUTION_OUT}" \
+# 	-acodec "${AUDIO_CODEC}" \
+# 	-ab "${AUDIO_BITRATE}"k \
+# 	-ar "${AUDIO_SAMPLE_RATE}" \
+# 	-threads 0 \
+# 	-f "${VIDEO_FORMAT}" \
+# 	"${filename}"
+
+# Input and Output Audio
+# ffmpeg \
+# 	-hide_banner \
+# 	-loglevel error \
+# 	-stats \
+# 	-f pulse -ac 2 -ar 44100 -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor \
+# 	-f pulse -ac 1 -ar 44100 -i alsa_input.pci-0000_00_1f.3.analog-stereo \
+# 	-filter_complex amix=inputs=2 \
+# 	-f x11grab -s 1920x1080 -i :0.0 -r 30 \
+# 	-vcodec libx264 -preset veryfast -crf 18 \
+# 	-acodec aac -ar 44100 -ab 160k \
+# 	-pix_fmt yuv420p \
+# 	-map 0:0 -map 1:0 -map 2:0 \
+# 	"${filename}"
+
+# Output Audio Only
+ffmpeg \
+ 	-hide_banner \
+ 	-loglevel error \
+ 	-stats \
+ 	-f pulse -ac 2 -ar 44100 -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor \
+ 	-f pulse -ac 1 -ar 44100 -i alsa_input.pci-0000_00_1f.3.analog-stereo \
+ 	-filter_complex amix=inputs=2 \
+ 	-f x11grab -s 1920x1080 -i :0.0 -r 30 \
+ 	-vcodec libx264 -preset veryfast -crf 18 \
+ 	-acodec aac -ar 44100 -ab 160k \
+ 	-pix_fmt yuv420p \
+ 	-map 0:0 -map 1:0 -map 2:0 \
+ 	"${filename}"
+
+
+
+	# -acodec libfdk_aac -ar 44100 -ab 160k \
+
+# ffmpeg -f pulse -i alsa_output.pci-0000_00_1f.3.analog-stereo.monitor -f pulse -i alsa_input.pci-0000_00_1f.3.analog-stereo -acodec libmp3lame -map 0:0 -map 1:0 outfile.mkv

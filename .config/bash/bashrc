@@ -1,0 +1,89 @@
+# ------------------------------------------
+#  Startup File - bashrc
+# ------------------------------------------
+echo "bashrc"
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+shopt -s autocd 						# A command name that is the name of a directory is executed as if it were the argument to the cd command. This option is only used by interactive shells.
+shopt -s cdable_vars					# An argument to the cd builtin command that is not a directory is assumed to be the name of a variable whose value is the directory to change to.
+shopt -s cdspell						# Minor errors in the spelling of a directory component in a cd command will be corrected. The errors checked for are transposed characters, a missing character, and a character too many. If a correction is found, the corrected path is printed, and the command proceeds. This option is only used by interactive shells.
+shopt -s checkhash						# Bash checks that a command found in the hash table exists before trying to execute it. If a hashed command no longer exists, a normal path search is performed.
+shopt -s checkwinsize					# Bash checks the window size after each external (non-builtin) command and, if necessary, updates the values of LINES and COLUMNS. This option is enabled by default.
+shopt -s cmdhist						# Bash attempts to save all lines of a multiple-line command in the same history entry. This allows easy re-editing of multi-line commands. This option is enabled by default, but only has an effect if command history is enabled (see Bash History Facilities).
+shopt -s dirspell						# Bash attempts spelling correction on directory names during word completion if the directory name initially supplied does not exist.
+shopt -s dotglob						# Bash includes filenames beginning with a ‘.’ in the results of filename expansion. The filenames ‘.’ and ‘..’ must always be matched explicitly, even if dotglob is set.
+shopt -s expand_aliases					# Aliases are expanded as described below under Aliases, Aliases. This option is enabled by default for interactive shells.
+shopt -s extglob						# The extended pattern matching features described above (see Pattern Matching) are enabled.
+shopt -s extquote						# $'string' and $"string" quoting is performed within ${parameter} expansions enclosed in double quotes. This option is enabled by default.
+shopt -s histappend						# The history list is appended to the file named by the value of the HISTFILE variable when the shell exits, rather than overwriting the file.
+shopt -s interactive_comments			# Allow a word beginning with ‘#’ to cause that word and all remaining characters on that line to be ignored in an interactive shell. This option is enabled by default.
+shopt -s nocaseglob						# Bash matches filenames in a case-insensitive fashion when performing filename expansion.
+shopt -s nocasematch					# Bash matches patterns in a case-insensitive fashion when performing matching while executing case or [[ conditional commands, when performing pattern substitution word expansions, or when filtering possible completions as part of programmable completion.
+shopt -s progcomp_alias					# If programmable completion is enabled, Bash treats a command name that doesn’t have any completions as a possible alias and attempts alias expansion. If it has an alias, Bash attempts programmable completion using the command word resulting from the expanded alias.
+shopt -s promptvars						# Prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded as described below (see Controlling the Prompt). This option is enabled by default.
+# shopt -s sourcepath						# The source builtin uses the value of PATH to find the directory containing the file supplied as an argument. This option is enabled by default.
+
+mkdir -p "${XDG_STATE_HOME}"/bash
+
+prepend_path() {
+    [[ :$PATH: == *:"$1":* ]] && return
+    [[ -d "$1" ]] && PATH="${1}${PATH:+:$PATH}"
+}
+
+prepend_path "${XDG_DATA_HOME}"/npm/bin
+prepend_path "${HOME}"/.local/bin
+
+export PATH
+
+unset -f prepend_path
+
+source "${XDG_CONFIG_HOME}"/bash/sources/history.sh
+source "${XDG_CONFIG_HOME}"/bash/sources/prompt.sh
+
+# ---------------- #
+
+if command -v fzf >/dev/null; then
+	source /usr/share/fzf/completion.bash
+fi
+
+if command -v zoxide >/dev/null; then
+	eval "$(zoxide init bash)"
+fi
+
+
+# ---------------- #
+
+# Enable case-insensitive completions
+bind "set completion-ignore-case on"
+
+# Disable flow control (ctrl+s, ctrl+q) to enable saving with ctrl+s in Vim
+stty -ixon -ixoff
+
+# bind -m emacs '"\e[1;5D": backward-word'						# KEY: Control + Left				ACTION: Move back a word
+# bind -m emacs '"\e[1;5C": forward-word'						# KEY: Control + Right				ACTION: Move forward a word
+# bind -m emacs '"\e[1;2D": backward-kill-word'					# KEY: Shift + Left					ACTION: Delete word from cursor backward
+# bind -m emacs '"\e[1;2C": kill-word'							# KEY: Shift + Right				ACTION: Delete word from cursor forward
+# bind -m emacs '"\e[1;6D": backward-kill-line'					# KEY: Control + Shift + Left		ACTION: Delete to beginning of line
+# bind -m emacs '"\e[1;6C": kill-line'							# KEY: Control + Shift + Right		ACTION: Delete to end of line
+# bind -m emacs '"\C-@":    magic-space'						# KEY: Control + Space				ACTION: Space without abbreviation expension
+# bind -m emacs '"\C-h":    kill-whole-line'					# KEY: Control + Backspace			ACTION: Clear whole line
+# bind -m emacs '"\e[H":    beginning-of-line'					# KEY: Home							ACTION: Move to beginning of line
+# bind -m emacs '"\e[F":    end-of-line'						# KEY: End							ACTION: Move to end of line
+# bind -m emacs '"\e[4~":   end-of-line'						# KEY: End (st)						ACTION: Move to end of line (st)
+# bind -m emacs '"\e[3~":   delete-char'						# KEY: Delete						ACTION: Delete a character
+# bind -m emacs '"\e[P":    delete-char'						# KEY: Delete (st)					ACTION: Delete a character (st)
+# bind -m emacs '"\e[2~":   overwrite-mode'						# KEY: Insert						ACTION: Toggle between overwrite mode and insert mode
+# bind -m emacs '"\e[A":    history-substring-search-backward'	# KEY: Up Arrow						ACTION: Move up one history item
+# bind -m emacs '"\e[B":    history-substring-search-forward'	# KEY: Down Arrow					ACTION: Move down one history item
+
+# bind -m emacs '"\C-_": insert-comment'						# Key: Control + Forward Slash		ACTION: Comment and accept line
+
+bind -m emacs '"\e[1;5C":"\ef\C-f"'
+
+if [ -f /usr/share/fzf/key-bindings.bash ]; then
+	source /usr/share/fzf/key-bindings.bash
+fi
+
+source "${XDG_CONFIG_HOME}"/bash/sources/aliases.sh

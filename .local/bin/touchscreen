@@ -1,0 +1,101 @@
+#!/bin/sh
+# Enable or disable the touchscreen
+# Dependencies: xinput
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit "${2:-1}"
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [OPTION]"
+    echo
+    echo "Options:"
+	echo " -e       Enable touchscreen"
+	echo " -d       Disable touchscreen"
+	echo " -h       Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+	while getopts ":edh" OPT; do
+		case "${OPT}" in
+			e)
+				if [ "${ACTION:-}" = "enable" ]; then
+					error "option -e can only be set once"
+				elif [ "${ACTION:-}" = "disable" ]; then
+					error "option -e conflicts with option -d"
+				else
+					ACTION="enable"
+				fi
+				;;
+			d)
+				if [ "${ACTION:-}" = "disable" ]; then
+					error "option -d can only be set once"
+				elif [ "${ACTION:-}" = "enable" ]; then
+					error "option -d conflicts with option -e"
+				else
+					ACTION="disable"
+				fi
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -gt 0 ]; then
+		error "too many arguments"
+	fi
+
+}
+
+main() {
+
+    if ! command -v xinput >/dev/null; then
+    	error "xinput is not installed"
+    fi
+
+    parse_options "$@"
+
+	input_id=$(xinput list --short | grep 'ELAN' | grep -oP '(?<=id=)\d+')
+
+	if [ -z "${input_id:-}" ]; then
+        error "Touchscreen not found"
+    fi
+
+	if [ -n "${ACTION:-}" ]; then
+		xinput "--${ACTION}" "${input_id}"
+	fi
+
+	if [ -t 1 ]; then
+
+		if xinput list "${input_id}" | grep -q 'This device is disabled'; then
+			status="Disabled"
+		else
+			status="Enabled"
+		fi
+
+		echo "Touchscreen: ${status}"
+
+	fi
+
+}
+
+main "$@"

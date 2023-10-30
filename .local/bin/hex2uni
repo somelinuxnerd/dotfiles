@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+import struct
+import sys
+
+def fullchr(n):
+    return struct.pack('<I', n).decode('utf-32le')
+
+args = sys.argv[1:]
+
+if len(args) == 0:
+    sys.exit("No hex values specified")
+
+for code in args:
+    if code.startswith('U+'):
+        code = code[2:]
+    print(fullchr(int(code, 16)))

@@ -1,0 +1,708 @@
+#!/usr/bin/env python
+# Dependencies: python-daemon, yt-dlp, xmltodict, yaml, python-gobject
+
+import concurrent.futures
+import gi                                                   # type: ignore[import]
+import io
+import logging
+import os
+import re
+import requests
+import shutil
+import signal
+import sqlite3
+import subprocess
+import sys
+import time
+import xmltodict
+import yaml
+import yt_dlp                                               # type: ignore[import]
+import string
+import random
+
+from datetime import datetime, timezone
+from PIL import Image                                       # type: ignore[import]
+from lockfile.pidlockfile import PIDLockFile                # type: ignore[import]
+from typing import List, TypeAlias, Literal, Optional
+from types import FrameType, SimpleNamespace
+
+gi.require_version('GdkPixbuf', '2.0')
+gi.require_version('Notify', '0.7')
+from gi.repository import GdkPixbuf, Gio, GLib, Notify      # type: ignore[import]
+
+# Declare script name
+SCRIPT_NAME = 'cowmilker'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# Declare user's home directory path
+HOME = os.path.expanduser('~')
+
+# Declare XDG compliant directory paths
+CONFIG_HOME = os.getenv('XDG_CONFIG_HOME', os.path.join(HOME, '.config'))
+CACHE_HOME = os.getenv('XDG_CACHE_HOME', os.path.join(HOME, '.cache'))
+DATA_HOME = os.getenv('XDG_DATA_HOME', os.path.join(HOME, '.local', 'share'))
+DOWNLOAD_HOME = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DOWNLOAD)
+
+# Declare script specific directory paths
+CONFIG_DIR = os.path.join(CONFIG_HOME, SCRIPT_NAME)
+TEMP_DIR = os.path.join(CACHE_HOME, SCRIPT_NAME)
+DATA_DIR = os.path.join(DATA_HOME, SCRIPT_NAME)
+DOWNLOAD_DIR = os.path.join(DOWNLOAD_HOME, SCRIPT_NAME)
+RUNTIME_DIR = os.path.join('/var/run/user', str(os.getuid()), SCRIPT_NAME)
+
+# Decalre script file paths
+CONFIG_FILE = os.path.join(CONFIG_DIR, 'config.yml')
+DB_FILE = os.path.join(CONFIG_DIR, 'database.sqlite')
+PID_FILE = os.path.join(RUNTIME_DIR, SCRIPT_NAME + '.pid')
+COOKIE_FILE = os.path.join(SCRIPT_DIR, 'cookies.txt')
+
+# Declare Type Aliases
+Channel: TypeAlias = SimpleNamespace
+Settings: TypeAlias = SimpleNamespace
+
+
+class Video(SimpleNamespace):
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self._id!r})"
+
+    @property
+    def logstr(self):
+        return f"type={self.type!r}, id={self.id!r}, title={self.title!r}, date={self.published.strftime('%Y-%m-%d_%H-%M-%S %Z')}"
+
+
+class ConfigFile:
+
+    TYPES = {
+        'root': {
+            'local_time': bool,
+            'api_key': str,
+            'channels': list
+        },
+        'channels': {
+            'id': str,
+            'streams': bool,
+            'uploads': bool,
+            'interval': int,
+            'notify': bool
+        }
+    }
+
+    def __init__(self, path):
+        self._path = path
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(path={self._path!r})"
+
+    @classmethod
+    def _validate_keys(cls, data_dict: dict) -> None:
+
+        # for key, type_ in cls.TYPES['root'].items():
+        #     if key
+
+        #     if key not in ('local_time', 'api_key', 'channels'):
+        #         sys.exit(f"invalid config setting {key}")
+
+        for channel in data_dict['channels']:
+            for key in channel.keys():
+                if key not in ('id', 'download', 'interval', 'notify'):
+                    sys.exit(f"invalid config setting {key!r}")
+            for key in channel['download'].keys():
+                if key not in ('streams', 'uploads'):
+                    sys.exit(f"invalid config setting {key!r}")
+
+    @staticmethod
+    def _validate_values(data_dict: dict) -> None:
+
+        if not isinstance(data_dict['local_time'], bool):
+            sys.exit("invalid data type for 'local_time'")
+
+        if not isinstance(data_dict['api_key'], str):
+            sys.exit("invalid data type for 'api_key'")
+
+        if not isinstance(data_dict['channels'], list):
+            sys.exit("invalid data type for 'channels'")
+
+        if len(data_dict['channels']) == 0:
+            sys.exit("No channels specified")
+
+        for channel in data_dict['channels']:
+            if not isinstance(channel['id'], str):
+                sys.exit(f"invalid data type for channel 'id' {channel['id']!r}")
+
+            for key in channel.keys():
+                if key not in ('id', 'download', 'interval', 'notify'):
+                    sys.exit(f"invalid config setting {key!r}")
+            for key in channel['download'].keys():
+                if key not in ('streams', 'uploads'):
+                    sys.exit(f"invalid config setting {key!r}")
+
+    @staticmethod
+    def _dict_to_settings(data_dict: dict) -> Settings:
+
+        channels_ns = []
+        for channel_dict in data_dict['channels']:
+            # channel_dict['download'] = SimpleNamespace(**channel_dict['download'])
+            channels_ns.append(SimpleNamespace(**channel_dict))
+
+        data_dict['channels'] = channels_ns
+
+        return Settings(**data_dict)
+
+    def load(self) -> Settings:
+
+        try:
+            with open(self._path, 'r') as file:
+                file_dict = yaml.safe_load(file)
+        except FileNotFoundError:
+            sys.exit(f'Config file {self._path!r} not found')
+        except yaml.YAMLError:
+            sys.exit(f'Error reading config file {self._path!r}')
+
+        # self._validate_keys(file_dict)
+        # self._validate_values(file_dict)
+
+        return self._dict_to_settings(file_dict)
+
+
+class VideoDatabase:
+
+    def __init__(self, path: str):
+
+        self._path = path
+
+        try:
+            self._conn = sqlite3.connect(self._path, timeout=5, isolation_level='DEFERRED', check_same_thread=False)
+        except sqlite3.DatabaseError:
+            sys.exit(f"invalid database file {self._path!r}")
+
+        self._cursor = self._conn.cursor()
+
+        self._create_tables()
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(path={self._path!r})"
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.close()
+
+    @property
+    def path(self) -> str:
+        return self._path
+
+    @property
+    def timestamp(self) -> datetime:
+        return datetime.now().astimezone(timezone.utc)
+
+    def close(self) -> None:
+        self._cursor.close()
+        self._conn.close()
+
+    def _create_tables(self) -> None:
+
+        query = """
+            CREATE TABLE IF NOT EXISTS "videos" (
+                "id"	       INTEGER   NOT NULL UNIQUE,
+                "status"	   TEXT      NOT NULL,
+                "id_string"    TEXT      NOT NULL UNIQUE,
+                "is_stream"    INTEGER   NOT NULL,
+                "published"    TIMESTAMP NOT NULL,
+                "title"        TEXT      NOT NULL,
+                "thumbnail"    TEXT      NOT NULL,
+                "channel_id"   TEXT      NOT NULL,
+                "channel_name" TEXT      NOT NULL,
+                "timestamp"	   TIMESTAMP NOT NULL,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            );
+        """
+
+        self._cursor.executescript(query)
+        self._conn.commit()
+
+    def add(self, video: SimpleNamespace, status: str):
+
+        query = """INSERT INTO videos (status, id_string, is_stream, published, title, thumbnail, channel_id, channel_name, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"""
+
+        values = (
+            status,
+            video.id,
+            1 if video.type == 'stream' else 0,
+            video.published,
+            video.title,
+            video.thumbnail,
+            video.channel_id,
+            video.channel_name,
+            self.timestamp
+        )
+
+        self._cursor.execute(query, values)
+        self._conn.commit()
+
+    def update_status(self, id: str, status: str):
+        self._cursor.execute(
+            """UPDATE videos SET status = ? WHERE id_string = ?;""",
+            (status, id)
+        )
+        self._conn.commit()
+
+    def remove(self, id: str):
+        self._cursor.execute(
+            """DELETE FROM videos WHERE id_string = ?;""",
+            (id,)
+        )
+        self._conn.commit()
+
+    def contains(self, id: str):
+        self._cursor.execute(
+            """SELECT id FROM videos WHERE id_string = ?""",
+            (id,)
+        )
+        return isinstance(self._cursor.fetchone(), tuple)
+
+    def remove_current(self):
+        self._cursor.execute(
+            """DELETE FROM videos WHERE status = 'current';""")
+        self._conn.commit()
+
+
+class DownloadLogger:
+
+    @staticmethod
+    def info(msg: str) -> None:
+        pass
+
+    @staticmethod
+    def debug(msg: str) -> None:
+        pass
+
+    @staticmethod
+    def warning(msg: str) -> None:
+        print(msg)
+
+    @staticmethod
+    def error(msg: str) -> None:
+        if not re.search('This live event will begin in a few moments', msg):
+            print(msg)
+
+
+def create_directories() -> None:
+
+    if not os.path.isdir(RUNTIME_DIR):
+        logging.debug("Creating runtime directory: path={RUNTIME_DIR!r}")
+        os.makedirs(RUNTIME_DIR)
+
+    if not os.path.isdir(DATA_DIR):
+        logging.debug("Creating data directory: path={DATA_DIR!r}")
+        os.makedirs(DATA_DIR)
+
+    if not os.path.isdir(DOWNLOAD_DIR):
+        logging.debug("Creating download directory: path={DOWNLOAD_DIR!r}")
+        os.makedirs(DOWNLOAD_DIR)
+
+    if not os.path.isdir(CONFIG_DIR):
+        logging.debug("Creating config directory: path={CONFIG_DIR!r}")
+        os.makedirs(CONFIG_DIR)
+
+    if not os.path.isfile(CONFIG_FILE):
+
+        logging.debug("Creating config file: path={CONFIG_FILE!r}")
+
+        data_dict: dict = {
+            'local_time': True,
+            'api_key': None,
+            'channels': []
+        }
+
+        with open(CONFIG_FILE, 'w') as file:
+            yaml.dump(data_dict, file)
+
+
+def get_feed_entries(channel_id: str, max_age: int = -1) -> List[Video] | None:
+
+    def random_parameter() -> dict[str, str]:
+
+        key_length = random.randint(1, 3)
+        key = ''.join(random.choices(string.ascii_lowercase, k=key_length))
+
+        value_length = random.randint(6, 9)
+        value = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=value_length))
+
+        return {key: value}
+
+    logging.debug(f"Getting feed videos: channel_id={channel_id!r}")
+
+    url = 'https://www.youtube.com/feeds/videos.xml'
+
+    params = {
+        'channel_id': channel_id,
+    }
+
+    params.update(random_parameter())
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-us,en;q=0.5',
+        'Sec-Fetch-Mode': 'navigate'
+    }
+
+    try:
+        response = requests.get(url, params=params, headers=headers)
+    except Exception as e:
+        logging.error(f"Channel feed request exception: {e}")
+        return None
+
+    if response.status_code != 200:
+        logging.error(f"Channel feed request invalid status code: {response.status_code}")
+        return None
+
+    feed_dict = xmltodict.parse(response.text).get('feed')
+
+    if not feed_dict:
+        logging.error("Channel feed contains to data")
+        return None
+
+    if 'entry' not in feed_dict:
+        logging.debug("Channel feed contains no entries")
+        return None
+
+    if not isinstance(feed_dict['entry'], list):
+        feed_entries = [feed_dict['entry']]
+    else:
+        feed_entries = feed_dict['entry']
+
+    videos = []
+
+    for entry in feed_entries:
+
+        item_published = datetime.fromisoformat(entry['published'])
+
+        if max_age > 0:
+            now = datetime.now().astimezone(tz=timezone.utc)
+            item_age = item_published - now
+            if item_age.total_seconds() < -abs(int(3600 * max_age)):
+                continue
+
+        video = Video()
+
+        video.type = None
+
+        video.channel_id = channel_id
+        video.channel_name = feed_dict['title']
+
+        video.id = entry['yt:videoId']
+        video.url = 'https://www.youtube.com/watch?v=' + entry['yt:videoId']
+        video.title = entry['title']
+        video.published = item_published
+        video.thumbnail = entry['media:group']['media:thumbnail']['@url']
+
+        videos.append(video)
+
+    return videos
+
+
+def get_video_type(video_id: str) -> Literal['stream', 'upload'] | None:
+
+    url = 'https://www.youtube.com/watch?v=' + video_id
+
+    options = {
+        'quiet': True,
+        'no_color': True,
+        'logger': DownloadLogger,                                           # Log messages to a logging.Logger instance.
+    }
+
+    with yt_dlp.YoutubeDL(options) as ydl:
+        try:
+            data = ydl.extract_info(url, download=False)
+        except (yt_dlp.utils.ExtractorError, yt_dlp.utils.DownloadError):
+            return None
+
+    if 'is_live' in data and data['is_live'] is True:
+        return 'stream'
+
+    return 'upload'
+
+
+def create_pixbuf(image_url: str) -> GdkPixbuf.Pixbuf | None:
+
+    try:
+        response = requests.get(image_url)
+    except Exception:
+        return None
+
+    image_bytes = response.content
+
+    pil = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+
+    pil.thumbnail((128, 128))
+
+    buffer = io.BytesIO()
+    pil.save(buffer, format='JPEG')
+
+    stream = Gio.MemoryInputStream.new_from_data(buffer.getvalue(), None)
+
+    return GdkPixbuf.Pixbuf.new_from_stream(stream, None)
+
+
+def notify_event(summary: str, video: Video) -> None:
+
+    message = "<b>Title:</b> {}\n<b>Channel:</b> {}".format(video.title, video.channel_name)
+
+    notification = Notify.Notification.new(summary, message, icon='file:///home/matt/downloads/cow-icons/001/cow-48.svg')
+
+    pixbuf = create_pixbuf(video.thumbnail)
+
+    if pixbuf:
+        notification.set_image_from_pixbuf(pixbuf)
+
+    notification.show()
+
+
+def download_ytarchive(video: Video) -> bool:
+
+    logging.info(f"DOWNLOAD START: downloader='ytarchive', {video.logid}")
+
+    published_local = video.published.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
+    file_dir = os.path.join(DOWNLOAD_DIR, video.channel_name)
+    file_name = f"{published_local.strftime('%Y-%m-%d_%H-%M-%S')} [{video.id}] {video.title}.mp4"
+    file_path = os.path.join(file_dir, file_name)
+    temp_path = os.path.join(TEMP_DIR, file_name)
+
+    output_format = temp_path.rstrip('.mp4')
+
+    if os.path.isfile(COOKIE_FILE):
+        command = ['ytarchive', '--no-merge', '--add-metadata', '--thumbnail', '--cookies', COOKIE_FILE, '--output', output_format, video.url, 'best']
+    else:
+        command = ['ytarchive', '--no-merge', '--add-metadata', '--thumbnail', '--output', output_format, video.url, 'best']
+
+    try:
+        subprocess.run(command, check=True, stdout=sys.stdout, stderr=sys.stderr)
+    except subprocess.CalledProcessError:
+        return False
+
+    # If the file was successfully created in the temp folder:
+    # - create the destination folder if it does not exist
+    # - move the video file to the destination folder
+    if os.path.isfile(temp_path):
+
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+
+        shutil.move(temp_path, file_path)
+
+        return True
+
+    return False
+
+
+def download_ytdlp(video: Video) -> bool:
+
+    logging.info(f"DOWNLOAD START: downloader='yt-dlp', type={video.type!r}, id={video.id!r}, title={video.title!r}")
+
+    published_local = video.published.replace(tzinfo=timezone.utc).astimezone(tz=None)
+
+    file_dir = os.path.join(DOWNLOAD_DIR, video.channel_name)
+    file_name = f"{published_local.strftime('%Y-%m-%d_%H-%M-%S')} [{video.id}] {video.title}.mp4"
+    file_path = os.path.join(file_dir, file_name)
+
+    options = {
+        'ignoreconfig': True,
+        'merge_output_format': 'mp4',
+        'consoletitle': False,
+        'nowarnings': True,
+        'noprogress': False,
+        'quiet': False,
+        'paths': {'temp': TEMP_DIR, 'home': file_dir},
+        'outtmpl': file_name,
+        'continuedl': False,
+        'overwrites': False,
+        'logger': DownloadLogger,
+        'no_color': True,
+        'ignoreerrors': False,
+        'postprocessors': [
+            {'key': 'EmbedThumbnail'},
+            {'key': 'FFmpegMetadata'}
+        ]
+    }
+
+    if os.path.isfile(COOKIE_FILE):
+        options['cookiefile'] = COOKIE_FILE
+
+    if video.type == 'stream':
+        options['format'] = 'bestvideo*'
+        options['live_from_start'] = True
+        options['concurrent_fragment_downloads'] = 2
+    else:
+        options['format'] = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best'
+
+    with yt_dlp.YoutubeDL(options) as ydl:
+        ydl.download([video.url])
+
+    if os.path.isfile(file_path):
+        return True
+
+    return False
+
+
+def download_video(video: Video, notify_user: Optional[bool] = False) -> None:
+
+    try:
+        logging.info(f"DOWNLOADING: video={video!r}")
+    except Exception:
+        pass
+
+    if notify_user and video.type == 'stream':
+        notify_event('Recording stream', video)
+
+    with VideoDatabase(DB_FILE) as database:
+
+        database.add(video, 'current')
+
+        if video.type == 'stream' and shutil.which('ytarchive'):
+            download_func = download_ytarchive
+        else:
+            download_func = download_ytdlp
+
+        result = download_func(video)
+
+        if not result:
+            logging.error(f"DOWNLOAD FAILED: type={video.type!r}, id={video.id!r}, title={video.title!r}")
+            database.update_status(video.id, 'failed')
+            return
+
+        logging.info(f"DOWNLOAD COMPLETE: type={video.type!r}, id={video.id!r}, title={video.title!r}")
+        database.update_status(video.id, 'complete')
+
+    if notify_user:
+        if video.type == 'stream':
+            notify_event('Stream recorded', video)
+        else:
+            notify_event('Video downloaded', video)
+
+
+def cleanup(signum: int, frame: Optional[FrameType]) -> None:
+
+    # Removing all entries with status 'current' from the database.
+    with VideoDatabase(DB_FILE) as database:
+        database.remove_current()
+
+    # Delete any remaining files in the cache directory.
+    if os.path.isdir(TEMP_DIR):
+        for item in os.listdir(TEMP_DIR):
+            item_path = os.path.join(TEMP_DIR, item)
+            if os.path.isfile(item_path):
+                os.remove(item_path)
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)
+
+    # Exit the script with a return code of zero.
+    logging.info(f"Stopping {SCRIPT_NAME}")
+    os._exit(0)
+
+
+def download_new_entries(channel: Channel, feed_entries: list) -> None:
+
+    # Create a list of videos matching the desired download criteria.
+    desired_videos: list = []
+
+    with VideoDatabase(DB_FILE) as database:
+
+        for video in feed_entries:
+
+            # If video already has a record in the database then skip it
+            if database.contains(video.id):
+                continue
+
+            logging.debug(f"Checking video type: id={video.id!r}, title={video.title!r}")
+            video.type = get_video_type(video.id)
+
+            if video.type == 'stream' and channel.streams is True:
+                logging.info(f"Appending to streams: id={video.id!r}, title={video.title!r}")
+                desired_videos.append(video)
+            elif video.type == 'upload' and channel.uploads is True:
+                logging.info(f"Appending to uploads: id={video.id!r}, title={video.title!r}")
+                desired_videos.append(video)
+
+    # Create and start a pool of threads to download the list of desired videos,
+    # creating no more than two concurrent download threads at a time.
+    futures = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        for video in desired_videos:
+            futures.append(executor.submit(download_video, video, channel.notify))
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
+
+
+def monitor_channel(channel: Channel) -> None:
+
+    logging.info(f"MONITOR: channel_id={channel.id!r}")
+
+    while True:
+
+        iteration_start: int = int(time.time())
+
+        # Get a list of the videos in the channel's xml feed
+        feed_entries: List[Video] | None = get_feed_entries(channel.id, max_age=-1)
+
+        # If the feed contained entries then check to see if they need to be downloaded.
+        # If so then download them.
+        if feed_entries:
+            download_new_entries(channel, feed_entries)
+
+        iteration_end: int = int(time.time())
+
+        # Get the number of seconds remaining until the next feed check is due
+        seconds_until_next_iteration: int = (channel.interval * 60) - (iteration_end - iteration_start)
+
+        # Sleep until the next feed check is due
+        if seconds_until_next_iteration > 0:
+            logging.debug(f"SLEEP: channel_id={channel.id!r}, seconds={seconds_until_next_iteration}")
+            time.sleep(seconds_until_next_iteration)
+
+
+def start_monitoring() -> None:
+
+    signal.signal(signal.SIGINT, cleanup)
+    signal.signal(signal.SIGTERM, cleanup)
+
+    config: Settings = ConfigFile(CONFIG_FILE).load()
+
+    Notify.init(SCRIPT_NAME)
+
+    # Create and start a pool of threads to monitor all channels asynchronously.
+    futures = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for channel in config.channels:
+            futures.append(executor.submit(monitor_channel, channel))
+        for future in concurrent.futures.as_completed(futures):
+            future.result()
+
+
+def main() -> None:
+
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s — %(message)s')
+
+    create_directories()
+
+    pidfile = PIDLockFile(PID_FILE, timeout=-1)
+
+    if pidfile.is_locked():
+        try:
+            os.kill(pidfile.read_pid(), 0)
+        except OSError:
+            pidfile.break_lock()
+        else:
+            sys.exit(f"{SCRIPT_NAME} is already running")
+
+    logging.info(f"Starting {SCRIPT_NAME}")
+
+    with pidfile:
+        start_monitoring()
+
+
+if __name__ == "__main__":
+    main()

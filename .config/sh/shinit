@@ -1,0 +1,53 @@
+# ------------------------------------------
+#  Startup File - shinit
+# ------------------------------------------
+
+echo "shinit"
+
+# Prepend "$1" to $PATH when not already in.
+prepend_path () {
+    case ":$PATH:" in
+        *:"$1":*)
+            ;;
+        *)
+            [ -d "$1" ] && PATH="$1${PATH:+:$PATH}"
+            ;;
+    esac
+}
+
+prepend_path "${XDG_DATA_HOME}"/npm/bin
+prepend_path "${HOME}"/.local/bin
+
+unset -f prepend_path
+
+export PATH
+
+export CDPATH=".:${HOME}"
+
+export HISTSIZE=10000
+
+export SHLVL=$(( ${SHLVL:=0} + 1 ))
+
+# Prompt
+RED=$(tput setaf 1)
+CYAN=$(tput setaf 6)
+MAGENTA=$(tput setaf 4)
+BBLACK=$(tput setaf 8)
+DIM=$(tput dim)
+RESET=$(tput sgr0)
+
+if [ "$(id -u)" = "0" ]; then
+    char="${RED}#${RESET}"
+else
+    char="${MAGENTA}\$${RESET}"
+fi
+
+export PS1='${BBLACK}${DIM}[${RESET}${CYAN}$(pwd | sed "s|^${HOME}|~|")${BBLACK}${DIM}]${RESET} ${char} '
+
+
+# Disable flow control (ctrl+s, ctrl+q)
+stty -ixon -ixoff
+
+if command -v zoxide >/dev/null; then
+    eval "$(zoxide init posix --hook prompt)"
+fi

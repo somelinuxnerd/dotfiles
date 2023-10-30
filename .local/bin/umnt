@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# Unmount or power off one or more drive partitions.
+# Dependencies: udisks2
+
+set -euo pipefail
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+	echo "${SCRIPT_NAME}: $1" >&2
+	exit 1
+}
+
+warning() {
+    echo "${SCRIPT_NAME}: $1" >&2
+}
+
+usage() {
+
+    echo "Usage: ${SCRIPT_NAME} [OPTION] [DEVICENAME..]"
+    echo
+    echo "Options:"
+    echo " -p  Power off device after unmounting"
+	echo " -h  Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+	power_off=false
+
+	while getopts ":ph" OPT; do
+		case "${OPT}" in
+			p)
+				if ${power_off}; then
+					error "option -p can only be set once"
+				fi
+				power_off=true
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -eq 0 ]; then
+		echo "no devices specified" >&2
+		exit 1
+	fi
+
+	partitions=( "$@" )
+
+}
+
+is_powered() {
+	lsblk -nlo TYPE,NAME | awk -v name="$1" '$1 == "part" && $2 == name {print $2}' | grep -qE "^$1$"
+}
+
+get_mountpoint() {
+	lsblk -lno TYPE,NAME,MOUNTPOINT | awk -v name="$1" '$1 == "part" && $2 == name {print $3}'
+}
+
+main() {
+
+	if ! command -v udisksctl >/dev/null; then
+		error "udisks2 is not installed"
+	fi
+
+	parse_options "$@"
+
+	for part in "${partitions[@]}"; do
+
+		if ! is_powered "${part}"; then
+			warning "${part}: partition not found"
+			continue
+		fi
+
+		mountpoint=$(get_mountpoint "${part}")
+
+		if ! ${power_off} && [ -z "${mountpoint}" ]; then
+			warning "${part}: not mounted"
+			continue
+		fi
+
+		if [ -n "${mountpoint}" ]; then
+			udisksctl unmount --no-user-interaction --block-device "/dev/${part}"
+		fi
+
+		if [ -n "$(get_mountpoint "${part}")" ]; then
+			warning "${part}: failed to unmount"
+			continue
+		fi
+
+		if ${power_off}; then
+
+			udisksctl power-off --no-user-interaction --block-device "/dev/${part}"
+
+			if is_powered "${part}"; then
+				warning "${part}: failed to power off"
+			fi
+
+		fi
+
+	done
+
+}
+
+main "$@"

@@ -1,0 +1,18 @@
+#!/bin/sh
+# Start or restart the gnome keyring deamon.
+# Dependencies: gnome-keyring
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+if ! command -v gnome-keyring-daemon >/dev/null; then
+	echo "${SCRIPT_NAME}: gnome-keyring is not installed" >&2
+	exit 1
+fi
+
+if pgrep --full gnome-keyring-daemon >/dev/null; then
+	gnome-keyring-daemon --replace >/dev/null 2>&1
+else
+	gnome-keyring-daemon --start >/dev/null 2>&1
+fi

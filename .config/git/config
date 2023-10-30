@@ -1,0 +1,54 @@
+[core]
+	excludesfile = /home/matt/.config/git/ignore
+	editor = nvim
+	pager = delta
+	filemode = true
+[user]
+	email = 4379338+somelinuxnerd@users.noreply.github.com
+	name = Some Linux Nerd
+	username = somelinuxnerd
+[init]
+	defaultBranch = main
+[color]
+	ui = true
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true    # use n and N to move between diff sections
+    light = false      # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+    side-by-side = true
+[merge]
+    conflictstyle = diff3
+	tool = meld
+[diff]
+    colorMoved = default
+[web]
+	browser = librewolf
+[credential "https://github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/usr/bin/gh auth git-credential
+[alias]
+	s = status
+	ss = status --short
+	a = !sh -c 'git add \"${1:-.}\"' -
+	ac = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\"' -
+	acp = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\" && git push --set-upstream origin main' -
+	acpf = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\" && git push --set-upstream origin main --force' -
+	au = add --update
+	auc = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\"' -
+	aucp = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main' -
+	aucpf = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main --force' -
+	c = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\"' -
+	cp = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main' -
+	cpf = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main --force' -
+	p = push --set-upstream origin main
+	pf = push --force --set-upstream origin main
+	rmhist = !sh -c 'git checkout --orphan temp_branch && git add --all && git commit --allow-empty-message --message=\"${1:-}\" && git branch --delete --force main && git branch --move main && git push --force origin main' -
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

@@ -1,0 +1,425 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_NAME=${0##*/}
+
+error() {
+	echo "$SCRIPT_NAME: ${2:-error: unspecified}" >&2
+	exit "${1:-1}"
+}
+
+abs_path() {
+	realpath -m "$1"
+}
+
+ensure_command_exists() {
+	if ! command -v "$1" >/dev/null; then
+		error 1 "command not found: $1"
+	fi
+}
+
+git::bare() {
+	git --git-dir="$GIT_DIR" --work-tree="$HOME" "$@"
+}
+
+git::from() {
+	git -C "$GIT_DIR" "$@"
+}
+
+repo::is_bare() {
+	git::from rev-parse --is-bare-repository &>/dev/null
+}
+
+repo::ensure_is_valid() {
+	if [[ ! -d "$GIT_DIR" ]]; then
+		error 128 "directory does not exist: $GIT_DIR"
+	elif ! repo::is_bare; then
+		error 128 "directory is not a valid repository: $GIT_DIR"
+	fi
+}
+
+repo::default_branch() {
+	git::bare config --get init.defaultBranch
+}
+
+repo::remote_url() {
+	git::bare config --get remote.origin.url
+}
+
+repo::is_remote_valid() {
+	git::bare ls-remote --exit-code origin
+}
+
+repo::get_files() {
+	git::bare ls-tree -r --full-tree --name-only HEAD
+}
+
+repo::update_commit_push() {
+
+	repo::ensure_is_valid
+
+	git::bare add --update
+
+	git::bare commit --allow-empty-message --message="${1:-}" >/dev/null || true
+
+	git::bare push --set-upstream origin main 2>/dev/null || true
+
+
+}
+
+repo::create_ignore_file() {
+
+	local file line
+	local -a lines
+
+	file="$DOTFILES_DIR"/gitignore
+
+	touch "$file"
+
+	lines=(
+		"${GIT_DIR/$HOME\/}"/
+		"${BACKUPS_DIR/$HOME\/}"/
+	)
+
+	for line in "${lines[@]}"; do
+		if ! grep -qP "^$line(\s*|\t*)*$" "$file"; then
+			echo "$line" >> "$file"
+		fi
+	done
+
+}
+
+repo::error_git_directory_exists() {
+	if repo::is_bare; then
+		error 128 "repository already exists: $GIT_DIR"
+	else
+		error 128 "directory already exists: $GIT_DIR"
+	fi
+}
+
+repo::clean_commit_history() {
+	git::bare checkout --orphan temp_branch
+	git::bare add --update
+	git::bare commit --allow-empty-message --message="${1:-}"
+	git::bare branch --delete --force main
+	git::bare branch --move main
+	git::bare push --force origin main
+}
+
+repo::get_current_branch() {
+	git::bare branch --show-current
+}
+
+repo::rename_current_branch() {
+
+	local new_name=${1:-}
+
+	if [[ -z "$new_name" ]]; then
+		error 1 "no new branch name specified"
+	fi
+
+	local old_name
+
+	old_name=$(repo::get_current_branch)
+
+	printf 'Renaming branch from \033[0;33m%s\033[0m to \033[0;33m%s\033[0m..\n' "$old_name" "$new_name"
+
+	git::bare branch --move "$new_name"
+
+	git::bare push origin --delete "$old_name" &>/dev/null
+
+	git::bare push origin --set-upstream "$new_name" &>/dev/null
+
+}
+
+repo::init() {
+
+	[[ -d "${GIT_DIR}" ]] && repo::error_git_directory_exists
+
+	echo "Creating dotfiles repository.."
+
+	mkdir -p "$GIT_DIR"
+
+	git init --initial-branch=main --bare "$GIT_DIR"
+
+	git::bare config --local status.showUntrackedFiles no
+	git::bare config --local core.excludesFile "$DOTFILES_DIR"/gitignore
+
+	repo::create_ignore_file
+	git::bare add "$DOTFILES_DIR"/gitignore
+
+	git::bare commit --allow-empty-message --message="${1:-Create dotfiles repository}"
+	git::bare branch -M main
+	git::bare remote add origin "$DOTFILES_REMOTE"
+	git::bare push --set-upstream origin main
+
+}
+
+repo::clone() {
+
+	[[ -d "$GIT_DIR" ]] && repo::error_git_directory_exists
+
+	echo "Cloning dotfiles repository.."
+
+	if ! git clone --quiet --bare "$DOTFILES_REMOTE" "$GIT_DIR"; then
+		error 1 "$DOTFILES_REMOTE: Failed to clone repository"
+	fi
+
+	git::bare config --local status.showUntrackedFiles no
+	git::bare config --local core.excludesFile "$DOTFILES_DIR"/gitignore
+
+	repo::create_ignore_file
+
+}
+
+repo::deploy() {
+
+	if [[ -d "${GIT_DIR}" ]] && ! repo::is_bare; then
+		error 1 "$GIT_DIR: directory already exists"
+	fi
+
+	echo "Deploying dotfiles.."
+
+	if [[ ! -d "$GIT_DIR" ]]; then
+		repo::clone >/dev/null
+	fi
+
+	repo::backup_to_directory "$BACKUPS_DIR"/"$(date +%Y-%m-%d_%H:%M:%S)"
+
+	git::bare checkout --force
+
+}
+
+repo::list_files() {
+
+	repo::ensure_is_valid
+
+	if command -v bat >/dev/null; then
+		repo::get_files | bat --style=numbers
+	else
+		repo::get_files HEAD | less
+	fi
+
+}
+
+repo::find_files() {
+
+	repo::ensure_is_valid
+
+	ensure_command_exists fzf
+
+	repo::get_files | fzf --reverse -x -i
+
+}
+
+repo::backup_to_directory() {
+
+	repo::ensure_is_valid
+
+	local backup_dir=${1:-}
+
+	if [[ -z "$backup_dir" ]]; then
+		backup_dir="$BACKUPS_DIR/$(date +%Y-%m-%d_%H:%M:%S)"
+	fi
+
+	backup_dir=$(abs_path "$backup_dir")
+
+	if [[ -d "$backup_dir" ]]; then
+		error 1 "directory already exists: $(abs_path "$backup_dir")"
+	fi
+
+	local backup_parent_dir
+	backup_parent_dir=$(dirname "$backup_dir")
+
+	if [[ ! -d "$backup_parent_dir" ]]; then
+		error 2 "directory does not exist: $(abs_path "$backup_parent_dir")"
+	fi
+
+	local backup_base_dir
+	backup_base_dir=$(basename "$backup_dir")
+
+	printf 'Creating backup: \033[0;33m%s\033[0m..\n' "$backup_base_dir"
+
+	local -a repo_files
+
+	readarray -t repo_files <<< "$(repo::get_files)"
+
+	local file src_path dest_path dest_dir
+
+	for file in "${repo_files[@]}"; do
+
+		src_path="$HOME/$file"
+		dest_path="$backup_dir/$file"
+		dest_dir=$(dirname "$dest_path")
+
+		mkdir -p "$dest_dir"
+
+		cp "$src_path" "$dest_path"
+
+	done
+
+}
+
+repo::archive_to_file() {
+
+	repo::ensure_is_valid
+
+	ensure_command_exists zip
+
+	local archive_file=${1:-}
+
+	if [[ -z "$archive_file" ]]; then
+		archive_file=.dotfiles-backup-"$(date +%Y-%m-%d_%H:%M:%S)".zip
+	else
+		archive_file="${archive_file%.zip}".zip
+	fi
+
+	archive_file=$(abs_path "$archive_file")
+
+	local archive_dir
+
+	archive_dir=$(dirname "$archive_file")
+
+	if [[ ! -d "$archive_dir" ]]; then
+		error 2 "directory does not exist: $archive_dir"
+	fi
+
+	printf 'Creating archive: \033[0;33m%s\033[0m..\n' "$archive_file"
+
+	local -a repo_files
+
+	readarray -t repo_files <<< "$(repo::get_files)"
+
+	cd "$HOME" || return 1
+
+	local file
+
+	for file in "${repo_files[@]}"; do
+		zip -q -r "$archive_file" "$file"
+	done
+
+}
+
+repo::sync() {
+
+	repo::ensure_is_valid
+
+	ensure_command_exists rsync
+
+	local sync_path=${1%:-}
+
+	sync_path=${sync_path%/}
+
+	if [[ -z "$sync_path" ]]; then
+		error 1 "no sync directory specified"
+	elif [[ ! -d "$sync_path" ]]; then
+		error 2 "sync directory does not exist: $sync_path"
+	fi
+
+	stty -echo
+
+	printf 'Syncing to: \033[0;33m%s\033[0m..\n' "$sync_path"
+
+	local temp_dir
+
+	temp_dir=$(mktemp -d)
+
+	cleanup() {
+		if [[ -n "${temp_dir:-}" ]]; then
+			echo "Sync aborted"
+			rm -rf "$temp_dir"
+		fi
+	}
+
+	trap 'cleanup' INT
+
+	local -a repo_files
+
+	readarray -t repo_files <<< "$(repo::get_files)"
+
+	local file src_path dest_path dest_dir
+
+	for file in "${repo_files[@]}"; do
+
+		src_path="$HOME/$file"
+		dest_path="$temp_dir/$file"
+		dest_dir=$(dirname "$dest_path")
+
+		mkdir -p "$dest_dir"
+
+		cp "$src_path" "$dest_path"
+
+	done
+
+	rsync -av "$temp_dir"/ "$sync_path"/
+
+	rm -rf "$temp_dir"
+
+	trap - INT
+
+}
+
+main() {
+
+	ensure_command_exists git
+
+	if [[ -z "${DOTFILES_DIR:-}" ]]; then
+		DOTFILES_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"/dotfiles
+	fi
+
+	if [[ -z "${DOTFILES_REMOTE:-}" ]]; then
+		DOTFILES_REMOTE="https://github.com/somelinuxnerd/dotfiles.git"
+	fi
+
+	GIT_DIR="$DOTFILES_DIR"/repo
+	BACKUPS_DIR="$DOTFILES_DIR"/backups
+
+	mkdir -p "$BACKUPS_DIR"
+
+	case "${1:-}" in
+		clone)
+			repo::clone
+			;;
+		init)
+			repo::init "${@:2}"
+			;;
+		deploy)
+			repo::deploy
+			;;
+		files)
+			repo::list_files
+			;;
+		find)
+			repo::find_files
+			;;
+		save)
+			repo::update_commit_push "${@:2}"
+			;;
+		archive)
+			repo::update_commit_push
+			repo::archive_to_file "${@:2}"
+			;;
+		backup)
+			repo::update_commit_push
+			repo::backup_to_directory "${@:2}"
+			;;
+		sync)
+			repo::update_commit_push
+			repo::sync "${@:2}"
+			;;
+		wipe)
+			repo::clean_commit_history "${@:2}"
+			;;
+		rcb)
+			repo::rename_current_branch "${@:2}"
+			;;
+		*)
+			repo::ensure_is_valid
+			git::bare "$@"
+			;;
+	esac
+
+}
+
+main "$@"

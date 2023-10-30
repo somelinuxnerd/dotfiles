@@ -1,0 +1,252 @@
+#!/usr/bin/env zsh
+# shellcheck disable=all
+
+_cmd_help() {
+    echo "Usage: zplug <command> [plugin]
+
+    COMMANDS:
+        clean          Remove unused plugins
+        help           Show this help message
+        list           List plugins
+        load           Load the specified plugin
+        update         Update plugin(s)"
+
+}
+
+_cmd_list() {
+
+    local _plugin
+
+    for _plugin in "${ZSH_PLUGINS[@]}"; do
+        printf '%3s) %s\n' "$ZSH_PLUGINS[(Ie)$_plugin]" "${_plugin##*/}"
+    done
+
+}
+
+_cmd_clean() {
+
+    typeset -a _unused_plugins=()
+    typeset _plugin _choice
+
+    for _plugin in "$ZSH_PLUGIN_DIR"/*(F); do
+        if ! (( $ZSH_PLUGINS[(Ie)${_plugin:t}] )); then
+            _unused_plugins+=( "${_plugin:t}" )
+        fi
+    done
+
+    if (( ${#_unused_plugins} == 0 )); then
+        echo "Nothing to remove" >&2
+        return 1
+    fi
+
+    for _plugin in ${_unused_plugins[@]}; do
+        printf 'Remove: %s? [y/N]: ' "$_plugin"
+        read _choice
+        if [[ "${_choice:l}" == "y" ]]; then
+            rm -rf "$ZSH_PLUGIN_DIR"/"$_plugin"
+        fi
+    done
+
+    # for plug in ${unused_plugins[@]}; do
+    #     echo "❔ Remove: $plug? (y/N)"
+    #     read -qs answer
+    #     [[ "$answer" == "y" ]] && { rm -rf "$ZAP_PLUGIN_DIR/$plug" && echo -e "\e[1A\e[K✅ Removed $plug" } || echo -e "\e[1A\e[K❕ skipped $plug"
+    # done
+
+}
+
+_cmd_update() {
+
+    _update_plugin() {
+
+        local _plugin_name=$1
+        local _plugin_dir="${ZSH_PLUGIN_DIR}/${_plugin_name}"
+        local _update_status
+
+        if [[ -d "${_plugin_dir}"/.git ]]; then
+
+            tput civis; printf '  Updating: \e[1m%-30s\e[0m' "${_plugin_name}"
+
+            _update_status=$(LANG=en_US git -C "${_plugin_dir}" status -uno | grep -Eo '(ahead|behind|up to date)')
+
+            if [[ $_update_status == "up to date" ]]; then
+                printf ' \e[32mUp to date\e[0m\n'
+                return 1
+            fi
+
+            if ! git -C "${_plugin_dir}" pull >/dev/null 2>&1; then
+                printf ' \e[31mFailed\e[0m\n'
+                return 1
+            fi
+
+            printf ' \e[32mDone\e[0m\n'
+
+        fi
+
+        return 0
+
+    }
+
+    local _plugin _choice
+
+    printf '  Update Plugins\n\n'
+
+    for _plugin in "${ZSH_PLUGINS[@]}"; do
+        printf '%3s) %s\n' "$ZSH_PLUGINS[(Ie)$_plugin]" "${_plugin##*/}"
+    done
+
+    printf "\n  Plugin Number | (a) All Plugins | (⏎) Abort: " && read _choice
+
+    case $_choice in
+        [[:digit:]]*)
+            printf '\n'
+            _update_plugin "$ZSH_PLUGINS[$_choice]"
+            printf '\n'
+            ;;
+        'a'|'A')
+            printf '\n'
+            for _plugin in "${ZSH_PLUGINS[@]}"; do
+                _update_plugin "${_plugin##*/}"
+            done
+            printf '\n'
+            ;;
+    esac
+
+}
+
+_cmd_load() {
+
+    _source_plugin_dir() {
+
+        local _plugin_dir=$1
+        local _plugin_name=${_plugin_dir##*/}
+
+        local -a _init_files=(
+            $_plugin_dir/*.plugin.{z,}sh(N)
+            $_plugin_dir/*.{z,}sh{-theme,}(N)
+        )
+
+        if ! (( "${#_init_files}" )); then
+            echo "No init file found '${_plugin_name}'." >&2
+            return 1
+        fi
+
+        if ! source ${_init_files[1]} 2>/dev/null; then
+            echo "${_plugin_name}: plugin source failed to loaded" >&2
+            return 1
+        fi
+
+        return 0
+
+    }
+
+    _load_from_git() {
+
+        local _git_path=${1%.git}
+        local _plugin_name=${_git_path##*/}
+        local _plugin_dir="${ZSH_PLUGIN_DIR}/${_plugin_name}"
+
+        if [ ! -d "${_plugin_dir}" ]; then
+
+            tput civis; printf 'Installing \e[1m%s\e[0m..' "${_plugin_name}"
+
+            local _repo_url="https://github.com/${_git_path}.git"
+
+            if ! git clone --quiet --depth 1 "${_repo_url}" "${_plugin_dir}" >/dev/null 2>&1; then
+                printf ' \e[31mFailed\e[0m\n'
+                return 1
+            fi
+
+            printf ' \e[32mComplete\e[0m\n'
+
+        fi
+
+        if _source_plugin_dir "${_plugin_dir}"; then
+            ZSH_PLUGINS+=( "${_plugin_name}" )
+        fi
+
+    }
+
+    _load_from_dir() {
+
+        local _plugin_dir=$1
+        local _plugin_name=${_plugin_dir##*/}
+
+        if [ ! -d "${_plugin_dir}" ]; then
+            echo "${_plugin_name}: local plugin not found" >&2
+            return 1
+        fi
+
+        if _source_plugin_dir "${_plugin_dir}"; then
+            ZSH_PLUGINS+=( "${_plugin_name}" )
+        fi
+
+    }
+
+    _load_from_file() {
+
+        local _init_path=$1
+        local _plugin_name=${_init_path:h:t}
+
+        if ! source "$_init_path" 2>/dev/null; then
+            echo "${_plugin_name}: plugin source failed to loaded" >&2
+            return 1
+        fi
+
+        ZSH_PLUGINS+=( "${_plugin_name}" )
+
+    }
+
+    if [[ $1 =~ $_regex_git ]]; then
+        _load_from_git $1
+    elif [[ $1 =~ $_regex_path ]]; then
+        if [[ -d $1 ]]; then
+            _load_from_dir $1
+        elif [[ -f $1 ]]; then
+            _load_from_file $1
+        fi
+    else
+        echo "invalid plugin" >&2
+        return 1
+    fi
+
+}
+
+_start() {
+
+    emulate -L zsh
+
+    zparseopts -D -F -K -- {h,-help}=flag_help || return 1
+
+    if (( #flag_help )); then
+        _cmd_help
+        return 0
+    fi
+
+    (( ! ${+ZSH_PLUGIN_DIR} )) && typeset -g ZSH_PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+    (( ! ${+ZSH_PLUGINS} )) && typeset -gaU ZSH_PLUGINS=()
+
+    mkdir -p "${ZSH_PLUGIN_DIR}"
+
+    typeset -A subcmds=(
+        clean  "_cmd_clean"
+        help   "_cmd_help"
+        list   "_cmd_list"
+        load   "_cmd_load"
+        update "_cmd_update"
+    )
+
+    typeset _regex_git='^[A-Za-z0-9-]+/[A-Za-z0-9-]+$'
+    typeset _regex_path='^\.?(/[A-Za-z0-9.-]+)+$'
+
+    trap 'tput cnorm' EXIT
+
+    if (( $+subcmds[$1] )); then
+        ${subcmds[$1]} $2
+    else
+        _cmd_help && return 1
+    fi
+
+}
+
+_start "$@"

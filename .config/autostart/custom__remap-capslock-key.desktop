@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Remap Caps Lock Key
+Comment=No description
+TryExec=xmodmap
+Exec=xmodmap -e 'clear lock' -e 'keycode 66 = Escape Caps_Lock NoSymbol NoSymbol'
+NoDisplay=false
+Hidden=false
+X-GNOME-Autostart-enabled=false
+X-GNOME-Autostart-Delay=5
+Name[en_US]=custom__remap-capslock-key.desktop

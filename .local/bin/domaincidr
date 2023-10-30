@@ -1,0 +1,33 @@
+#!/bin/sh
+
+SCRIPT_NAME=$(basename "$0")
+
+error_exit() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit "${2:-1}"
+}
+
+if [ "$#" -eq 0 ]; then
+    error_exit "no domain provided"
+elif [ "$#" -gt 1 ]; then
+    error_exit "too many arguments specified"
+elif ! command -v whois >/dev/null; then
+    error_exit "whois is not installed"
+fi
+
+first_origin=true
+
+for code in $(whois "$(host "$1" | sed -n "s/$1 has address\s//p")" -h whois.radb.net | sed -n "s/^origin:\s*//p"); do
+
+    if ${first_origin}; then
+        first_origin=false
+    else
+        echo
+    fi
+
+    echo "Origin Code: ${code}"
+    echo "--------------------"
+
+    whois -h whois.radb.net -- '-i origin '"${code}" | sed -n "s/^route:\s*//p" | sort -u
+
+done

@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# shellcheck shell=bash disable=SC2001,SC2034
+
+SCRIPT_NAME=$(basename "$0")
+
+CACHE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/fzmpd"
+DB_FILE="${XDG_DATA_HOME:-$HOME/.local/share}/database"
+
+MPC_FORMAT="[%artist%\t%album%\t%track%\t%title%]"
+LIST_HEADER=$(printf '%-52s%-50s%-7s%-52s' "Artist" "Album" "Track" "Title")
+
+RED=$(tput setaf 2)
+BLUE=$(tput setaf 6)
+GREEN=$(tput setaf 3)
+WHITE=$(tput setaf 15)
+BOLD=$(tput bold)
+UNDERLINE=$(tput smul)
+RESET=$(tput sgr0)
+
+check_dependencies() {
+	for cmd in mpd mpc fzf; do
+		if ! command -v "${cmd}" >/dev/null; then
+			echo "${SCRIPT_NAME}: ${cmd} is not installed" >&2
+			exit 1
+		fi
+	done
+}
+
+update_cache() {
+
+	echo "Updating cache.."
+
+	rm -f "${CACHE_FILE}"
+
+    mpc search "(track != '')" | grep -v '^$' | while read -r line; do
+
+        IFS=$'\t' read -r -a fields <<< "${line}"
+
+		fields[2]=$(printf '%02d' "${fields[2]}")
+
+		artist=${fields[0]:0:50}
+		album=${fields[1]:0:50}
+		track=${fields[2]:0:5}
+		title=${fields[3]:0:50}
+
+		printf '%s%-52s%s%-52s%s%3s  %s%-52s%s\n' \
+			"${RED}" "${artist}" "${BLUE}" "${album}" \
+			"${WHITE}" "${track}" "${GREEN}" "${title}" \
+			"${RESET}" >> "${CACHE_FILE}"
+
+    done
+
+}
+
+select_tracks() {
+	fzf -i --exact --multi --no-sort --ansi --header="${LIST_HEADER}" --color="header:15:bold:underline" --layout=reverse --height=100% < "${CACHE_FILE}"
+}
+
+create_playlist() {
+
+	tracks=$1
+
+	mpc --quiet clear
+
+	IFS=$'\n'
+	for track in ${tracks}; do
+
+		IFS=$'\t' read -r -a track_array <<< "$(sed -E 's/\s{3,}/\t/g' <<< "${track}")"
+
+		artist=${track_array[0]}
+		album=${track_array[1]}
+		track=$(echo "${track_array[2]:4}" | sed 's/^\s*//')
+
+		mpc findadd "((artist == \"${artist}\") AND (album == \"${album}\") AND (title == \"${track}\"))"
+
+	done
+
+}
+
+display_playlist() {
+
+	clear
+
+	echo "Playing ${BOLD}$(mpc playlist | wc -l)${RESET} tracks"
+
+	echo "${BOLD}${UNDERLINE}${LIST_HEADER}${RESET}"
+
+	mpc playlist | while read -r line; do
+
+		IFS=$'\t' read -r -a fields <<< "${line}"
+
+		fields[2]=$(printf '%02d' "${fields[2]}")
+
+		artist=${fields[0]:0:50}
+		album=${fields[1]:0:50}
+		track=${fields[2]:0:5}
+		title=${fields[3]:0:50}
+
+		printf '%s%-52s%s%-52s%s%3s  %s%-52s%s\n' \
+			"${RED}" "${artist}" "${BLUE}" "${album}" \
+			"${WHITE}" "${track}" "${GREEN}" "${title}" \
+			"${RESET}"
+
+	done
+
+}
+
+main() {
+
+	check_dependencies
+
+	if [ ! -f "${CACHE_FILE}" ] || [ "${DB_FILE}" -nt "${CACHE_FILE}" ]; then
+		update_cache
+	fi
+
+	tracks=$(select_tracks)
+
+	[ -n "${tracks}" ] && create_playlist "${tracks}" || exit 0
+
+	display_playlist
+
+	mpc --quiet play
+
+}
+
+main "$@"

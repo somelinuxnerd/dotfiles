@@ -1,0 +1,331 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+declare -gr BACKUP_DIR_NAME="Backups"
+declare -gr SCRIPT_NAME=${0##*/}
+declare -gr CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/scripts"
+declare -gr CONFIG_FILE="${CONFIG_DIR}/${SCRIPT_NAME}.cfg"
+declare -gr PID_FILE="/var/run/user/${UID}/${SCRIPT_NAME}.pid"
+declare -ga MISSING_DIRS=()
+declare -ga APPROVED_DIRS=()
+declare -gra IGNORED_DIRS=(
+	'downloads'
+	'music'
+	'nobackup'
+	'temp'
+	'vbox'
+	'videos'
+)
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit "${2:-1}"
+}
+
+cleanup() {
+    rm -f "${PID_FILE}"
+	stty echo
+}
+
+create_config_file() {
+
+    mkdir -p "${CONFIG_DIR}"
+
+    (
+
+        echo "# List backup destinations in this file."
+        echo "# Destinations can be identified in the"
+        echo "# following formats:"
+        echo "#"
+        echo "# LABEL=<label>"
+        echo "# UUID=<uuid>"
+        echo "# PARTUUID=<partuuid>"
+        echo
+
+    ) > "${CONFIG_FILE}"
+
+}
+
+usage() {
+
+    echo "Usage: ${SCRIPT_NAME} [OPTION] [SOURCE] [DEST]"
+    echo
+    echo "Options:"
+    echo " -l  List mounted backup drives and exit"
+    echo " -d  Perform a trial with no changes made"
+    echo " -q  Suppress non-error messages during transfer"
+    echo " -v  Display more verbose output during transfer"
+	echo " -h  Show this help message"
+
+    exit 0
+
+}
+
+get_source_dirs() {
+
+    local dirname
+    local basename
+
+    declare -ga SOURCE_DIRS=()
+
+    for dirname in "$HOME"/*; do
+
+        if [ ! -d "${dirname}" ] || [ -L "${dirname}" ]; then
+            continue
+        fi
+
+        basename=$(basename "${dirname}")
+
+        if ! [[ ${IGNORED_DIRS[*]} =~ (^|[[:space:]])"${basename,,}"($|[[:space:]]) ]]; then
+            SOURCE_DIRS+=("${basename}")
+        fi
+
+    done
+
+}
+
+parse_options() {
+
+    LIST_DRIVES=false
+    DRY_RUN=false
+    QUIET=false
+    VERBOSE=false
+    SOURCE_DIRS=()
+
+	while getopts ":ldqvh" OPT; do
+		case "${OPT}" in
+			l)
+				if ${LIST_DRIVES}; then
+					error "option -l can only be set once"
+				elif ${QUIET}; then
+					error "option -l conflicts with option -q"
+				elif ${VERBOSE}; then
+					error "option -l conflicts with option -v"
+				fi
+				LIST_DRIVES=true
+				;;
+			d)
+				if ${DRY_RUN}; then
+					error "option -d can only be set once"
+				elif ${LIST_DRIVES}; then
+					error "option -d conflicts with option -l"
+				fi
+				DRY_RUN=true
+				;;
+			q)
+				if ${QUIET}; then
+					error "option -q can only be set once"
+				elif ${VERBOSE}; then
+					error "option -q conflicts with option -v"
+				elif ${LIST_DRIVES}; then
+					error "option -q conflicts with option -l"
+				fi
+				QUIET=true
+				;;
+			v)
+				if ${VERBOSE}; then
+					error "option -v can only be set once"
+				elif ${QUIET}; then
+					error "option -v conflicts with option -q"
+				elif ${LIST_DRIVES}; then
+					error "option -v conflicts with option -l"
+                fi
+				VERBOSE=true
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+    if ${LIST_DRIVES} && [ "$#" -gt 0 ]; then
+        error "too many arguments specified"
+    fi
+
+    if [ "$#" -eq 0 ]; then
+        get_source_dirs
+    else
+		SOURCE_DIRS=("$@")
+    fi
+
+}
+
+get_mountpoints() {
+
+    DRIVE_MOUNTPOINTS=()
+
+    local file line mountpoint
+
+    readarray -t file < "${CONFIG_FILE}"
+
+    for line in "${file[@]}"; do
+
+        if ! grep -qE '^(LABEL|UUID|PARTUUID)=[A-Fa-f0-9-]+$' <<< "${line}"; then
+            continue
+        fi
+
+        read -r key value <<< "${line//=/ }"
+
+        # Get the mountpoint for the specified drive label or uuid
+        mountpoint=$(lsblk -o "${key}",MOUNTPOINT | awk -v value="${value}" '$1 == value {print $2}')
+
+        # If a mountpoint exists for the config entry and it is not already in the mountpoints array then append it to the array
+        if [ -n "${mountpoint}" ] && [[ ! ${DRIVE_MOUNTPOINTS[*]} =~ (^|[[:space:]])"${mountpoint}"($|[[:space:]]) ]]; then
+            DRIVE_MOUNTPOINTS+=("${mountpoint}")
+        fi
+
+    done
+
+}
+
+print_drive_list() {
+
+    local label
+    local index=1
+
+    for mountpoint in "${DRIVE_MOUNTPOINTS[@]}"; do
+
+        label=$(lsblk -o MOUNTPOINT,LABEL | awk -v mountpoint="${mountpoint}" '$1 == mountpoint {print $2}')
+
+        printf '%2s. %s: %s\n' "${index}" "${label:-No Label}" "${mountpoint}"
+
+        index=$(( index + 1 ))
+
+    done
+
+}
+
+sync_directory() {
+
+    local src_path=$1
+    local dst_path=$2
+
+
+    if [ ! -d "${dst_path}" ]; then
+        mkdir -p "${dst_path}"
+    fi
+
+    local args=(
+        "--archive"
+        "--xattrs"
+        "--force"
+        "--partial"
+        "--human-readable"
+        "--delete-during"
+        "--delete-excluded"
+    )
+
+    if ${QUIET}; then
+        args+=("--quiet")
+    elif ${VERBOSE}; then
+        args+=("--progress")
+    else
+        args+=("--info=progress2")
+    fi
+
+    if ${DRY_RUN}; then
+        args+=("--dry-run")
+    fi
+
+    if [ -f "${src_path}/.backupignore" ]; then
+        while read -r line; do
+            args+=( "--exclude" "${line}" )
+        done < "${src_path}/.backupignore"
+    fi
+
+    args+=("${src_path}/" "${dst_path}/")
+
+    sudo rsync "${args[@]}"
+
+}
+
+perform_backup() {
+
+    local src_path
+    local dst_path
+    local mount_path
+    local dst_base_dir
+    local dir
+
+    for mount_path in "${DRIVE_MOUNTPOINTS[@]}"; do
+
+        dst_base_dir="${mount_path}/${BACKUP_DIR_NAME}"
+
+        for dir in "${SOURCE_DIRS[@]}"; do
+            if [ ! -d "${HOME}/${dir}" ]; then
+                if ! [[ ${MISSING_DIRS[*]} =~ (^|[[:space:]])"${dir}"($|[[:space:]]) ]]; then
+                    MISSING_DIRS+=("${dir}")
+                fi
+            elif ! [[ ${APPROVED_DIRS[*]} =~ (^|[[:space:]])"${dir}"($|[[:space:]]) ]]; then
+                APPROVED_DIRS+=("${dir}")
+            fi
+        done
+
+        for dir in "${APPROVED_DIRS[@]}"; do
+
+            src_path="${HOME}/${dir}"
+            dst_path="${dst_base_dir}/${dir}"
+
+            if ! ${QUIET}; then
+                printf '%10s -> %s\n' "${dir}" "$(basename "${mount_path}")"
+            fi
+
+            sync_directory "${src_path}" "${dst_path}"
+
+        done
+
+    done
+
+}
+
+main() {
+
+    parse_options "$@"
+
+    if [[ ! -f "${CONFIG_FILE}" ]]; then
+        create_config_file
+    fi
+
+    if ! grep -qE '^(LABEL|UUID|PARTUUID)=[A-Fa-f0-9-]+$' "${CONFIG_FILE}"; then
+        error "config file contains no drives"
+    fi
+
+    get_mountpoints
+
+    if [ "${#DRIVE_MOUNTPOINTS[@]}" -eq 0 ]; then
+        error "No backup drives mounted"
+    fi
+
+    if ${LIST_DRIVES}; then
+        print_drive_list
+        exit 0
+    fi
+
+    if [ -f "${PID_FILE}" ]; then
+        error "script is already running"
+    fi
+
+    trap 'cleanup' EXIT QUIT TERM INT ERR
+
+    echo $$ > "${PID_FILE}"
+
+	stty -echo
+
+    perform_backup
+
+    if [ "${#MISSING_DIRS[@]}" -gt 0 ]; then
+        printf "The following directories were not found: %s\n" "$(echo "${MISSING_DIRS[*]}" | xargs | sed -e 's/ /, /g')"
+    fi
+
+}
+
+main "$@"

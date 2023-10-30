@@ -1,0 +1,234 @@
+#!/usr/bin/env zsh
+# shellcheck disable=all
+
+if (( ! ${+ZSH_PLUGIN_DIR} )); then
+	typeset -g ZSH_PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+fi
+
+if (( ! ${+ZSH_PLUGINS} )); then
+	typeset -gaU ZSH_PLUGINS=()
+fi
+
+mkdir -p "${ZSH_PLUGIN_DIR}"
+
+plug() {
+
+    _try_source() {
+        local -a initfiles=(
+            $plugin_dir/${plugin_name}.{plugin.,}{z,}sh{-theme,}(N)
+            $plugin_dir/*.{plugin.,}{z,}sh{-theme,}(N)
+        )
+        (( $#initfiles )) && source $initfiles[1]
+    }
+
+    # If the absolute is a directory then source as a local plugin
+    local plugin_absolute="${1:A}"
+
+    if [ -d "${plugin_absolute}" ]; then
+        local plugin="${plugin_absolute}"
+        local plugin_name="${plugin:t}"
+        local plugin_dir="${plugin_absolute}"
+    else
+        # If the basename directory exists, then local source only
+        if [ -d "${plugin_absolute:h}" ]; then
+            [[ -f "${plugin_absolute}" ]] && source "${plugin_absolute}"
+            return
+        fi
+
+        local plugin="$1"
+        local plugin_name="${plugin:t}"
+        local plugin_dir="$ZSH_PLUGIN_DIR/$plugin_name"
+    fi
+
+    local git_ref="$2"
+    if [ ! -d "$plugin_dir" ]; then
+        tput civis; printf '  %-35s' "$plugin_name"
+        if ! git clone --depth 1 "${GIT_PREFIX:-"https://github.com/"}${plugin}.git" "$plugin_dir" >/dev/null 2>&1; then
+            printf '\e[1;31mFailed to clone\e[0m\n'
+            return 12
+        fi
+        printf '\e[1;32mCloned\e[0m\n'
+    fi
+    [[ -n "$git_ref" ]] && {
+        git -C "$plugin_dir" pull --unshallow > /dev/null 2>&1
+        git -C "$plugin_dir" checkout "$git_ref" > /dev/null 2>&1 || { echo "❌ Failed to checkout $git_ref"; return 13 }
+    }
+    _try_source && { ZSH_PLUGINS+="$plugin_name" && return 0 } || echo "❌ $plugin_name not activated" && return 1
+}
+
+_header_msg() {
+    printf '\n \033[0;36m--- \033[1mPlugins :: %s\033[0;36m ' "$1"; for _ in $(seq $(( 42 - ${#1} ))); printf '-'; printf '\033[0m\n'
+}
+
+_mgr_clean() {
+
+    typeset -a unused_plugins=()
+
+    _header_msg "Clean"
+
+    for plugin in "$ZSH_PLUGIN_DIR"/*; do
+        [[ "$ZSH_PLUGINS[(Ie)${plugin:t}]" -eq 0 ]] && unused_plugins+=("${plugin:t}")
+    done
+
+    [[ ${#unused_plugins[@]} -eq 0 ]] && { echo "  Nothing to remove"; return 15 }
+
+    for plug in ${unused_plugins[@]}; do
+        printf '     %-35s[y/N] ' "$plug"
+        tput sc; tput cnorm; read answer
+        tput rc; tput cub 6
+        if [[ "${answer:l}" == "y" ]]; then
+            rm -rf "$ZSH_PLUGIN_DIR/$plug"
+            printf '\033[1;31mRemoved\033[0m\n'
+        else
+            printf '\033[1;33mSkipped\033[0m\n'
+        fi
+    done
+
+}
+
+_mgr_list() {
+
+    _header_msg "List"
+
+    local _plugin
+
+    for _plugin in ${ZSH_PLUGINS[@]}; do
+        printf ' %2s) %s\n' $ZSH_PLUGINS[(Ie)$_plugin] $_plugin
+    done
+
+    printf '\n'
+
+}
+
+_mgr_update() {
+
+    local _plugin _plug _status
+
+    _check_status() {
+        git -C "$1" remote update &>/dev/null
+        case $(LANG=en_US git -C "$1" status -uno | grep -Eo '(ahead|behind|up to date)') in
+            ahead)
+                _status='\033[1;34mLocal ahead remote\033[0m' ;;
+            behind)
+                _status='\033[1;33mOut of date\033[0m' ;;
+            'up to date')
+                _status='\033[1;32mUp to date\033[0m' ;;
+            *)
+                _status='\033[1;31mDiverged state\033[0m' ;;
+        esac
+    }
+
+    _pull_update() {
+        tput civis; printf ' %2s) %-35s' "$1" "${2:t}"
+        git -C "$2" reset --hard HEAD~ &>/dev/null
+        if git -C "$2" pull &>/dev/null; then
+            printf '\e[1;32mUpdated\e[0m\n'
+            return 0
+        else
+            printf '\e[1;31mFailed to update\e[0m\n'
+            return 14
+        fi
+    }
+
+    _skip_update() {
+        tput civis; printf ' %2s) %-35s' "$1" "${2:t}"
+        printf '\e[0;32mAlready up to date\e[0m\n'
+        return 0
+    }
+
+    tput sc; tput civis
+
+    _header_msg "Update"
+
+    typeset -a _valid_options=()
+
+    for _plugin in ${ZSH_PLUGINS[@]}; do
+        _check_status "$ZSH_PLUGIN_DIR/$_plugin"
+        if [[ "$_status" != '\033[1;32mUp to date\033[0m' ]]; then
+            _valid_options+=( $ZSH_PLUGINS[(Ie)$_plugin] )
+        fi
+        printf ' %2s) %-35s%b\n' $ZSH_PLUGINS[(Ie)$_plugin] $_plugin $_status
+    done
+
+    if (( ${#_valid_options} == 1 )); then
+        printf '\n     No updates needed\n\n'
+    else
+        printf '\n     (#) Number | (a) All Plugins | (⏎) Abort: ' && tput cnorm; read _choice
+    fi
+
+    case $_choice in
+        [[:digit:]]*)
+
+            [[ $_choice -gt ${#ZSH_PLUGINS[@]} ]] && { printf "    Invalid option\n" && return 1 }
+
+            tput rc; tput dl $(( ${#ZSH_PLUGINS[@]} + 4 ))
+
+            _header_msg "Updating"
+
+            if (($_valid_options[(Ie)$ZSH_PLUGINS[(Ie)$_choice]])); then
+                _pull_update "$_choice" "$ZSH_PLUGIN_DIR/$ZSH_PLUGINS[$_choice]"
+            else
+                _skip_update "$_choice" "$ZSH_PLUGIN_DIR/$ZSH_PLUGINS[$_choice]"
+            fi
+            ;;
+
+        'a'|'A')
+
+            tput rc; tput dl $(( ${#ZSH_PLUGINS[@]} + 4 ))
+
+            _header_msg "Updating"
+
+            for _plugin in ${ZSH_PLUGINS[@]}; do
+                if (($_valid_options[(Ie)$ZSH_PLUGINS[(Ie)$_plugin]])); then
+                    _pull_update "$ZSH_PLUGINS[(Ie)$_plugin]" "$ZSH_PLUGIN_DIR/$_plugin"
+                else
+                    _skip_update "$ZSH_PLUGINS[(Ie)$_plugin]" "$ZSH_PLUGIN_DIR/$_plugin"
+                fi
+            done
+            ;;
+    esac
+
+    printf '\n'
+
+    [[ $ZSH_CLEAN_ON_UPDATE == true ]] && _mgr_clean || return 0
+
+}
+
+_mgr_help() {
+    echo " Plugins - Help
+
+Usage: plugmgr <command> [options]
+
+COMMANDS:
+    clean          Remove unused plugins
+    help           Show this help message
+    list           List plugins
+    update         Update plugins"
+}
+
+plugmgr() {
+    typeset -A subcmds=(
+        clean  "_mgr_clean"
+        help   "_mgr_help"
+        list   "_mgr_list"
+        update "_mgr_update"
+        c      "_mgr_clean"
+        h      "_mgr_help"
+        l      "_mgr_list"
+        u      "_mgr_update"
+    )
+    emulate -L zsh
+    trap 'tput cnorm' EXIT
+    [[ -z "$subcmds[$1]" ]] && { _mgr_help; return 1 } || ${subcmds[$1]} $2
+}
+
+pluginit() { :; }
+
+# vim: ft=zsh ts=4 et
+# Return codes:
+#   0:  Success
+#   1:  Invalid option
+#   12: Failed to clone
+#   13: Failed to checkout
+#   14: Failed to pull
+#   15: Nothing to remove

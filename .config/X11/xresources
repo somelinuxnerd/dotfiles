@@ -1,0 +1,81 @@
+! Define Font Variables
+#define FONT_SANS        	Noto Sans
+#define FONT_MONO        	Noto Sans Mono
+#define FONT_TERM        	JetBrainsMono Nerd Font
+#define FONT_SIZE        	11
+
+! Define Cursor Variables
+#define CURSOR_THEME     	xcursor-breeze-snow
+#define CURSOR_SIZE      	32
+
+! Define Color Variables
+#define BACKGROUND       	#282A36
+#define FOREGROUND       	#F8F8F2
+#define SELECTION        	#44475A
+#define COMMENT          	#6272A4
+#define BACKGROUND_TERM  	#080A16
+#define BLACK            	#21222C
+#define BRIGHT_BLACK     	#4d4d4d
+#define RED              	#FF5555
+#define BRIGHT_RED       	#FF6E6E
+#define GREEN            	#50FA7B
+#define BRIGHT_GREEN     	#69FF94
+#define YELLOW           	#F1FA8C
+#define BRIGHT_YELLOW    	#FFFFA5
+#define BLUE             	#BD93F9
+#define BRIGHT_BLUE      	#D6ACFF
+#define MAGENTA          	#FF79C6
+#define BRIGHT_MAGENTA   	#FF92DF
+#define CYAN            	#8BE9FD
+#define BRIGHT_CYAN      	#A4FFFF
+#define WHITE           	#F8F8F2
+#define BRIGHT_WHITE     	#FFFFFF
+
+! Terminal Colors
+*.foreground:    			FOREGROUND
+*.background:    			BACKGROUND
+*.color0:        			BLACK
+*.color1:        			RED
+*.color2:        			GREEN
+*.color3:        			YELLOW
+*.color4:        			BLUE
+*.color5:        			MAGENTA
+*.color6:        			CYAN
+*.color7:        			WHITE
+*.color8:        			BRIGHT_BLACK
+*.color9:        			BRIGHT_RED
+*.color10:       			BRIGHT_GREEN
+*.color11:       			BRIGHT_YELLOW
+*.color12:       			BRIGHT_BLUE
+*.color13:       			BRIGHT_MAGENTA
+*.color14:       			BRIGHT_CYAN
+*.color15:       			BRIGHT_WHITE
+
+! Cursor
+*.cursorBlink:    			true
+*.cursorColor:   			FOREGROUND
+
+! Mouse Cursor
+Xcursor.theme:   			CURSOR_THEME
+Xcursor.size:    			CURSOR_SIZE
+
+! X11 Fonts
+Xft.dpi:         			96
+Xft.antialias:   			true
+Xft.hinting:     			true
+Xft.rgba:        			rgb
+Xft.autohint:    			true
+Xft.hintstyle:   			hintslight
+Xft.lcdfilter:   			lcdfilter
+
+! Application - sxiv
+Sxiv.foreground: 			FOREGROUND
+Sxiv.background: 			#FF0000
+Sxiv.font:					FONT_MONO:size=FONT_SIZE:style=bold
+
+Nsxiv.window.background: 	BACKGROUND
+Nsxiv.window.foreground: 	FOREGROUND
+Nsxiv.mark.foreground:   	BRIGHT_BLACK
+Nsxiv.bar.background:    	BLACK
+Nsxiv.bar.foreground:    	FOREGROUND
+Nsxiv.bar.font:       		FONT_SANS:size=12:style=normal

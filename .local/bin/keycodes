@@ -1,0 +1,99 @@
+#!/bin/sh
+# Show infirmation for keys or mouse
+# buttons as they are pressed.
+# Dependencies: xwininfo, xev
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit 1
+}
+
+usage() {
+
+    echo "Usage: ${SCRIPT_NAME} [OPTION]"
+    echo
+    echo "Options:"
+	echo " -m  Capture mouse events instead of keyboard events"
+	echo " -h  Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+    MOUSE_EVENTS=false
+
+	while getopts ":mh" OPT; do
+		case "${OPT}" in
+			m)
+				if ${MOUSE_EVENTS}; then
+					error "option -n can only be set once"
+				fi
+				MOUSE_EVENTS=true
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+    if [ "$#" -gt 0 ]; then
+        error "too many arguments"
+    fi
+
+}
+
+monitor_mouse() {
+
+    echo "Capturing Mouse Events"
+    echo "Press Alt-F4 to Close Capture Window"
+    echo
+
+    xev -event button -rv -name "Mouse Capture Window" -geometry 500x450-0+0 | \
+        awk -F'[ )]+' '/^ButtonPress/ { a[NR+2] } NR in a { gsub(",",""); printf "Button: %s\n", $5 }'
+
+}
+
+monitor_keys() {
+
+    echo "Capturing Keyboard Events"
+    echo "Press Alt-F4 to Close Capture Window"
+    echo
+
+	xev -event keyboard -rv -name "Keyboard Capture Window" -geometry 500x50-0+0 | \
+        awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "Key: %-22s Code: %-5s Sym: %s\n", $8, $5, substr($7, 1, length($7)-1) }'
+
+}
+
+main() {
+
+    if ! command -v xev >/dev/null; then
+        error "xev is not installed"
+    elif ! command -v xwininfo >/dev/null; then
+        error "xwininfo is not installed"
+    fi
+
+    parse_options "$@"
+
+    if ${MOUSE_EVENTS}; then
+        monitor_mouse
+    else
+        monitor_keys
+    fi
+
+}
+
+main "$@"

@@ -1,0 +1,108 @@
+#!/usr/bin/env zsh
+# shellcheck disable=all
+
+_source_plugin_dir() {
+
+	local _plugin_dir=$1
+	local _plugin_name=${_plugin_dir##*/}
+
+	local -a _init_files=(
+		$_plugin_dir/*.plugin.{z,}sh(N)
+		$_plugin_dir/*.{z,}sh{-theme,}(N)
+	)
+
+	if ! (( "${#_init_files}" )); then
+		echo "No init file found '${_plugin_name}'." >&2
+		return 1
+	fi
+
+	if ! source ${_init_files[1]} 2>/dev/null; then
+		echo "${_plugin_name}: plugin source failed to loaded" >&2
+		return 1
+	fi
+
+	return 0
+
+}
+
+_load_from_git() {
+
+	local _git_path=${1%.git}
+	local _plugin_name=${_git_path##*/}
+	local _plugin_dir="${ZSH_PLUGIN_DIR}/${_plugin_name}"
+
+	if [ ! -d "${_plugin_dir}" ]; then
+
+		tput civis; printf 'Installing \e[1m%s\e[0m..' "${_plugin_name}"
+
+		local _repo_url="https://github.com/${_git_path}.git"
+
+		if ! git clone --quiet --depth 1 "${_repo_url}" "${_plugin_dir}" >/dev/null 2>&1; then
+			printf ' \e[31mFailed\e[0m\n'
+			return 1
+		fi
+
+		printf ' \e[32mComplete\e[0m\n'
+
+	fi
+
+	if _source_plugin_dir "${_plugin_dir}"; then
+		ZSH_PLUGINS+=( "${_plugin_name}" )
+	fi
+
+}
+
+_load_from_dir() {
+
+	local _plugin_dir=$1
+	local _plugin_name=${_plugin_dir##*/}
+
+	if [ ! -d "${_plugin_dir}" ]; then
+		echo "${_plugin_name}: local plugin not found" >&2
+		return 1
+	fi
+
+	if _source_plugin_dir "${_plugin_dir}"; then
+		ZSH_PLUGINS+=( "${_plugin_name}" )
+	fi
+
+}
+
+_load_from_file() {
+
+	local _init_path=$1
+	local _plugin_name=${_init_path:h:t}
+
+	if ! source "$_init_path" 2>/dev/null; then
+		echo "${_plugin_name}: plugin source failed to loaded" >&2
+		return 1
+	fi
+
+	ZSH_PLUGINS+=( "${_plugin_name}" )
+
+}
+
+typeset _regex_git='^[A-Za-z0-9-]+/[A-Za-z0-9-]+$'
+
+if [[ $1 =~ $_regex_git ]]; then
+	_load_from_git $1
+elif [[ -d $1 ]]; then
+	_load_from_dir $1
+elif [[ -f $1 ]]; then
+	_load_from_file $1
+else
+	echo "invalid plugin" >&2
+	return 1
+fi
+
+emulate -L zsh
+
+if (( ! ${+ZSH_PLUGIN_DIR} )); then
+	typeset -g ZSH_PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/plugins"
+fi
+
+if (( ! ${+ZSH_PLUGINS} )); then
+	typeset -gaU ZSH_PLUGINS=()
+fi
+
+mkdir -p "${ZSH_PLUGIN_DIR}"

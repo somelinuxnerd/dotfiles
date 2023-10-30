@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import sys
+from requests.utils import requote_uri, unquote
+
+SCRIPT_NAME = os.path.basename(sys.argv[0])
+
+
+def get_arguments():
+
+    def formatter(prog):
+        return argparse.HelpFormatter(prog, max_help_position=30)
+
+    parser = argparse.ArgumentParser(prog=SCRIPT_NAME, usage="%(prog)s [OPTION] URL", description="Encode or decode a URL", prefix_chars='-', formatter_class=formatter, add_help=False)
+
+    parser.add_argument('-d', '--decode', action="store_true", help='Decode rather than encode the URL string')
+    parser.add_argument('-h', '--help', action='help', help='Show help message and exit')
+    parser.add_argument('url', nargs='?', help=argparse.SUPPRESS)
+
+    return parser.parse_args()
+
+
+def main():
+
+    args = get_arguments()
+
+    url_string = unquote(args.url) if args.decode else requote_uri(args.url)
+
+    print(url_string)
+
+
+if __name__ == "__main__":
+    main()

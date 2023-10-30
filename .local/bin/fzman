@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly SCRIPT_NAME=${0##*/}
+
+error() {
+	printf '%s: %s\n' "${SCRIPT_NAME}" "$2" >&2
+	exit "${1:-1}"
+}
+
+# ------------------------------
+
+if ! command -v fzf >/dev/null; then
+	error 127 "fzf command not found"
+fi
+
+# ------------------------------
+
+if (( $# == 0 )); then
+	set ""
+fi
+
+# ------------------------------
+
+typeset -a results
+readarray -t results < <(apropos --and "$@" 2>/dev/null)
+
+# ------------------------------
+
+if (( ${#results[@]} == 0 )); then
+	error 1 "no matches for $(tput setaf 3)$(printf '%s ' "$@")$(tput sgr0)"
+fi
+
+# ------------------------------
+
+if (( ${#results[@]} == 1 )); then
+	read -r section item <<< "$(awk '{ print substr($2, 2, length($2) - 2), $1 }' <<< "${results[0]}")"
+	man "${section}" "${item}"
+	exit 0
+fi
+
+# ------------------------------
+
+typeset -i col_width=0
+for i in $(apropos --and "$@" | awk '{print $1}'); do
+	if (( ${#i} > col_width )); then
+		col_width=${#i}
+	fi
+done
+
+(( col_width = col_width + 5 ))
+
+# ------------------------------
+
+typeset -a results_formatted
+
+readarray -t results_formatted <<< "$(printf "%s\n" "${results[@]}" | sort | awk -v col_width=$col_width '{ item = $1; sec = substr($2, 2, length($2) - 2); desc = ""; for (i = 4; i <= NF; i++) desc = desc $i " "; printf "%-*s%-12s%s\n",col_width,item,sec,desc }')"
+
+# ------------------------------
+
+header=$(printf "%-${col_width}s%-12s%s\n" "Item" "Section" "Description")
+
+# x="echo {} | awk '{print substr(\$2, 2, length(\$2) - 2)\" \"\$1}' | xargs man"
+# choice=$(printf "%s\n" "${results_formatted[@]}" | sort | fzf --reverse --info=inline:' ' --header="${header}" --preview="$x" --preview-window=75)
+choice=$(printf "%s\n" "${results_formatted[@]}" | sort | fzf --reverse --info=inline:' ' --header="${header}")
+
+if [[ -z "${choice}" ]]; then
+	echo no choice
+	exit 1
+fi
+
+read -r section item <<< "$(awk '{print $2" "$1}' <<< "${choice}")"
+
+man "${section}" "${item}"

@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+# Search directories in PATH for executable files matching the specified keyword.
+
+set -euo pipefail
+
+SCRIPT_NAME=${0##*/}
+
+COLOR_ERROR=$'\033[0;31m'
+COLOR_DIR=$(tput setaf 247)
+COLOR_FILE=$'\033[1;37m'
+COLOR_ARROW=$'\033[1;30m'
+COLOR_RESET=$'\033[0m'
+
+error() {
+    printf '%s%s:%s %s\n' "${COLOR_ERROR}" "${SCRIPT_NAME}" "${COLOR_RESET}" "$1" >&2
+    exit 1
+}
+
+usage() {
+
+	echo "Command grep (cg) searches the PATH environment variable for matching commands"
+	echo
+	echo "Usage: ${SCRIPT_NAME} [options] <pattern>"
+    echo
+    echo "Options:"
+	echo "  -d DIR   Search the specified directory instead of the PATH variable"
+	echo "  -b       Match only the beginning of command names"
+    echo "  -e       Match only the end of command names"
+    echo "  -w       Match only whole command names"
+	echo "  -i       Case insensitive matching"
+	echo "  -n       Show only command names instead of full paths"
+	echo "  -c WHEN  Colorize output (always, auto, never)"
+	echo "  -h       Show this help message"
+
+    exit 0
+
+}
+
+parse_options() {
+
+
+	[[ "${*: -1}" == "--help" ]] && usage
+
+	IGNORE_CASE=false
+	SHOW_DIRECTORY=true
+	MATCH_TYPE=
+	COLOR_WHEN=
+
+	while getopts ":bewinc:h" OPT; do
+		case "${OPT}" in
+			b)
+				case "${MATCH_TYPE}" in
+					begin) error "option -${OPT} can only be set once"     ;;
+					end)   error "option -${OPT} conflicts with option -e" ;;
+					whole) error "option -${OPT} conflicts with option -w" ;;
+					'')    MATCH_TYPE="begin"                              ;;
+				esac
+				;;
+			e)
+				case "${MATCH_TYPE}" in
+					begin) error "option -${OPT} conflicts with option -b" ;;
+					end)   error "option -${OPT} can only be set once"     ;;
+					whole) error "option -${OPT} conflicts with option -w" ;;
+					'')    MATCH_TYPE="end"                                ;;
+				esac
+				;;
+			w)
+				case "${MATCH_TYPE}" in
+					begin) error "option -${OPT} conflicts with option -b" ;;
+					end)   error "option -${OPT} conflicts with option -e" ;;
+					whole) error "option -${OPT} can only be set once"     ;;
+					'')    MATCH_TYPE="whole"                              ;;
+				esac
+				;;
+			i)
+				if ${IGNORE_CASE}; then
+					error "option -i can only be set once"
+				else
+					IGNORE_CASE=true
+				fi
+				;;
+			n)
+				if ! ${SHOW_DIRECTORY}; then
+					error "option -n can only be set once"
+				else
+					SHOW_DIRECTORY=false
+				fi
+				;;
+			c)
+				case "${OPTARG}" in
+					always|auto|never)
+						if [ -n "${COLOR_WHEN}" ]; then
+							error "option -c can only be set once"
+						else
+							COLOR_WHEN=$OPTARG
+						fi
+						;;
+					*)
+						error "option -c has no '${OPTARG}' setting (choices: always, auto, never)"
+						;;
+				esac
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	if [ -z "${COLOR_WHEN}" ]; then
+		COLOR_WHEN="auto"
+	fi
+
+	if [ -z "${MATCH_TYPE}" ]; then
+		MATCH_TYPE="partial"
+	fi
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -eq 0 ]; then
+		error "no pattern specified"
+	fi
+
+	if [ "$#" -gt 1 ]; then
+		error "only one pattern can be specified"
+	fi
+
+	PATTERN=$1
+
+}
+
+is_color_enabled() {
+
+	if [ "${COLOR_WHEN}" = "always" ]; then
+		return 0
+	elif [ "${COLOR_WHEN}" = "never" ]; then
+		return 1
+	fi
+
+	[ -t 1 ]
+
+}
+
+main() {
+
+	parse_options "$@"
+
+	if ! is_color_enabled; then
+		COLOR_DIR="" COLOR_FILE="" COLOR_RESET=""
+	fi
+
+	local arg_name arg_value bin_dirname bin_path \
+		real_path real_dirname real_filename
+
+	if ${IGNORE_CASE}; then
+		arg_name="iname"
+	else
+		arg_name="name"
+	fi
+
+	case "${MATCH_TYPE:-}" in
+		begin)   arg_value="${PATTERN}*"  ;;
+		end)     arg_value="*${PATTERN}"  ;;
+		whole)   arg_value="${PATTERN}"   ;;
+		partial) arg_value="*${PATTERN}*" ;;
+		*) : ;;
+	esac
+
+	IFS=':'
+	for bin_dirname in ${PATH}; do
+
+		if [ ! -d "${bin_dirname}" ]; then
+			continue
+		fi
+
+		find "${bin_dirname}" -maxdepth 1 -executable -"${arg_name}" "${arg_value}" -printf '%f\n' | sort | while read -r bin_filename; do
+
+			if ${SHOW_DIRECTORY}; then
+				printf "%s%s/%s" "${COLOR_DIR}" "${bin_dirname}" "${COLOR_RESET}"
+			fi
+
+			printf '%s%s%s' "${COLOR_FILE}" "${bin_filename}" "${COLOR_RESET}"
+
+			bin_path="${bin_dirname}/${bin_filename}"
+
+			real_path=$(realpath "${bin_path}")
+
+			if [ "${real_path}" != "${bin_path}" ]; then
+				real_dirname=$(dirname "${real_path}")
+				if [ "${bin_dirname}" = "${real_dirname}" ]; then
+					printf ' %s->%s %s%s' "${COLOR_ARROW}" "${COLOR_FILE}" "$(basename "${real_path}")" "${COLOR_RESET}"
+				else
+					real_filename=$(basename "${real_path}")
+					printf ' %s->%s %s%s/%s%s%s%s' "${COLOR_ARROW}" "${COLOR_RESET}" "${COLOR_DIR}" "${real_dirname}" "${COLOR_RESET}" "${COLOR_FILE}" "$(basename "${real_filename}")" "${COLOR_RESET}"
+				fi
+			fi
+
+			printf '\n'
+
+		done
+
+	done
+
+}
+
+main "$@"

@@ -1,0 +1,158 @@
+#!/bin/sh
+
+set -eu
+
+SCRIPT_NAME="$(basename "$0")"
+
+error() {
+    echo "${SCRIPT_NAME}: $1" >&2
+    exit 1
+}
+
+cleanup() {
+    echo "Sync aborted"
+}
+
+usage() {
+
+    echo "Usage: ${SCRIPT_NAME} [OPTION] [SOURCE] [DEST]"
+    echo
+    echo "Options:"
+	echo " -p VALUE  Set process priority"
+	echo " -h        Show this help message"
+
+    exit 0
+
+}
+
+round_number() {
+	printf "%.${2:-0}f\n" "${1}"
+}
+
+is_integer() {
+	echo "$1" | grep -Eq '^[+-]?[0-9]+$'
+}
+
+parse_options() {
+
+	while getopts ":p:h" OPT; do
+		case "${OPT}" in
+			p)
+				if [ -n "${PRIORITY:-}" ]; then
+					error "option -p can only be set once"
+				fi
+				PRIORITY=$OPTARG
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+    if [ "$#" -eq 0 ]; then
+        error "no source or destination directories specified"
+    elif [ "$#" -eq 1 ]; then
+        error "no destination directory specified"
+    elif [ "$#" -gt 2 ]; then
+        error "too many arguments specified"
+    fi
+
+    SRC_DIR=$1
+
+    if [ ! -d "${SRC_DIR}" ]; then
+        error "source directory ${SRC_DIR} does not exist"
+    fi
+
+    DST_DIR=$2
+
+    if [ ! -d "${DST_DIR}" ]; then
+        error "source directory ${DST_DIR} does not exist"
+    fi
+
+    PRIORITY=${PRIORITY:-5}
+
+    if ! is_integer "${PRIORITY}"; then
+        error "invalid priority ${PRIORITY}"
+    fi
+
+}
+
+calc_values() {
+
+    if [ "${PRIORITY}" -lt 5 ]; then
+        memory_max=$(echo "(${PRIORITY} * 0.2) * 3.5" | bc)
+    elif [ "${PRIORITY}" -gt 5 ]; then
+        memory_max=$(echo "(${PRIORITY} * 0.2) * 3.5" | bc)
+    else
+        memory_max=3
+    fi
+
+    # If memory max is less than one then add a leading zero to the value
+    if [ "$(echo "${memory_max} < 1" | bc)" -eq 1 ]; then
+        memory_max="0${memory_max}"
+    fi
+
+    # Range: 1 - 10000, Default: 100
+    cpu_weight=$(( PRIORITY * 20 ))
+
+    # Range: 1 - 400, Default: 100
+    cpu_quota=$(( PRIORITY * 20 ))
+
+    # Range: 1 - 10000, Default: 100
+    io_weight=$(( PRIORITY * 20 ))
+
+    # Range: -20 - 19
+    if [ "${PRIORITY}" -lt 5 ]; then
+        nice_value=$(echo "20 - ((${PRIORITY} - 1) * 4)" | bc)
+    elif [ "${PRIORITY}" -gt 5 ]; then
+        nice_value=$(echo "((${PRIORITY} - 5) * 3.8) * -1" | bc)
+    else
+        nice_value=0
+    fi
+
+    nice_value=$(round_number "${nice_value}")
+
+    if [ "${nice_value}" -gt 19 ]; then
+        nice_value=19
+    fi
+
+}
+
+main() {
+
+    if ! command -v rsync >/dev/null; then
+        error "rsync is not installed"
+    fi
+
+    parse_options "$@"
+
+    trap 'cleanup' HUP INT QUIT ABRT
+
+    stty -echo
+
+    calc_values
+
+    echo "Syncing: ${SRC_DIR} -> ${DST_DIR}.."
+
+    sudo systemd-run \
+        --quiet \
+        --scope \
+        --uid="$(id -u)" \
+        --gid="$(id -g)" \
+        --property=CPUWeight="${cpu_weight}" \
+        --property=CPUQuota="${cpu_quota}%" \
+        --property=IOWeight="${io_weight}" \
+        --property=MemoryMax="${memory_max}G" \
+        --nice="${nice_value}" -- rsync -avP --delete "${SRC_DIR}" "${DST_DIR}"
+
+}
+
+main "$@"

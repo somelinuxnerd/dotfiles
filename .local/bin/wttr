@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Display local weather data from wttr.in
+# https://github.com/chubin/wttr.in
+
+set -euo pipefail
+
+SCRIPT_NAME=$(basename "$0")
+
+if ! command -v curl >/dev/null; then
+	echo "${SCRIPT_NAME}: curl is not installed" >&2
+	exit 1
+fi
+
+clear
+
+if [ -n "${WTTR_LOCATION:-}" ]; then
+	WTTR_LOCATION=${WTTR_LOCATION// /%20}
+fi
+
+case "${1:-}" in
+	-f) curl --silent "https://us.wttr.in/${WTTR_LOCATION:-}?lang=en&Fu"        ;;
+	-n) curl --silent "https://us.wttr.in/${WTTR_LOCATION:-}?lang=en&format=v2" ;;
+	*)  curl --silent "https://us.wttr.in/${WTTR_LOCATION:-}?lang=en&format=2"  ;;
+esac

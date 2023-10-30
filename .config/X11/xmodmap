@@ -1,0 +1,4 @@
+! Change capslock behavior from the default on/off to the escape key with shifted capslock
+! Original: 'keycode  66 = Caps_Lock NoSymbol Caps_Lock'
+clear lock
+keycode  66 = Escape Caps_Lock NoSymbol NoSymbol

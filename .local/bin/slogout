@@ -1,0 +1,42 @@
+#!/bin/sh
+
+set -o errexit
+set -o nounset
+
+get_desktop() {
+	if pgrep -f startplasma-x11 >/dev/null && command -v qdbus >/dev/null; then
+		echo "plasma"
+	elif pgrep -f xfce4-session >/dev/null && command -v xfce4-session-logout >/dev/null; then
+		echo "xfce"
+	elif pgrep -f cinnamon-session >/dev/null && command -v cinnamon-session-quit >/dev/null; then
+		echo "cinnamon"
+	elif pgrep -f mate-session >/dev/null && command -v mate-session-save >/dev/null; then
+		echo "mate"
+	elif pgrep -f gnome-session >/dev/null && command -v gnome-session-quit >/dev/null; then
+		echo "gnome"
+	fi
+}
+
+case "$(get_desktop)" in
+	plasma)
+		qdbus org.kde.ksmserver /KSMServer logout 0 0 2
+		;;
+	xfce)
+		xfce4-session-logout --logout --fast
+		;;
+	cinnamon)
+		cinnamon-session-quit --no-prompt --force
+		;;
+	mate)
+		mate-session-save --logout --force
+		;;
+	gnome)
+		gnome-session-quit --no-prompt --force
+		;;
+	*)
+		session_id=$(loginctl list-sessions --no-legend | grep 'tty1$' | cut -d' ' -f1)
+		if [ -n "${session_id}" ]; then
+			loginctl terminate-session "${session_id}"
+		fi
+		;;
+esac

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Pamac Tray
+Icon=update-notifier
+Exec=sh -c "GDK_BACKEND=x11 pamac-tray"
+Terminal=false
+Type=Application
+StartupNotify=false
+NotShowIn=KDE;GNOME;
+X-GNOME-Autostart-enabled=false
+X-GNOME-Autostart-Delay=45
+Comment[en_US]=Package manager frontend for Pacman and the AUR

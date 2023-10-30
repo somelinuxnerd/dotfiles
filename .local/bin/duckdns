@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+# Update Duck DNS records my match current public IP address.
+# Dependencies: curl, secret-tool
+
+set -euo pipefail
+
+SCRIPT_NAME=$(basename "$0")
+
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+RESET=$(tput sgr0)
+
+DEFAULT_DOMAINS="doctorcringe,lolcow"
+
+error() {
+	echo "${SCRIPT_NAME:-error}: $1" >&2
+	exit 1
+}
+
+usage() {
+
+	echo "Usage: ${SCRIPT_NAME} [option]"
+    echo
+    echo "Options:"
+    echo "  -d            Disable domains (set to 0.0.0.0)"
+	echo "  -i IP         IP address to apply"
+	echo "  -s SUBDOMAIN  Subdomain to be updated (default: all)"
+    echo "  -t            Set account token"
+	echo "  -h            Show this help message"
+
+    exit 0
+
+}
+
+is_ip_address() {
+	echo "$1" | grep -qE '^(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$'
+}
+
+is_subdomains() {
+	echo "$1" | grep -qE '^[a-zA-Z0-9]+(,[a-zA-Z0-9]+)*$'
+}
+
+parse_options() {
+
+	DISABLE_DOMAINS=false
+	UPDATE_TOKEN=false
+	DOMAINS=
+	IP_ADDRESS=
+
+	while getopts ":di:s:th" OPT; do
+		case "${OPT}" in
+			d)
+				if ${DISABLE_DOMAINS}; then
+					error "option -d can only be set once"
+				elif ${UPDATE_TOKEN}; then
+					error "option -d conflicts with option -t"
+				else
+					DISABLE_DOMAINS=true
+				fi
+				;;
+			i)
+				if [ -n "${IP_ADDRESS:-}" ]; then
+					error "option -i can only be set once"
+				elif ! is_ip_address "${OPTARG}"; then
+					error "invalid ip address"
+				elif ${UPDATE_TOKEN}; then
+					error "option -i conflicts with option -t"
+				else
+					IP_ADDRESS=${OPTARG}
+				fi
+				;;
+			s)
+				if [ -n "${DOMAINS}" ]; then
+					error "option -s can only be set once"
+				elif ! is_subdomains "${OPTARG}"; then
+					error "invalid subdomains"
+				elif ${UPDATE_TOKEN}; then
+					error "option -s conflicts with option -t"
+				else
+					DOMAINS=${OPTARG}
+				fi
+				;;
+			t)
+				if ${UPDATE_TOKEN}; then
+					error "option -t can only be set once"
+				elif ${DISABLE_DOMAINS}; then
+					error "option -t conflicts with option -d"
+				elif [ -n "${IP_ADDRESS}" ]; then
+					error "option -t conflicts with option -i"
+				elif [ -n "${DOMAINS}" ]; then
+					error "option -t conflicts with option -s"
+				else
+					UPDATE_TOKEN=true
+				fi
+				;;
+			h)
+				usage
+				;;
+			:)
+				error "option -${OPTARG} requires an argument"
+				;;
+			\?)
+				error "unknown option -${OPTARG}"
+				;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	if [ "$#" -gt 0 ]; then
+		error "too many arguments specified"
+	fi
+
+	if [ -z "${DOMAINS}" ]; then
+		DOMAINS=$DEFAULT_DOMAINS
+	fi
+
+	if [ -z "${IP_ADDRESS}" ]; then
+		IP_ADDRESS="0.0.0.0"
+	fi
+
+}
+
+set_token() {
+
+	local value
+
+	read -r -p "Enter your account token: " value
+
+	if [ -z "${value}" ]; then
+		error "No token value entered"
+	else
+		echo -n "${value}" | secret-tool store --label="User - DuckDNS - theinfiniterick" service duckdns.org account theinfiniterick
+	fi
+
+}
+
+get_token() {
+
+	local value
+
+	value=$(secret-tool lookup service duckdns.org account theinfiniterick || true)
+
+	[ -z "${value}" ] && set_token
+
+	echo "${value}"
+
+}
+
+main() {
+
+	# Throw an error if all script dependencies are not installed
+	for cmd in curl secret-tool; do
+		if ! command -v "${cmd}" >/dev/null; then
+			error "${cmd} is not installed"
+		fi
+	done
+
+	parse_options "$@"
+
+	# If the command line argument 'token' is passed then update the
+	# account token and exit
+	if ${UPDATE_TOKEN}; then
+		set_token
+		exit 0
+	fi
+
+	# Get the account token from the linux keyring
+	local token
+	token=$(get_token)
+
+	# echo "DISABLE_DOMAINS: ${DISABLE_DOMAINS}"
+	# echo "   UPDATE_TOKEN: ${UPDATE_TOKEN}"
+	# echo "        DOMAINS: ${DOMAINS}"
+	# echo "     IP_ADDRESS: ${IP_ADDRESS}"
+	# echo "          token: ${token}"
+
+	# Update the IP address for the specified domains
+	result=$(echo url="https://www.duckdns.org/update?domains=${DOMAINS}&token=${token}&ip=${ip_address:-}" | curl -s -k -K - || true)
+
+	# Display the result of the update attempt
+	if [ "${result}" = "OK" ]; then
+		echo "Result: ${GREEN}Success${RESET}"
+	else
+		echo "Result: ${RED}Failure${RESET}"
+	fi
+
+}
+
+main "$@"

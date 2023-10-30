@@ -1,0 +1,47 @@
+#!/bin/sh
+# Mount one or more drive partitions.
+# Dependencies: udisks2
+
+set -eu
+
+SCRIPT_NAME=$(basename "$0")
+
+warning() {
+    echo "${SCRIPT_NAME}: $1" >&2
+}
+
+is_powered() {
+	lsblk -nlo TYPE,NAME | awk -v name="$1" '$1 == "part" && $2 == name {print $2}' | grep -qE "^$1$"
+}
+
+get_mountpoint() {
+	lsblk -lno TYPE,NAME,MOUNTPOINT | awk -v name="$1" '$1 == "part" && $2 == name {print $3}'
+}
+
+main() {
+
+	if ! command -v udisksctl >/dev/null; then
+		error "udisks2 is not installed"
+	fi
+
+	for part in "$@"; do
+
+		if ! is_powered "${part}"; then
+			warning "${part}: partition not found"
+			continue
+		fi
+
+		mountpoint=$(get_mountpoint "${part}")
+
+		if [ -n "${mountpoint}" ]; then
+			warning "${part}: already mounted at ${mountpoint}"
+			continue
+		fi
+
+		udisksctl mount --no-user-interaction --block-device "/dev/${part}"
+
+	done
+
+}
+
+main "$@"

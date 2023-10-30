@@ -1,0 +1,47 @@
+# Include system-wide inputrc, which is ignored by default when
+# a user has their own .inputrc file.
+$include /etc/inputrc
+
+# Prevent the terminal from echoing ^C after Ctrl+C is pressed.
+set echo-control-characters off
+
+# Neither sound a beep nor flash the screen when trying to ring the bell.
+set bell-style none
+
+# Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
+set input-meta on
+set output-meta on
+set convert-meta off
+
+# Autocomplete hidden files without typing the dot
+set match-hidden-files on
+
+# Make Tab autocompletion case-insensitive (cd ~/dow<Tab> => cd ~/Downloads/).
+set completion-ignore-case on
+
+# Try to stay at the same cursor position when moving through the history.
+set history-preserve-point on
+
+$if mode=emacs
+# "\e[H": beginning-of-line			# KEY: Home							ACTION: Move to the beginning of the line
+# "\e[1~": beginning-of-line      	# KEY: Home              			ACTION: Move to the beginning of the line (tty)
+# "\e[F": end-of-line             	# KEY: End               			ACTION: Move to the beginning of the line
+# "\e[4~": end-of-line            	# KEY: End               			ACTION: Move to the beginning of the line (tty)
+# "\e[1;5D": backward-word 			# KEY: Ctrl + ArrowLeft 			ACTION: Move forward one word
+# "\e[1;5C": forward-word 			# KEY: Ctrl + ArrowRight 			ACTION: Move backward one word
+"\e[1;2D": backward-kill-word 		# KEY: Shift-ArrowLeft				ACTION: Erase one word backword
+"\e[1;2C": kill-word 				# KEY: Shift-ArrowRight				ACTION: Erase one word forward
+# "\e[A": previous-history			# KEY: ArrowUp						ACTION: Move backward one item in history
+# "\e[B": next-history				# KEY: ArrowDown					ACTION: Move forward one item in history
+# "\e[2~": overwrite-mode			# KEY: Insert						ACTION: Toggle insert/overwrite mode
+# "\e[3~": delete-char				# KEY: Delete						ACTION: Delete the character under the cursor
+"\e[[P": delete-char				# KEY: Delete						ACTION: Delete the character under the cursor (st)
+# "\C-_": insert-comment			# KEY: Ctrl + /						ACTION: Comment and accept line
+# "\C-r": reverse-search-history	# KEY: Ctrl + r						ACTION: Search backward starting at the current line and moving `up' through the history as necessary
+"\C-z": undo						# KEY: Ctrl + z 					ACTION: Incremental undo, separately remembered for each line
+$endif
+
+#forward-word-and-char() {
+#    forward-word
+#    forward-char
+#}

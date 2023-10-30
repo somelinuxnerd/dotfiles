@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly SCRIPT_NAME=${0##*/}
+
+if (( EUID > 0 )); then
+	echo "${SCRIPT_NAME}: This script requires root privileges" >&2
+	exit 1
+fi
+
+temp_dir=$(mktemp -d)
+
+exit_cleanup() {
+	rm -rf "${temp_dir}"
+}
+
+abort_cleanup() {
+	write_default_domains
+	echo "Update aborted"
+	exit 2
+}
+
+write_default_domains() {
+
+	hostname=$(</etc/hostname)
+
+	echo -n "# Static table lookup for hostnames.
+# See hosts(5) for details.
+
+127.0.0.1    localhost
+127.0.0.1    ${hostname}.localdomain        ${hostname}
+
+::1          localhost ip6-localhost ip6-loopback
+fe00::0      ip6-localnet
+ff00::0      ip6-mcastprefix
+ff02::1      ip6-allnodes
+ff02::2      ip6-allrouters
+ff02::3      ip6-allhosts" > /etc/hosts
+
+}
+
+add_blocked_domains() {
+
+	curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts -o "${temp_dir}"/blocklist.main
+	curl -s https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social-only/hosts -o "${temp_dir}"/blocklist.social
+
+	declare -a social_sites=(
+		'Facebook'
+		'Instagram'
+		'MySpace'
+		'Pinterest'
+		'TikTok'
+		'Tumblr'
+		'WhatsApp'
+		# 'LinkedIn'
+		# 'Reddit'
+		# 'Twitter'
+	)
+
+	{
+
+		echo -e "\n\n\n# Begin Blocked Domains\n\n# Adware and Malware"
+
+		grep -P '^0.0.0.0 (?!0.0.0.0)' "${temp_dir}"/blocklist.main | sort -u
+
+		for site in "${social_sites[@]}"; do
+			awk -v site="${site}" \
+				'tolower($0) ~ "^#(\\s|\\t)*"tolower(site)"(\\s|\\t)*$" { s=1; print "\n"$0; next };/^(#.*)?$/{ s = 0 }; s == 1 { print }' \
+				"${temp_dir}"/blocklist.social
+		done
+
+	} >> /etc/hosts
+
+}
+
+{
+
+	trap 'exit_cleanup' EXIT
+
+	trap 'abort_cleanup' INT
+
+	stty -echo
+
+	write_default_domains
+
+	add_blocked_domains
+
+	echo "Hosts file updated"
+
+}

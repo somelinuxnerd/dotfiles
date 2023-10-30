@@ -1,0 +1,12 @@
+#!/bin/sh
+
+pids=$(pgrep --exact --ignore-case "$3" | sort -n)
+
+if [ -z "${pids}" ]; then
+	echo "Process $3 not found" >&2
+	exit 1
+fi
+
+for pid in ${pids}; do
+	sudo ionice -c "$1" -n "$2" -p "${pid}"
+done

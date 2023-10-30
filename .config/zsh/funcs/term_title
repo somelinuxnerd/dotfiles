@@ -1,0 +1,27 @@
+#!/usr/bin/env zsh
+# shellcheck disable=all
+
+emulate -L zsh
+
+setopt LOCAL_OPTIONS NO_PROMPT_SUBST
+
+# Don't set the title if inside emacs, unless using vterm
+[[ -n "${INSIDE_EMACS:-}" && "$INSIDE_EMACS" != vterm ]] && return
+
+local title_string="${USER}: ${PWD/#${HOME}/~}"
+
+case "$TERM" in
+    cygwin|xterm*|putty*|rxvt*|konsole*|ansi|mlterm*|alacritty|st*|foot)
+        print -Pn "\e]2;${title_string}\a" # set window name
+        print -Pn "\e]1;${title_string}\a" # set tab name
+        ;;
+    screen*|tmux*)
+        print -Pn "\ek${title_string}\e\\" # set screen hardstatus
+        ;;
+    *)
+        # Try to use terminfo to set the title if the feature is available
+        if (( ${+terminfo[fsl]} && ${+terminfo[tsl]} )); then
+            print -Pn "${terminfo[tsl]}${title_string}${terminfo[fsl]}"
+        fi
+        ;;
+esac

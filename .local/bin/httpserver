@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+
+# TODO: Finish usage message
+# TODO: Validate port number
+# TODO: Set proper log file location
+# TODO: Figure out monitoring
+
+set -o errexit
+set -o nounset
+
+SCRIPT_NAME=$(basename "$0")
+# BIND_HOST=$(ip route show | grep -oP '(?<=src\s)(([0-9]{1,3}\.){3}[0-9]{1,3})(?=\smetric)')
+LOG_FILE="/home/matt/log"
+
+raise_error() {
+    echo "${SCRIPT_NAME}: $1"
+    exit 1
+}
+
+usage() {
+    echo "Usage: ${SCRIPT_NAME} [OPTIONS]"
+    echo
+    echo "Options:"
+	echo " -s, --start           Start server"
+	echo " -k, --kill            Kill server"
+	echo " -c, --check           Check server status"
+	echo " -m, --monitor         Monitor running server"
+    echo " -b, --bind ADDRESS    Set bind host address"
+    echo " -p, --port NUMBER     Set bind host port"
+    echo " -d, --directory PATH  Set server root directory"
+	echo " -h, --help            Show this help message"
+    exit 0
+}
+
+get_options() {
+
+    ACTION=
+    BIND_HOST=
+    BIND_PORT=
+    DIRECTORY=
+
+    while [ "$#" -gt 0 ]; do
+
+        case "$1" in
+            -s|--start|-k|--kill|-c|--check|-m|--monitor)
+                if [ -n "${ACTION}" ]; then
+                    raise_error "action can only be set once"
+                fi
+                ;;
+            -b|--bind|-p|--port|-d|--directory)
+                if [ "$#" -eq 1 ] || [ "$(echo "$2" | cut -c1)" = "-" ]; then
+                    raise_error "option $1 requires a value"
+                fi
+                ;;
+        esac
+
+        case "$1" in
+            -s|--start)
+                ACTION="start"
+                shift
+                ;;
+            -k|--kill)
+                ACTION="kill"
+                shift
+                ;;
+            -c|--check)
+                ACTION="check"
+                shift
+                ;;
+            -m|--monitor)
+                ACTION="monitor"
+                shift
+                ;;
+            -b|--bind)
+                BIND_HOST=$2
+                shift 2
+                ;;
+            -p|--port)
+                BIND_PORT=$2
+                shift 2
+                ;;
+            -d|--directory)
+                DIRECTORY=$2
+                shift 2
+                ;;
+            -h|--help)
+                usage
+                ;;
+            *)
+                raise_error "invalid option $1"
+                ;;
+        esac
+
+    done
+
+    ACTION=${ACTION:-check}
+
+    if [ "${ACTION}" = "start" ]; then
+        BIND_HOST=${BIND_HOST:-127.0.0.1}
+        BIND_PORT=${BIND_PORT:-8000}
+        DIRECTORY=${DIRECTORY:-$PWD}
+    else
+        if [ -n "${BIND_HOST}" ]; then
+            raise_error "bind address should only be set when starting the server"
+        elif [ -n "${BIND_PORT}" ]; then
+            raise_error "bind port should only be set when starting the server"
+        elif [ -n "${DIRECTORY}" ]; then
+            raise_error "directory should only be set when starting the server"
+        fi
+    fi
+
+}
+
+get_pid_host_port() {
+    pgrep -f '^python -m http.server' | xargs ps -o pid,args --no-headers -p 2>/dev/null | awk '{print $1,$(NF-1),$NF}'
+}
+
+check_server() {
+
+    read -r pid host port <<< "$(get_pid_host_port)"
+
+	if [ -n "${pid}" ]; then
+		echo "Server is running: http://${host}:${port}"
+    else
+		echo "Server is not running"
+    fi
+
+}
+
+monitor_server() {
+    watch -n 1 "cat ${LOG_FILE}"
+}
+
+start_server() {
+
+    read -r pid host port <<< "$(get_pid_host_port)"
+
+	if [ -n "${pid}" ]; then
+		raise_error "Server is already running: http://${host}:${port}"
+    fi
+
+    if [ ! -d "${DIRECTORY}" ]; then
+        raise_error "Directory ${DIRECTORY} does not exist"
+    fi
+
+    cd "${DIRECTORY}" || exit 1
+
+    echo "Starting server: http://${BIND_HOST}:${BIND_PORT}, directory \"${DIRECTORY}\"" | tee --append "${LOG_FILE}"
+
+    python -m http.server --bind "${BIND_HOST}" "${BIND_PORT}" >> "${LOG_FILE}" 2>&1 & disown
+
+}
+
+kill_server() {
+
+    read -r pid host port <<< "$(get_pid_host_port)"
+
+	if [ -z "${pid}" ]; then
+		raise_error "Server is not running"
+    fi
+
+	echo "Killing Server: http://${host}:${port}" | tee --append "${LOG_FILE}"
+
+	kill -15 "${pid}" 2>/dev/null
+
+    fuser -s -k "${port}/tcp"
+
+}
+
+main() {
+
+    get_options "$@"
+
+    case "${ACTION}" in
+		check)    check_server    ;;
+		monitor)  monitor_server  ;;
+		start)    start_server    ;;
+		kill)     kill_server     ;;
+    esac
+
+}
+
+main "$@"

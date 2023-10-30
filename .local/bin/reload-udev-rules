@@ -1,0 +1,8 @@
+#!/bin/sh
+# Reload udev rules.
+
+# Reload rules and databases
+sudo udevadm control --reload-rules
+
+# Manually force udev to trigger your rules
+sudo udevadm trigger --type=all --action=change --prioritized-subsystem=block,usb

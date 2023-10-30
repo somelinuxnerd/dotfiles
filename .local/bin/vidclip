@@ -1,0 +1,30 @@
+#!/bin/sh
+
+in_file=$1
+
+start_time=$(echo "$2" | cut -d- -f1)
+end_time=$(echo "$2" | cut -d- -f2)
+
+file_prefix=$(echo "${in_file}" | cut -d. -f1)
+file_suffix=$(echo "${in_file}" | cut -d. -f2)
+
+index=0
+out_file="${file_prefix}_clip${index}.${file_suffix}"
+
+while [ -f "${out_file}" ]; do
+	out_file="${file_prefix}_clip${index}.${file_suffix}"
+	index=$(( index + 1 ))
+done
+
+ffmpeg \
+	-hide_banner \
+	-stats \
+	-loglevel error \
+	-accurate_seek \
+	-i "${in_file}" \
+	-ss "${start_time}" \
+	-to "${end_time}" \
+	-movflags use_metadata_tags \
+	-acodec copy \
+	-vcodec h264 \
+	"${out_file}"

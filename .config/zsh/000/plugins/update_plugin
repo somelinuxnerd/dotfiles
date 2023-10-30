@@ -1,0 +1,44 @@
+#!/usr/bin/env zsh
+# Updates an existing plugin or installs it if it doesnloads a plugin and downloads it to the plugins
+# directory if it does not already exist.
+# TODO: Figure out how to properly compile plugins on installation
+# shellcheck disable=all
+
+emulate -L zsh
+
+local plugin_repo=$1
+local plugin_name=$(basename "${plugin_repo}")
+local plugin_dir="${ZDOTDIR}/plugins/${plugin_name}"
+local source_path="${plugin_dir}/${plugin_name}.plugin.zsh"
+
+if [ ! -d "${plugin_dir}" ]; then
+	echo "${plugin_name}: plugin not found" >&2
+	exit 1
+fi
+
+echo "Updating ${plugin_name}.."
+
+(
+	cd "${plugin_dir}"
+	git reset --hard HEAD
+	git clean -xffd
+	git pull
+)
+
+# Create a symlink for the plugin.zsh file if it does not exist
+if [ ! -e "${source_path}" ]; then
+	local -a zsh_files=("${plugin_dir}"/*.plugin.{z,}sh(N) "${plugin_dir}"/*.{z,}sh{-theme,}(N))
+	(( $#zsh_files )) || { echo >&2 "No init file found '${plugin_repo}'." && continue }
+	ln -sf "${zsh_files[1]}" "${source_path}"
+fi
+
+# Compile to byetcode
+for file in "${plugin_dir}"/**/*.zsh; do
+	if [ ! -L "${file}" ]; then
+		zcompile "${file}"
+	fi
+done
+
+if [ -f "${source_path}" ]; then
+    source "${source_path}"
+fi
