@@ -67,7 +67,9 @@ get_source_dirs() {
     local dirname
     local basename
 
-    declare -ga SOURCE_DIRS=()
+    declare -ga SOURCE_DIRS=(
+        ".local/share/dotfiles/backups"
+    )
 
     for dirname in "$HOME"/*; do
 

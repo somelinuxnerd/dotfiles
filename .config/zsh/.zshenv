@@ -1,7 +1,6 @@
 # --------------------------------------
 #  Startup File: .zshenv
 # --------------------------------------
-echo .zshenv
 
 skip_global_compinit=1
 
