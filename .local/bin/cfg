@@ -2,7 +2,13 @@
 
 set -euo pipefail
 
-SCRIPT_NAME=${0##*/}
+declare -gr SCRIPT_NAME=${0##*/}
+declare -gr DOTFILES_DIR="${DOTFILES_DIR:=${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles}"
+declare -gr DOTFILES_REMOTE="${DOTFILES_REMOTE:=https://github.com/somelinuxnerd/dotfiles.git}"
+declare -gr GIT_DIR="$DOTFILES_DIR"/repo
+declare -gr BACKUPS_DIR="$DOTFILES_DIR"/backups
+
+# --- Helper Functions --- #
 
 error() {
 	echo "$SCRIPT_NAME: ${2:-error: unspecified}" >&2
@@ -13,58 +19,124 @@ abs_path() {
 	realpath -m "$1"
 }
 
-ensure_command_exists() {
-	if ! command -v "$1" >/dev/null; then
-		error 1 "command not found: $1"
-	fi
+check_dependency() {
+	command -v "$1" >/dev/null || error 1 "command not found: $1"
 }
 
-_git() {
+# --- Remote Functions --- #
+
+remote::default_branch() {
+	git ls-remote "$DOTFILES_REMOTE" 'refs/heads/*' | grep -oP '^[a-z0-9]+\s+refs\/heads\/\K.*'
+}
+
+remote::is_valid() {
+	git ls-remote --exit-code "$DOTFILES_REMOTE" >/dev/null
+}
+
+# --- Repo Functions --- #
+
+repo::git() {
 	git --git-dir="$GIT_DIR" --work-tree="$HOME" "$@"
 }
 
-repo::is_bare() {
+repo::dir_exists() {
+	[[ -d "$GIT_DIR" ]]
+}
+
+repo::is_valid() {
 	git -C "$GIT_DIR" rev-parse --is-bare-repository &>/dev/null
 }
 
-repo::ensure_is_valid() {
-	if [[ ! -d "$GIT_DIR" ]]; then
+repo::error_if_invalid() {
+	if ! repo::dir_exists; then
 		error 128 "directory does not exist: $GIT_DIR"
-	elif ! repo::is_bare; then
+	elif ! repo::is_valid; then
 		error 128 "directory is not a valid repository: $GIT_DIR"
 	fi
 }
 
+repo::error_if_exists() {
+	if repo::dir_exists; then
+		if repo::is_valid; then
+			error 128 "repository already exists: $GIT_DIR"
+		else
+			error 128 "directory already exists: $GIT_DIR"
+		fi
+	fi
+}
+
 repo::default_branch() {
-	_git config --get init.defaultBranch
+	repo::error_if_invalid
+	repo::git config --get init.defaultBranch
+}
+
+repo::current_branch() {
+	repo::error_if_invalid
+	repo::git branch --show-current
 }
 
 repo::remote_url() {
-	_git config --get remote.origin.url
+	repo::error_if_invalid
+	repo::git config --get remote.origin.url
 }
 
-repo::is_remote_valid() {
-	_git ls-remote --exit-code origin
-}
-
-repo::get_files() {
-	_git ls-tree -r --full-tree --name-only HEAD
+repo::files() {
+	repo::error_if_invalid
+	repo::git ls-tree -r --full-tree --name-only HEAD
 }
 
 repo::update_commit_push() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
 
-	_git add --update
+	repo::git add --update
 
-	_git commit --allow-empty-message --message="${1:-}" >/dev/null || true
+	repo::git commit --allow-empty-message --message="${1:-}" >/dev/null || true
 
-	_git push --set-upstream origin main 2>/dev/null || true
-
+	repo::git push --set-upstream origin main 2>/dev/null || true
 
 }
 
-repo::create_ignore_file() {
+repo::rename_current_branch() {
+
+	repo::error_if_invalid
+
+	local new_name=${1:-}
+
+	if [[ -z "$new_name" ]]; then
+		error 1 "no new branch name specified"
+	fi
+
+	local old_name
+
+	old_name=$(repo::current_branch)
+
+	printf 'Renaming branch from \033[0;33m%s\033[0m to \033[0;33m%s\033[0m..\n' "$old_name" "$new_name"
+
+	repo::git branch --move "$new_name"
+
+	repo::git push origin --delete "$old_name" &>/dev/null
+
+	repo::git push origin --set-upstream "$new_name" &>/dev/null
+
+}
+
+repo::wipe_commit_log() {
+
+	repo::error_if_invalid
+
+	repo::git checkout --orphan temp_branch
+	repo::git add --update
+	repo::git commit --allow-empty-message --message="${1:-}"
+	repo::git branch --delete --force main
+	repo::git branch --move main
+	repo::git push --force origin main
+
+}
+
+# --- Command Functions --- #
+
+create_ignore_file() {
 
 	local file line
 	local -a lines
@@ -86,63 +158,23 @@ repo::create_ignore_file() {
 
 }
 
-repo::error_git_directory_exists() {
-	if repo::is_bare; then
-		error 128 "repository already exists: $GIT_DIR"
-	else
-		error 128 "directory already exists: $GIT_DIR"
-	fi
-}
-
-repo::clean_commit_history() {
-	_git checkout --orphan temp_branch
-	_git add --update
-	_git commit --allow-empty-message --message="${1:-}"
-	_git branch --delete --force main
-	_git branch --move main
-	_git push --force origin main
-}
-
-repo::get_current_branch() {
-	_git branch --show-current
-}
-
-repo::rename_current_branch() {
-
-	local new_name=${1:-}
-
-	if [[ -z "$new_name" ]]; then
-		error 1 "no new branch name specified"
-	fi
-
-	local old_name
-
-	old_name=$(repo::get_current_branch)
-
-	printf 'Renaming branch from \033[0;33m%s\033[0m to \033[0;33m%s\033[0m..\n' "$old_name" "$new_name"
-
-	_git branch --move "$new_name"
-
-	_git push origin --delete "$old_name" &>/dev/null
-
-	_git push origin --set-upstream "$new_name" &>/dev/null
-
-}
-
 repo::init() {
 
-	[[ -d "${GIT_DIR}" ]] && repo::error_git_directory_exists
+	repo::error_if_exists
+
+	remote::is_valid && error 1 "Remote already exists"
 
 	echo "Creating dotfiles repository.."
 
 	mkdir -p "$GIT_DIR"
 
-	git init --initial-branch=main --bare "$GIT_DIR"
+	git -C "$GIT_DIR" init --initial-branch=main --bare
 
 	_git config --local status.showUntrackedFiles no
 	_git config --local core.excludesFile "$DOTFILES_DIR"/gitignore
 
-	repo::create_ignore_file
+	create_ignore_file
+
 	_git add "$DOTFILES_DIR"/gitignore
 
 	_git commit --allow-empty-message --message="${1:-Create dotfiles repository}"
@@ -154,7 +186,7 @@ repo::init() {
 
 repo::clone() {
 
-	[[ -d "$GIT_DIR" ]] && repo::error_git_directory_exists
+	repo::error_if_exists
 
 	echo "Cloning dotfiles repository.."
 
@@ -165,13 +197,13 @@ repo::clone() {
 	_git config --local status.showUntrackedFiles no
 	_git config --local core.excludesFile "$DOTFILES_DIR"/gitignore
 
-	repo::create_ignore_file
+	create_ignore_file
 
 }
 
 repo::deploy() {
 
-	if [[ -d "${GIT_DIR}" ]] && ! repo::is_bare; then
+	if [[ -d "${GIT_DIR}" ]] && ! repo::is_valid; then
 		error 1 "$GIT_DIR: directory already exists"
 	fi
 
@@ -189,29 +221,31 @@ repo::deploy() {
 
 repo::list_files() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
 
 	if command -v bat >/dev/null; then
-		repo::get_files | bat --style=numbers
+		repo::files | bat --style=numbers
 	else
-		repo::get_files HEAD | less
+		repo::files HEAD | less
 	fi
 
 }
 
 repo::find_files() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
 
-	ensure_command_exists fzf
+	check_dependency fzf
 
-	repo::get_files | fzf --reverse -x -i
+	repo::files | fzf --reverse -x -i
 
 }
 
 repo::backup_to_directory() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
+
+	mkdir -p "$BACKUPS_DIR"
 
 	local backup_dir=${1:-}
 
@@ -232,6 +266,8 @@ repo::backup_to_directory() {
 		error 2 "directory does not exist: $(abs_path "$backup_parent_dir")"
 	fi
 
+	repo::update_commit_push
+
 	local backup_base_dir
 	backup_base_dir=$(basename "$backup_dir")
 
@@ -239,7 +275,7 @@ repo::backup_to_directory() {
 
 	local -a repo_files
 
-	readarray -t repo_files <<< "$(repo::get_files)"
+	readarray -t repo_files <<< "$(repo::files)"
 
 	local file src_path dest_path dest_dir
 
@@ -259,9 +295,11 @@ repo::backup_to_directory() {
 
 repo::archive_to_file() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
 
-	ensure_command_exists zip
+	check_dependency zip
+
+	repo::update_commit_push
 
 	local archive_file=${1:-}
 
@@ -285,7 +323,7 @@ repo::archive_to_file() {
 
 	local -a repo_files
 
-	readarray -t repo_files <<< "$(repo::get_files)"
+	readarray -t repo_files <<< "$(repo::files)"
 
 	cd "$HOME" || return 1
 
@@ -299,9 +337,11 @@ repo::archive_to_file() {
 
 repo::sync() {
 
-	repo::ensure_is_valid
+	repo::error_if_invalid
 
-	ensure_command_exists rsync
+	check_dependency rsync
+
+	repo::update_commit_push
 
 	local sync_path=${1%:-}
 
@@ -332,7 +372,7 @@ repo::sync() {
 
 	local -a repo_files
 
-	readarray -t repo_files <<< "$(repo::get_files)"
+	readarray -t repo_files <<< "$(repo::files)"
 
 	local file src_path dest_path dest_dir
 
@@ -356,22 +396,14 @@ repo::sync() {
 
 }
 
+repo::list_backups() {
+	mkdir -p "$BACKUPS_DIR"
+	ls -1 "$BACKUPS_DIR"
+}
+
 main() {
 
-	ensure_command_exists git
-
-	if [[ -z "${DOTFILES_DIR:-}" ]]; then
-		DOTFILES_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"/dotfiles
-	fi
-
-	if [[ -z "${DOTFILES_REMOTE:-}" ]]; then
-		DOTFILES_REMOTE="https://github.com/somelinuxnerd/dotfiles.git"
-	fi
-
-	GIT_DIR="$DOTFILES_DIR"/repo
-	BACKUPS_DIR="$DOTFILES_DIR"/backups
-
-	mkdir -p "$BACKUPS_DIR"
+	check_dependency git
 
 	case "${1:-}" in
 		clone)
@@ -393,26 +425,30 @@ main() {
 			repo::update_commit_push "${@:2}"
 			;;
 		archive)
-			repo::update_commit_push
 			repo::archive_to_file "${@:2}"
 			;;
 		backup)
-			repo::update_commit_push
-			repo::backup_to_directory "${@:2}"
+			case "${2:-}" in
+				-l|list)
+					repo::list_backups
+					;;
+				*)
+					repo::backup_to_directory "${@:2}"
+					;;
+			esac
 			;;
 		sync)
-			repo::update_commit_push
 			repo::sync "${@:2}"
 			;;
 		wipe)
-			repo::clean_commit_history "${@:2}"
+			repo::wipe_commit_log "${@:2}"
 			;;
 		rcb)
 			repo::rename_current_branch "${@:2}"
 			;;
 		*)
-			repo::ensure_is_valid
-			_git "$@"
+			repo::error_if_invalid
+			repo::git "$@"
 			;;
 	esac
 
