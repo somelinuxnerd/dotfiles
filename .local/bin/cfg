@@ -19,16 +19,12 @@ ensure_command_exists() {
 	fi
 }
 
-git::bare() {
+_git() {
 	git --git-dir="$GIT_DIR" --work-tree="$HOME" "$@"
 }
 
-git::from() {
-	git -C "$GIT_DIR" "$@"
-}
-
 repo::is_bare() {
-	git::from rev-parse --is-bare-repository &>/dev/null
+	git -C "$GIT_DIR" rev-parse --is-bare-repository &>/dev/null
 }
 
 repo::ensure_is_valid() {
@@ -40,30 +36,30 @@ repo::ensure_is_valid() {
 }
 
 repo::default_branch() {
-	git::bare config --get init.defaultBranch
+	_git config --get init.defaultBranch
 }
 
 repo::remote_url() {
-	git::bare config --get remote.origin.url
+	_git config --get remote.origin.url
 }
 
 repo::is_remote_valid() {
-	git::bare ls-remote --exit-code origin
+	_git ls-remote --exit-code origin
 }
 
 repo::get_files() {
-	git::bare ls-tree -r --full-tree --name-only HEAD
+	_git ls-tree -r --full-tree --name-only HEAD
 }
 
 repo::update_commit_push() {
 
 	repo::ensure_is_valid
 
-	git::bare add --update
+	_git add --update
 
-	git::bare commit --allow-empty-message --message="${1:-}" >/dev/null || true
+	_git commit --allow-empty-message --message="${1:-}" >/dev/null || true
 
-	git::bare push --set-upstream origin main 2>/dev/null || true
+	_git push --set-upstream origin main 2>/dev/null || true
 
 
 }
@@ -99,16 +95,16 @@ repo::error_git_directory_exists() {
 }
 
 repo::clean_commit_history() {
-	git::bare checkout --orphan temp_branch
-	git::bare add --update
-	git::bare commit --allow-empty-message --message="${1:-}"
-	git::bare branch --delete --force main
-	git::bare branch --move main
-	git::bare push --force origin main
+	_git checkout --orphan temp_branch
+	_git add --update
+	_git commit --allow-empty-message --message="${1:-}"
+	_git branch --delete --force main
+	_git branch --move main
+	_git push --force origin main
 }
 
 repo::get_current_branch() {
-	git::bare branch --show-current
+	_git branch --show-current
 }
 
 repo::rename_current_branch() {
@@ -125,11 +121,11 @@ repo::rename_current_branch() {
 
 	printf 'Renaming branch from \033[0;33m%s\033[0m to \033[0;33m%s\033[0m..\n' "$old_name" "$new_name"
 
-	git::bare branch --move "$new_name"
+	_git branch --move "$new_name"
 
-	git::bare push origin --delete "$old_name" &>/dev/null
+	_git push origin --delete "$old_name" &>/dev/null
 
-	git::bare push origin --set-upstream "$new_name" &>/dev/null
+	_git push origin --set-upstream "$new_name" &>/dev/null
 
 }
 
@@ -143,16 +139,16 @@ repo::init() {
 
 	git init --initial-branch=main --bare "$GIT_DIR"
 
-	git::bare config --local status.showUntrackedFiles no
-	git::bare config --local core.excludesFile "$DOTFILES_DIR"/gitignore
+	_git config --local status.showUntrackedFiles no
+	_git config --local core.excludesFile "$DOTFILES_DIR"/gitignore
 
 	repo::create_ignore_file
-	git::bare add "$DOTFILES_DIR"/gitignore
+	_git add "$DOTFILES_DIR"/gitignore
 
-	git::bare commit --allow-empty-message --message="${1:-Create dotfiles repository}"
-	git::bare branch -M main
-	git::bare remote add origin "$DOTFILES_REMOTE"
-	git::bare push --set-upstream origin main
+	_git commit --allow-empty-message --message="${1:-Create dotfiles repository}"
+	_git branch -M main
+	_git remote add origin "$DOTFILES_REMOTE"
+	_git push --set-upstream origin main
 
 }
 
@@ -166,8 +162,8 @@ repo::clone() {
 		error 1 "$DOTFILES_REMOTE: Failed to clone repository"
 	fi
 
-	git::bare config --local status.showUntrackedFiles no
-	git::bare config --local core.excludesFile "$DOTFILES_DIR"/gitignore
+	_git config --local status.showUntrackedFiles no
+	_git config --local core.excludesFile "$DOTFILES_DIR"/gitignore
 
 	repo::create_ignore_file
 
@@ -187,7 +183,7 @@ repo::deploy() {
 
 	repo::backup_to_directory "$BACKUPS_DIR"/"$(date +%Y-%m-%d_%H:%M:%S)"
 
-	git::bare checkout --force
+	_git checkout --force
 
 }
 
@@ -416,7 +412,7 @@ main() {
 			;;
 		*)
 			repo::ensure_is_valid
-			git::bare "$@"
+			_git "$@"
 			;;
 	esac
 
