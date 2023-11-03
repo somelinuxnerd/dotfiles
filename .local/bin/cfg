@@ -304,7 +304,7 @@ repo::archive_to_file() {
 	local archive_file=${1:-}
 
 	if [[ -z "$archive_file" ]]; then
-		archive_file=.dotfiles-backup-"$(date +%Y-%m-%d_%H:%M:%S)".zip
+		archive_file=dotfiles-backup-"$(date +%Y-%m-%d_%H:%M:%S)".zip
 	else
 		archive_file="${archive_file%.zip}".zip
 	fi
