@@ -1,0 +1,108 @@
+#!/bin/sh
+# Add password to the keyring with the command:
+# secret-tool store --label="KeePassXC" application keepassxc
+
+set -o errexit
+set -o nounset
+
+SCRIPT_NAME=$(basename "$0")
+
+error() {
+
+	if [ ! -t 1  ]; then
+		notify-send -i keepassxc "KeePassXC" "$1"
+	else
+		echo "${SCRIPT_NAME}: $1" >&2
+	fi
+
+	exit "${2:-1}"
+
+}
+
+warn() {
+
+	if [ ! -t 1  ]; then
+		notify-send -i keepassxc "KeePassXC" "$1"
+	else
+		echo "${SCRIPT_NAME}: $1" >&2
+	fi
+
+}
+
+is_command() {
+	command -v "$1" >/dev/null
+}
+
+is_password_valid() {
+	echo "$2" | keepassxc-cli db-info "$1" >/dev/null 2>&1
+}
+
+if ! is_command keepassxc; then
+	error "KeePassXC is not installed"
+fi
+
+if pgrep --exact keepassxc >/dev/null; then
+	error "KeePassXC is already running"
+fi
+
+# get database file
+
+keepass_file=${KEEPASS_FILE:-}
+
+if [ ! -f "${keepass_file}" ] && is_command locate; then
+
+	if is_command xdg-user-dir; then
+		keepass_file=$(locate --limit 1 "$(xdg-user-dir DOCUMENTS)"/**/keepass.kdbx)
+	fi
+
+	if [ ! -f "${keepass_file}" ]; then
+		keepass_file=$(locate --limit 1 "${HOME}"/**/keepass.kdbx)
+	fi
+
+fi
+
+if [ ! -f "${keepass_file}" ]; then
+	keepassxc >/dev/null 2>&1 &
+	exit $?
+fi
+
+# get database password
+
+if ! is_command secret-tool; then
+	keepassxc "${keepass_file}" >/dev/null 2>&1 &
+	exit $?
+fi
+
+keepass_pass=$(secret-tool lookup application keepassxc || true)
+
+# If password is blank request password from the user
+if [ -z "${keepass_pass}" ]; then
+	if [ -t 1 ]; then
+		printf 'Please enter your password: '
+		read -r keepass_pass
+	elif is_command zenity; then
+		keepass_pass=$(DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus XAUTHORITY=/run/user/1000/Xauthority DISPLAY=:0 zenity --title="KeePassXC" --password || true)
+	fi
+fi
+
+# If password is still blank open keepass file without specifying the password
+if [ -z "${keepass_pass}" ]; then
+	keepassxc "${keepass_file}" >/dev/null 2>&1 &
+	exit $?
+fi
+
+# If password is invalid open keepass file without specifying the password
+if ! is_password_valid "${keepass_file}" "${keepass_pass}"; then
+	warn "Password is not valid"
+	keepassxc "${keepass_file}" >/dev/null 2>&1 &
+	exit $?
+
+fi
+
+# Store passwords in secrets
+printf '%s\n' "${keepass_pass}" | secret-tool store --label="KeePassXC" application keepassxc
+
+# Open keepass with specified password
+printf '%s\n' "${keepass_pass}" | keepassxc --pw-stdin "${keepass_file}" >/dev/null 2>&1 &
+
+exit $?

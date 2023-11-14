@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Usage: gitclean  git-repo-url
+
+gitclean ()
+{
+    git clone "$1" workDir && {
+        cd workDir/
+        for BR in $(git branch | tr " " "\n" | grep -v '*')
+        do
+            echo "working on branch $BR"
+            git checkout $BR
+            git checkout --orphan cross
+            git add -A
+            git commit -m "Initial Commit" && {
+                git branch -D $BR
+                git branch -m $BR
+                git push -f origin $BR
+                git gc --aggressive --prune=all
+            }
+        done
+    }
+    cd $currDir
+    rm -rf workDir
+}
