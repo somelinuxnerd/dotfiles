@@ -9,9 +9,10 @@ filepopup_delay=10
 generic_title_format=${title}${?artist: - ${artist}}
 net_buffer_kb=160
 show_interface=FALSE
+shuffle=TRUE
 
 [audgui]
-filesel_path=/home/matt/music/library
+filesel_path=/home/matt/music/library/G/Grateful Dead/Album
 
 [audqt]
 theme=dark
@@ -51,8 +52,8 @@ NumHotkeys=8
 custom_duration_enabled=TRUE
 
 [pipewire]
-volume_left=85
-volume_right=85
+volume_left=95
+volume_right=95
 
 [qtui]
 column_widths=25,25,420,318,50,238,175,85,100,25,75,275,275,275,75,275,175

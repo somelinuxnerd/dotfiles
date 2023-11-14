@@ -1,32 +1,42 @@
 {
     "userDataProfilesMigration": true,
     "profileAssociations": {
-        "workspaces": {},
-        "emptyWindows": {
-            "1698951146374": "__default__profile__"
-        }
+        "workspaces": {
+            "file:///home/matt/projects/workspaces/home.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/more/go/cfg": "__default__profile__",
+            "file:///home/matt/projects": "__default__profile__",
+            "file:///home/matt/projects/more/go": "__default__profile__",
+            "file:///home/matt/projects/workspaces/cfg.code-workspace": "__default__profile__"
+        },
+        "emptyWindows": {}
     },
     "profileAssociationsMigration": true,
     "telemetry.sqmId": "",
     "telemetry.machineId": "416adb6d9ccabcd14281bd9008ab9e254187bb51b94f0a2c0239f6fd183e1f37",
     "backupWorkspaces": {
-        "workspaces": [],
-        "folders": [],
-        "emptyWindows": [
+        "workspaces": [
             {
-                "backupFolder": "1698951146374"
+                "id": "cea0ee170c4efdba3cf410c9d120420e",
+                "configURIPath": "file:///home/matt/projects/workspaces/cfg.code-workspace"
             }
-        ]
+        ],
+        "folders": [],
+        "emptyWindows": []
     },
     "windowsState": {
         "lastActiveWindow": {
-            "backupPath": "/home/matt/.config/vscode/user-data/Backups/1698951146374",
+            "workspaceIdentifier": {
+                "id": "cea0ee170c4efdba3cf410c9d120420e",
+                "configURIPath": "file:///home/matt/projects/workspaces/cfg.code-workspace"
+            },
+            "backupPath": "/home/matt/.config/vscode/user-data/Backups/cea0ee170c4efdba3cf410c9d120420e",
             "uiState": {
                 "mode": 0,
-                "x": 448,
-                "y": 224,
-                "width": 1024,
-                "height": 768
+                "x": 0,
+                "y": 34,
+                "width": 1920,
+                "height": 1006
             }
         },
         "openedWindows": []
@@ -76,6 +86,89 @@
                                     "id": "vscode.menubar.separator"
                                 },
                                 {
+                                    "id": "openRecentWorkspace",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/workspaces/cfg.code-workspace",
+                                        "path": "/home/matt/projects/workspaces/cfg.code-workspace",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/workspaces/cfg (Workspace)"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/go",
+                                        "path": "/home/matt/projects/more/go",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/go"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects",
+                                        "path": "/home/matt/projects",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/go/cfg",
+                                        "path": "/home/matt/projects/more/go/cfg",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/go/cfg"
+                                },
+                                {
+                                    "id": "openRecentWorkspace",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/workspaces/shells.code-workspace",
+                                        "path": "/home/matt/projects/workspaces/shells.code-workspace",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/workspaces/shells (Workspace)"
+                                },
+                                {
+                                    "id": "openRecentWorkspace",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/workspaces/home.code-workspace",
+                                        "path": "/home/matt/projects/workspaces/home.code-workspace",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/workspaces/home (Workspace)"
+                                },
+                                {
+                                    "id": "vscode.menubar.separator"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/.local/bin/tt",
+                                        "path": "/home/matt/.local/bin/tt",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/.local/bin/tt"
+                                },
+                                {
+                                    "id": "vscode.menubar.separator"
+                                },
+                                {
                                     "id": "workbench.action.openRecent",
                                     "label": "&&More..."
                                 },
@@ -109,18 +202,15 @@
                     },
                     {
                         "id": "workbench.action.files.save",
-                        "label": "&&Save",
-                        "enabled": false
+                        "label": "&&Save"
                     },
                     {
                         "id": "workbench.action.files.saveAs",
-                        "label": "Save &&As...",
-                        "enabled": false
+                        "label": "Save &&As..."
                     },
                     {
                         "id": "saveAll",
-                        "label": "Save A&&ll",
-                        "enabled": false
+                        "label": "Save A&&ll"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -251,13 +341,15 @@
                     },
                     {
                         "id": "workbench.action.files.revert",
-                        "label": "Re&&vert File",
-                        "enabled": false
+                        "label": "Re&&vert File"
                     },
                     {
                         "id": "workbench.action.closeActiveEditor",
-                        "label": "&&Close Editor",
-                        "enabled": false
+                        "label": "&&Close Editor"
+                    },
+                    {
+                        "id": "workbench.action.closeFolder",
+                        "label": "Close &&Workspace"
                     },
                     {
                         "id": "workbench.action.closeWindow",
@@ -302,13 +394,11 @@
                     },
                     {
                         "id": "actions.find",
-                        "label": "&&Find",
-                        "enabled": false
+                        "label": "&&Find"
                     },
                     {
                         "id": "editor.action.startFindReplaceAction",
-                        "label": "&&Replace",
-                        "enabled": false
+                        "label": "&&Replace"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -571,8 +661,7 @@
                                 },
                                 {
                                     "id": "breadcrumbs.toggle",
-                                    "label": "&&Breadcrumbs",
-                                    "checked": true
+                                    "label": "&&Breadcrumbs"
                                 },
                                 {
                                     "id": "editor.action.toggleStickyScroll",
@@ -703,6 +792,10 @@
                         "label": "E&&xtensions"
                     },
                     {
+                        "id": "workbench.view.extension.test",
+                        "label": "T&&esting"
+                    },
+                    {
                         "id": "vscode.menubar.separator"
                     },
                     {
@@ -726,8 +819,7 @@
                     },
                     {
                         "id": "editor.action.toggleWordWrap",
-                        "label": "&&Word Wrap",
-                        "enabled": false
+                        "label": "&&Word Wrap"
                     }
                 ]
             },
@@ -735,8 +827,7 @@
                 "items": [
                     {
                         "id": "workbench.action.navigateBack",
-                        "label": "&&Back",
-                        "enabled": false
+                        "label": "&&Back"
                     },
                     {
                         "id": "workbench.action.navigateForward",
@@ -745,8 +836,7 @@
                     },
                     {
                         "id": "workbench.action.navigateToLastEditLocation",
-                        "label": "&&Last Edit Location",
-                        "enabled": false
+                        "label": "&&Last Edit Location"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -1251,6 +1341,11 @@
                 "label": "Ctrl+W",
                 "userSettingsLabel": "ctrl+w"
             },
+            "workbench.action.closeFolder": {
+                "label": "Ctrl+K F",
+                "isNative": false,
+                "userSettingsLabel": "ctrl+k f"
+            },
             "workbench.action.closeWindow": {
                 "label": "Alt+F4",
                 "userSettingsLabel": "alt+f4"
@@ -1625,7 +1720,7 @@
     "theme": "vs-dark",
     "themeBackground": "#151723",
     "windowSplash": {
-        "zoomLevel": 1,
+        "zoomLevel": 0,
         "baseTheme": "vs-dark",
         "colorInfo": {
             "foreground": "#f8f8f2",
@@ -1642,7 +1737,7 @@
             "editorPartMinWidth": 220,
             "titleBarHeight": 0,
             "activityBarWidth": 48,
-            "sideBarWidth": 256,
+            "sideBarWidth": 208,
             "statusBarHeight": 22,
             "windowBorder": false
         }

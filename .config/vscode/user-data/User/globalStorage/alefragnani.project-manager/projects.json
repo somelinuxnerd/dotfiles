@@ -26,5 +26,19 @@
 		"paths": [],
 		"tags": [],
 		"enabled": true
+	},
+	{
+		"name": "Home",
+		"rootPath": "/home/matt/projects/workspaces/home.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	},
+	{
+		"name": "CFG",
+		"rootPath": "/home/matt/projects/workspaces/cfg.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
 	}
 ]
