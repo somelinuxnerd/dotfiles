@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Example for $XDG_CONFIG_HOME/nsxiv/exec/win-title
+# Called by nsxiv(1) whenever any of the relevant information changes.
+# The output is set as nsxiv's window title.
+#
+# Arguments, "Optional" arguments might be empty:
+#   $1: resolved absolute path of the current file
+#   $2: current file number
+#   $3: total file number
+#   $4: image width (Optional: Disabled on thumbnails mode)
+#   $5: image height (Optional: Disabled on thumbnails mode)
+#   $6: current zoom (Optional: Disabled on thumbnails mode)
+#
+# The term file is used rather than image as nsxiv does not
+# precheck that the input files are valid images. Total file
+# count may be different from the actual count of valid images.
+
+exec 2>/dev/null
+
+file_name="${1##*/}"
+file_number=${2:-1}
+total_number=${3:-1}
+file_zoom=${6:-}
+
+title=$file_name
+
+if [ -n "${file_zoom}" ]; then
+	title="${title}   (${file_zoom}%)"
+fi
+
+if [ "${total_number}" -gt 1 ]; then
+	title="${title}   [${2} of ${3}]"
+fi
+
+printf "%s" "${title}"
