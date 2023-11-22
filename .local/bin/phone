@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+# "Disabling Google Play Store.."
+# adb shell pm disable --user 0 com.android.vending
+# adb backup -f backup1.ab -apk -obb -shared -all -system
+
+uninstall_unwanted_packages() {
+
+	readarray -t packages <<< "$(cat uad_packages.txt)"
+
+	for pkg in "${packages[@]}"; do
+		echo "Uninstalling: '$pkg'"
+		adb shell pm uninstall --user 0 "$pkg" &>/dev/null
+	done
+
+}
+
+install_fdroid() {
+
+	echo "Downloading F-Droid.."
+	curl -s -L https://f-droid.org/F-Droid.apk -o F-Droid.apk
+
+	echo "Installing F-Droid.."
+	adb install F-Droid.apk &>/dev/null
+
+	enable_install_unknown_apps "org.fdroid.fdroid"
+
+}
+
+enable_install_unknown_apps() {
+	local app_id=$1
+	echo "Enable 'Install unknown apps' for ${app_id}.."
+	adb shell appops set "${app_id}" REQUEST_INSTALL_PACKAGES allow
+}
+
+install_from_fdroid() {
+
+	if [[ ! -f fdroid-index.jar ]]; then
+		echo "Downloading F-Droid repository index.."
+		curl -s -L https://f-droid.org/repo/index.jar -o fdroid-index.jar
+		unzip -p fdroid-index.jar index.xml > fdroid-index.xml
+	fi
+
+	local app_id=$1
+	local app_file=$(grep versioncode fdroid-index.xml | awk -F"apkname" '{print $2}'  | sed 's/[<]//'|  sed 's/[>]//' | sed 's/[/]//' | grep "^${app_id}_")
+
+	echo "Downloading ${app_id}"
+	curl -s -L -O https://f-droid.org/repo/"$app_file"
+
+	echo "Installing ${app_id}.."
+	adb install "$app_file" &>/dev/null
+}
+
+main() {
+
+	uninstall_unwanted_packages
+
+	temp_dir=$(mktemp --directory)
+
+	(
+		cd "$temp_dir" || exit 1
+
+		install_fdroid
+
+		# Aurora Store
+		install_from_fdroid "com.aurora.store"
+		enable_install_unknown_apps "com.aurora.store"
+
+		# Fennec Browser
+		install_from_fdroid "org.mozilla.fennec_fdroid"
+
+		# NewPipe
+		install_from_fdroid "org.schabi.newpipe"
+
+		# ProtonVPN
+		install_from_fdroid "ch.protonvpn.android"
+
+		# Simple Contacts
+		install_from_fdroid "com.simplemobiletools.contacts.pro"
+	)
+
+	rm -rf "$temp_dir"
+
+}
+
+main
