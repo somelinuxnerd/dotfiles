@@ -7,7 +7,8 @@
             "file:///home/matt/projects/more/go/cfg": "__default__profile__",
             "file:///home/matt/projects": "__default__profile__",
             "file:///home/matt/projects/more/go": "__default__profile__",
-            "file:///home/matt/projects/workspaces/cfg.code-workspace": "__default__profile__"
+            "file:///home/matt/projects/workspaces/cfg.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/repos/web/browser-tweaks": "__default__profile__"
         },
         "emptyWindows": {}
     },
@@ -15,24 +16,20 @@
     "telemetry.sqmId": "",
     "telemetry.machineId": "416adb6d9ccabcd14281bd9008ab9e254187bb51b94f0a2c0239f6fd183e1f37",
     "backupWorkspaces": {
-        "workspaces": [
+        "workspaces": [],
+        "folders": [
             {
-                "id": "cea0ee170c4efdba3cf410c9d120420e",
-                "configURIPath": "file:///home/matt/projects/workspaces/cfg.code-workspace"
+                "folderUri": "file:///home/matt/projects/repos/web/browser-tweaks"
             }
         ],
-        "folders": [],
         "emptyWindows": []
     },
     "windowsState": {
         "lastActiveWindow": {
-            "workspaceIdentifier": {
-                "id": "cea0ee170c4efdba3cf410c9d120420e",
-                "configURIPath": "file:///home/matt/projects/workspaces/cfg.code-workspace"
-            },
-            "backupPath": "/home/matt/.config/vscode/user-data/Backups/cea0ee170c4efdba3cf410c9d120420e",
+            "folder": "file:///home/matt/projects/repos/web/browser-tweaks",
+            "backupPath": "/home/matt/.config/vscode/user-data/Backups/deac721f074d5d256e39dc499b6e0c16",
             "uiState": {
-                "mode": 0,
+                "mode": 1,
                 "x": 0,
                 "y": 34,
                 "width": 1920,
@@ -79,11 +76,21 @@
                             "items": [
                                 {
                                     "id": "workbench.action.reopenClosedEditor",
-                                    "label": "&&Reopen Closed Editor",
-                                    "enabled": false
+                                    "label": "&&Reopen Closed Editor"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/repos/web/browser-tweaks"
                                 },
                                 {
                                     "id": "openRecentWorkspace",
@@ -158,6 +165,83 @@
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/documents/streamlink.txt",
+                                        "path": "/home/matt/documents/streamlink.txt",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/documents/streamlink.txt"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/temp/trolling/Clean%20Urine%20Stash/Joe/notes.txt",
+                                        "path": "/home/matt/temp/trolling/Clean Urine Stash/Joe/notes.txt",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/temp/trolling/Clean Urine Stash/Joe/notes.txt"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/temp/trolling/Clean%20Urine%20Stash/Brittany%20Luciano/brittany-phone",
+                                        "path": "/home/matt/temp/trolling/Clean Urine Stash/Brittany Luciano/brittany-phone",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/temp/trolling/Clean Urine Stash/Brittany Luciano/brittany-phone"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/go/cfg/.more/notes.md",
+                                        "path": "/home/matt/projects/more/go/cfg/.more/notes.md",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/go/cfg/.more/notes.md"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/.local/bin/cfg",
+                                        "path": "/home/matt/.local/bin/cfg",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/.local/bin/cfg"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
                                         "external": "file:///home/matt/.local/bin/tt",
                                         "path": "/home/matt/.local/bin/tt",
                                         "scheme": "file"
@@ -210,7 +294,8 @@
                     },
                     {
                         "id": "saveAll",
-                        "label": "Save A&&ll"
+                        "label": "Save A&&ll",
+                        "enabled": false
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -349,7 +434,7 @@
                     },
                     {
                         "id": "workbench.action.closeFolder",
-                        "label": "Close &&Workspace"
+                        "label": "Close &&Folder"
                     },
                     {
                         "id": "workbench.action.closeWindow",
@@ -545,8 +630,7 @@
                                 },
                                 {
                                     "id": "workbench.action.toggleSidebarVisibility",
-                                    "label": "&&Primary Side Bar",
-                                    "checked": true
+                                    "label": "&&Primary Side Bar"
                                 },
                                 {
                                     "id": "workbench.action.toggleAuxiliaryBar",
@@ -790,10 +874,6 @@
                     {
                         "id": "workbench.view.extensions",
                         "label": "E&&xtensions"
-                    },
-                    {
-                        "id": "workbench.view.extension.test",
-                        "label": "T&&esting"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -1720,7 +1800,7 @@
     "theme": "vs-dark",
     "themeBackground": "#151723",
     "windowSplash": {
-        "zoomLevel": 0,
+        "zoomLevel": 1,
         "baseTheme": "vs-dark",
         "colorInfo": {
             "foreground": "#f8f8f2",
@@ -1737,7 +1817,7 @@
             "editorPartMinWidth": 220,
             "titleBarHeight": 0,
             "activityBarWidth": 48,
-            "sideBarWidth": 208,
+            "sideBarWidth": 0,
             "statusBarHeight": 22,
             "windowBorder": false
         }

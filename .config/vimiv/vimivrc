@@ -4,15 +4,15 @@
 [GENERAL] ######################################################################
 start_fullscreen: no
 start_slideshow: no
-slideshow_delay: 5
+slideshow_delay: 10
 shuffle: no
 display_bar: yes
 default_thumbsize: (128, 128)
-geometry: 800x600
+geometry: 600x600
 recursive: no
 rescale_svg: yes
 overzoom: 3
-search_case_sensitive: yes
+search_case_sensitive: no
 incsearch: yes
 copy_to_primary: no
 commandline_padding: 6

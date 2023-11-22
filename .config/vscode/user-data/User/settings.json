@@ -186,7 +186,7 @@
     "terminal.integrated.tabStopWidth": 4,
     "breadcrumbs.enabled": false,
     "workbench.colorTheme": "Dracula Dark",
-    "editor.fontSize": 16,
     "debug.console.fontSize": 13,
-    "terminal.integrated.lineHeight": 1.2
+    "terminal.integrated.lineHeight": 1.2,
+    "window.zoomLevel": 1
 }
