@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Lowercase
+Name[en]=Lowercase
+Name[C]=Lowercase
+Tooltip[en_US]=Lowercase selected items
+Tooltip[en]=Lowercase selected items
+Tooltip[C]=Lowercase selected items
+Icon[en_US]=edit-rename
+Icon[en]=edit-rename
+Icon[C]=edit-rename
+ToolbarLabel[en_US]=Lowercase
+ToolbarLabel[en]=Lowercase
+ToolbarLabel[C]=Lowercase
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Files/Folders - Lowercase Names
+Name[en]=Files/Folders - Lowercase Names
+Name[C]=Files/Folders - Lowercase Names
+Exec=/home/matt/.local/share/file-manager/actions/scripts/rename-files-folders_lowercase.sh %F

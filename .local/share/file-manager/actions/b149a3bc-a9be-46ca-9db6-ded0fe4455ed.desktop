@@ -1,0 +1,24 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Edit as Root
+Name[en]=Edit as Root
+Name[C]=Edit as Root
+Tooltip[en_US]=Open the file with administration privileges
+Tooltip[en]=Open the file with administration privileges
+Tooltip[C]=Open the file with administration privileges
+Icon[en_US]=edit
+Icon[en]=edit
+Icon[C]=edit
+ToolbarLabel[en_US]=Edit as Root
+ToolbarLabel[en]=Edit as Root
+ToolbarLabel[C]=Edit as Root
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=File - Open as Root
+Name[en]=File - Open as Root
+Name[C]=File - Open as Root
+Exec=/home/matt/.local/share/file-manager/actions/scripts/edit-text-file_as-root-user.sh %f
+MimeTypes=text/*;application/x-desktop;
+SelectionCount==1
+TryExec=/usr/bin/pkexec

@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Uppercase
+Name[en]=Uppercase
+Name[C]=Uppercase
+Tooltip[en_US]=Uppercase selected items
+Tooltip[en]=Uppercase selected items
+Tooltip[C]=Uppercase selected items
+Icon[en_US]=edit-rename
+Icon[en]=edit-rename
+Icon[C]=edit-rename
+ToolbarLabel[en_US]=Uppercase
+ToolbarLabel[en]=Uppercase
+ToolbarLabel[C]=Uppercase
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Files/Folders - Uppercase Names
+Name[en]=Files/Folders - Uppercase Names
+Name[C]=Files/Folders - Uppercase Names
+Exec=/home/matt/.local/share/file-manager/actions/scripts/rename-items-uppercase.sh %F

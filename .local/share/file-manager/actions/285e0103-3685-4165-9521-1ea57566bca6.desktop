@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Queue
+Name[en]=Queue
+Name[C]=Queue
+ToolbarLabel[en_US]=Queue
+ToolbarLabel[en]=Queue
+ToolbarLabel[C]=Queue
+Profiles=profile-zero;
+
+Icon[en_US]=media-playlist-append
+Icon[en]=media-playlist-append
+Icon[C]=media-playlist-append
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Append to Queue
+Name[en]=Append to Queue
+Name[C]=Append to Queue
+Exec=/home/matt/.local/share/file-manager/actions/scripts/mpd-queue_append-and-play.sh.sh %F
+MimeTypes=audio/*;
+TryExec=/usr/bin/mpc

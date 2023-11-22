@@ -1,0 +1,26 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Search
+Name[en]=Search
+Name[C]=Search
+Tooltip[en_US]=Search selected folder
+Tooltip[en]=Search selected folder
+Tooltip[C]=Search selected folder
+Icon[en_US]=folder-saved-search
+Icon[en]=folder-saved-search
+Icon[C]=folder-saved-search
+TargetLocation=true
+TargetToolbar=true
+ToolbarLabel[en_US]=Search
+ToolbarLabel[en]=Search
+ToolbarLabel[C]=Search
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Folder - Open Search Tool
+Name[en]=Folder - Open Search Tool
+Name[C]=Folder - Open Search Tool
+Exec=/home/matt/.local/share/file-manager/actions/scripts/run-program_search-tool.sh %f
+MimeTypes=inode/directory;
+SelectionCount=<2
+TryExec=/usr/bin/catfish

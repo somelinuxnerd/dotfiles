@@ -1,0 +1,24 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Copy Contents
+Name[en]=Copy Contents
+Name[C]=Copy Contents
+Tooltip[en_US]=Copy contents of selected file to the clipboard
+Tooltip[en]=Copy contents of selected file to the clipboard
+Tooltip[C]=Copy contents of selected file to the clipboard
+Icon[en_US]=edit-copy-symbolic
+Icon[en]=edit-copy-symbolic
+Icon[C]=edit-copy-symbolic
+ToolbarLabel[en_US]=Copy Contents
+ToolbarLabel[en]=Copy Contents
+ToolbarLabel[C]=Copy Contents
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=File - Copy Contents to Clipboard
+Name[en]=File - Copy Contents to Clipboard
+Name[C]=File - Copy Contents to Clipboard
+Exec=/home/matt/.local/share/file-manager/actions/scripts/copy-to-clipboard_file-contents.sh %f
+MimeTypes=text/*;application/x-shellscript;
+SelectionCount==1
+TryExec=/usr/bin/xclip

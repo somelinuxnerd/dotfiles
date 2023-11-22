@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Copy Path
+Name[en]=Copy Path
+Name[C]=Copy Path
+Tooltip[en_US]=Copy selected item path(s) to the clipboard
+Tooltip[en]=Copy selected item path(s) to the clipboard
+Tooltip[C]=Copy selected item path(s) to the clipboard
+Icon[en_US]=edit-copy-path
+Icon[en]=edit-copy-path
+Icon[C]=edit-copy-path
+ToolbarLabel[en_US]=Copy Path
+ToolbarLabel[en]=Copy Path
+ToolbarLabel[C]=Copy Path
+Profiles=profile-zero;
+
+
+[X-Action-Profile profile-zero]
+Name[en_US]=File/Folder - Copy Path to Clipboard
+Name[en]=File/Folder - Copy Path to Clipboard
+Name[C]=File/Folder - Copy Path to Clipboard
+Exec=/home/matt/.local/share/file-manager/actions/scripts/copy-to-clipboard_file-folder-paths.sh %F
+TryExec=/usr/bin/xclip

@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+ToolbarLabel[en_US]=Colons to Dashes
+ToolbarLabel[en]=Colons to Dashes
+ToolbarLabel[C]=Colons to Dashes
+Icon[en_US]=edit-rename
+Icon[en]=edit-rename
+Icon[C]=edit-rename
+Tooltip[en_US]=Replaces underscores with spaces in selected items
+Tooltip[en]=Replaces underscores with spaces in selected items
+Tooltip[C]=Replaces underscores with spaces in selected items
+Name[en_US]=Colons to Dashes
+Name[en]=Colons to Dashes
+Name[C]=Colons to Dashes
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Exec=/home/matt/.local/share/file-manager/actions/scripts/rename-files-folders_colons-to-dashes.sh %F
+Name[en_US]=Files/Folders - Replace colons with dashes in names
+Name[en]=Files/Folders - Replace colons with dashes in names
+Name[C]=Files/Folders - Replace colons with dashes in names

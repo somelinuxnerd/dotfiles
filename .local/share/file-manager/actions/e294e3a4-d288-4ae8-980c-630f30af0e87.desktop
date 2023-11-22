@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+ToolbarLabel[en_US]=Play
+ToolbarLabel[en]=Play
+ToolbarLabel[C]=Play
+Name[en_US]=Play
+Name[en]=Play
+Name[C]=Play
+Profiles=profile-zero;
+
+Icon[en_US]=media-playback-start
+Icon[en]=media-playback-start
+Icon[C]=media-playback-start
+
+[X-Action-Profile profile-zero]
+TryExec=/usr/bin/mpc
+MimeTypes=audio/*;
+Exec=/home/matt/.local/share/file-manager/actions/scripts/mpd-queue_add-and-play.sh %F
+Name[en_US]=Add to Queue
+Name[en]=Add to Queue
+Name[C]=Add to Queue

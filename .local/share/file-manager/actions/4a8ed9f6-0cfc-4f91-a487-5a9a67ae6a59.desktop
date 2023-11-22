@@ -1,0 +1,23 @@
+[Desktop Entry]
+Type=Action
+Icon[en_US]=mediainfo
+Icon[en]=mediainfo
+Icon[C]=mediainfo
+Tooltip[en_US]=View Mediainfo
+Tooltip[en]=View Mediainfo
+Tooltip[C]=View Mediainfo
+ToolbarLabel[en_US]=View Mediainfo
+ToolbarLabel[en]=View Mediainfo
+ToolbarLabel[C]=View Mediainfo
+Name[en_US]=View Mediainfo
+Name[en]=View Mediainfo
+Name[C]=View Mediainfo
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+TryExec=/home/matt/.local/share/file-manager/actions/scripts/view-mediainfo-runnable.sh
+MimeTypes=audio/*;video/*;
+Exec=/home/matt/.local/share/file-manager/actions/scripts/view-mediainfo.sh %F
+Name[en_US]=View Mediainfo
+Name[en]=View Mediainfo
+Name[C]=View Mediainfo

@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Slugify
+Name[en]=Slugify
+Name[C]=Slugify
+Tooltip[en_US]=Slugify selected items
+Tooltip[en]=Slugify selected items
+Tooltip[C]=Slugify selected items
+Icon[en_US]=edit-rename
+Icon[en]=edit-rename
+Icon[C]=edit-rename
+ToolbarLabel[en_US]=Slugify
+ToolbarLabel[en]=Slugify
+ToolbarLabel[C]=Slugify
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Files/Folders - Slugify Names
+Name[en]=Files/Folders - Slugify Names
+Name[C]=Files/Folders - Slugify Names
+Exec=/home/matt/.local/share/file-manager/actions/scripts/rename-files-folders_slugify.sh %F

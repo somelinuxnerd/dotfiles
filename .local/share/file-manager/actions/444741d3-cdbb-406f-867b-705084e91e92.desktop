@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Action
+ToolbarLabel[en_US]=Underscores to Spaces
+ToolbarLabel[en]=Underscores to Spaces
+ToolbarLabel[C]=Underscores to Spaces
+Icon[en_US]=edit-rename
+Icon[en]=edit-rename
+Icon[C]=edit-rename
+Tooltip[en_US]=Replaces underscores with spaces in selected items
+Tooltip[en]=Replaces underscores with spaces in selected items
+Tooltip[C]=Replaces underscores with spaces in selected items
+Name[en_US]=Underscores to Spaces
+Name[en]=Underscores to Spaces
+Name[C]=Underscores to Spaces
+Profiles=profile-zero;
+
+[X-Action-Profile profile-zero]
+Exec=/home/matt/.local/share/file-manager/actions/scripts/rename-files-folders_underscores-to-spaces.sh %F
+Name[en_US]=Files/Folders - Replace underscores with spaces in names
+Name[en]=Files/Folders - Replace underscores with spaces in names
+Name[C]=Files/Folders - Replace underscores with spaces in names

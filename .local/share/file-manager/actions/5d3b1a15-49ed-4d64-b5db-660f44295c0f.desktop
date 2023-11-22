@@ -1,0 +1,27 @@
+[Desktop Entry]
+Type=Action
+Name[en_US]=Disk Usage
+Name[en]=Disk Usage
+Name[C]=Disk Usage
+Tooltip[en_US]=Analyze disk usage of selected folder
+Tooltip[en]=Analyze disk usage of selected folder
+Tooltip[C]=Analyze disk usage of selected folder
+Icon[en_US]=indicator-sensors-disk
+Icon[en]=indicator-sensors-disk
+Icon[C]=indicator-sensors-disk
+ToolbarLabel[en_US]=Disk Usage
+ToolbarLabel[en]=Disk Usage
+ToolbarLabel[C]=Disk Usage
+Profiles=profile-zero;
+
+
+
+TargetLocation=true
+
+[X-Action-Profile profile-zero]
+Name[en_US]=Folder - Disk Usage Analyzer
+Name[en]=Folder - Disk Usage Analyzer
+Name[C]=Folder - Disk Usage Analyzer
+Exec=/home/matt/.local/share/file-manager/actions/scripts/run-program_disk-usage.sh %f
+SelectionCount=<2
+TryExec=/usr/bin/baobab
