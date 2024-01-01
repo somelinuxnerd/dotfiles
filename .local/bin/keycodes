@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # Show infirmation for keys or mouse
 # buttons as they are pressed.
 # Dependencies: xwininfo, xev

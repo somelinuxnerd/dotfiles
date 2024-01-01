@@ -12,3 +12,4 @@ aliases: {rc: repo create, rd: repo delete, rl: repo list, rr: repo rename}
 http_unix_socket:
 # What web browser gh should use when opening URLs. If blank, will refer to environment.
 browser: librewolf
+version: "1"

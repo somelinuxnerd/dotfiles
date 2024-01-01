@@ -161,7 +161,6 @@
     "sync.forceUpload": true,
     "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', 'monospace', monospace",
     "go.toolsManagement.autoUpdate": true,
-    "python.languageServer": "Pylance",
     "python.analysis.autoImportCompletions": true,
     "launch": {
 
@@ -188,5 +187,14 @@
     "workbench.colorTheme": "Dracula Dark",
     "debug.console.fontSize": 13,
     "terminal.integrated.lineHeight": 1.2,
-    "window.zoomLevel": 1
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "errorLens.onSave": true,
+    "errorLens.problemRangeDecorationEnabled": true,
+    "python.analysis.diagnosticSeverityOverrides": {},
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "outline.showModules": false,
+    "window.zoomLevel": 1,
+    "[xml]": {
+        "editor.defaultFormatter": "redhat.vscode-xml"
+    }
 }

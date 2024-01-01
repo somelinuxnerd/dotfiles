@@ -2,7 +2,7 @@
 # Add password to the keyring with the command:
 # secret-tool store --label="KeePassXC" application keepassxc
 
-set -o errexit
+#set -o errexit
 set -o nounset
 
 SCRIPT_NAME=$(basename "$0")
@@ -49,19 +49,41 @@ fi
 
 keepass_file=${KEEPASS_FILE:-}
 
-if [ ! -f "${keepass_file}" ] && is_command locate; then
+if [ ! -f "${keepass_file}" ]; then
 
 	if is_command xdg-user-dir; then
-		keepass_file=$(locate --limit 1 "$(xdg-user-dir DOCUMENTS)"/**/keepass.kdbx)
+		documents_dir=$(xdg-user-dir DOCUMENTS)
+	fi
+
+	if is_command locate; then
+
+		if [ -n "${documents_dir:-}" ]; then
+			keepass_file=$(locate --limit 1 "${documents_dir}"/**/keepass.kdbx)
+		fi
+
+		if [ ! -f "${keepass_file}" ]; then
+			keepass_file=$(locate --limit 1 "${HOME}"/**/keepass.kdbx)
+		fi
+
 	fi
 
 	if [ ! -f "${keepass_file}" ]; then
-		keepass_file=$(locate --limit 1 "${HOME}"/**/keepass.kdbx)
+
+		if [ -n "${documents_dir:-}" ]; then
+			keepass_file=$(find "${document_dir}" -mindepth 1 -maxdepth 3 -name "keepass.kdbx" -print -quit)
+		fi
+
+		if [ ! -f "${keepass_file}" ]; then
+			keepass_file=$(find "${HOME}" -mindepth 1 -maxdepth 3 -name "keepass.kdbx" -print -quit)
+		fi
+
 	fi
 
 fi
 
+
 if [ ! -f "${keepass_file}" ]; then
+	warn "keepass file not found"
 	keepassxc >/dev/null 2>&1 &
 	exit $?
 fi
@@ -69,6 +91,7 @@ fi
 # get database password
 
 if ! is_command secret-tool; then
+	warn "secret-tool is not installed"
 	keepassxc "${keepass_file}" >/dev/null 2>&1 &
 	exit $?
 fi
@@ -87,13 +110,14 @@ fi
 
 # If password is still blank open keepass file without specifying the password
 if [ -z "${keepass_pass}" ]; then
+	warn "no password found"
 	keepassxc "${keepass_file}" >/dev/null 2>&1 &
 	exit $?
 fi
 
 # If password is invalid open keepass file without specifying the password
 if ! is_password_valid "${keepass_file}" "${keepass_pass}"; then
-	warn "Password is not valid"
+	warn "password is not valid"
 	keepassxc "${keepass_file}" >/dev/null 2>&1 &
 	exit $?
 

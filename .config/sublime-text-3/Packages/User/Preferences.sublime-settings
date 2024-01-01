@@ -6,8 +6,10 @@
 	"highlight_modified_tabs": true,
 	"ignored_packages":
 	[
+		"Package Control",
 		"Vintage"
 	],
+	"index_files": false,
 	"line_padding_bottom": 1,
 	"line_padding_top": 1,
 	"scroll_past_end": false,

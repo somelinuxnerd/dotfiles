@@ -4,13 +4,28 @@
 # adb shell pm disable --user 0 com.android.vending
 # adb backup -f backup1.ab -apk -obb -shared -all -system
 
-uninstall_unwanted_packages() {
+uninstall_package() {
+	echo "Disabling Package: '$1'"
+	adb shell pm uninstall --user 0 "$1" &>/dev/null
+}
 
-	readarray -t packages <<< "$(cat uad_packages.txt)"
+disable_package() {
+	echo "Uninstalling Package: '$1'"
+	adb shell pm disable --user 0 "$1" &>/dev/null
+}
+
+uninstall_package_list() {
+
+	echo
+	echo "-----------------------"
+	echo "Uninstalling List: '$1'"
+	echo "-----------------------"
+	echo
+
+	readarray -t packages <<< "$(cat uninstall/"$1")"
 
 	for pkg in "${packages[@]}"; do
-		echo "Uninstalling: '$pkg'"
-		adb shell pm uninstall --user 0 "$pkg" &>/dev/null
+		uninstall_package "${pkg}"
 	done
 
 }
@@ -53,7 +68,10 @@ install_from_fdroid() {
 
 main() {
 
-	uninstall_unwanted_packages
+	uninstall_package_list "1-recommended.txt"
+	uninstall_package_list "2-advanced.txt"
+	uninstall_package_list "3-expert.txt"
+	exit 0
 
 	temp_dir=$(mktemp --directory)
 

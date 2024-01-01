@@ -5,10 +5,12 @@
             "file:///home/matt/projects/workspaces/home.code-workspace": "__default__profile__",
             "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
             "file:///home/matt/projects/more/go/cfg": "__default__profile__",
-            "file:///home/matt/projects": "__default__profile__",
             "file:///home/matt/projects/more/go": "__default__profile__",
             "file:///home/matt/projects/workspaces/cfg.code-workspace": "__default__profile__",
-            "file:///home/matt/projects/repos/web/browser-tweaks": "__default__profile__"
+            "file:///home/matt/projects/repos/web/browser-tweaks": "__default__profile__",
+            "file:///home/matt/projects/more/shell-scripts": "__default__profile__",
+            "file:///home/matt/projects/workspaces/dotfiles.code-workspace": "__default__profile__",
+            "file:///home/matt/projects": "__default__profile__"
         },
         "emptyWindows": {}
     },
@@ -19,21 +21,21 @@
         "workspaces": [],
         "folders": [
             {
-                "folderUri": "file:///home/matt/projects/repos/web/browser-tweaks"
+                "folderUri": "file:///home/matt/projects"
             }
         ],
         "emptyWindows": []
     },
     "windowsState": {
         "lastActiveWindow": {
-            "folder": "file:///home/matt/projects/repos/web/browser-tweaks",
-            "backupPath": "/home/matt/.config/vscode/user-data/Backups/deac721f074d5d256e39dc499b6e0c16",
+            "folder": "file:///home/matt/projects",
+            "backupPath": "/home/matt/.config/vscode/user-data/Backups/de671a007bb8253354ed35a6023d643b",
             "uiState": {
                 "mode": 0,
                 "x": 0,
                 "y": 34,
                 "width": 1920,
-                "height": 1006
+                "height": 1002
             }
         },
         "openedWindows": []
@@ -76,10 +78,44 @@
                             "items": [
                                 {
                                     "id": "workbench.action.reopenClosedEditor",
-                                    "label": "&&Reopen Closed Editor"
+                                    "label": "&&Reopen Closed Editor",
+                                    "enabled": false
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects",
+                                        "path": "/home/matt/projects",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects"
+                                },
+                                {
+                                    "id": "openRecentWorkspace",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/workspaces/dotfiles.code-workspace",
+                                        "path": "/home/matt/projects/workspaces/dotfiles.code-workspace",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/workspaces/dotfiles (Workspace)"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/shell-scripts",
+                                        "path": "/home/matt/projects/more/shell-scripts",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/shell-scripts"
                                 },
                                 {
                                     "id": "openRecentFolder",
@@ -113,17 +149,6 @@
                                     },
                                     "enabled": true,
                                     "label": "~/projects/more/go"
-                                },
-                                {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects",
-                                        "path": "/home/matt/projects",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects"
                                 },
                                 {
                                     "id": "openRecentFolder",
@@ -165,89 +190,111 @@
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.old.user.js"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.js"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/documents/streamlink.txt",
-                                        "path": "/home/matt/documents/streamlink.txt",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/documents/streamlink.txt"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/temp/trolling/Clean%20Urine%20Stash/Joe/notes.txt",
-                                        "path": "/home/matt/temp/trolling/Clean Urine Stash/Joe/notes.txt",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/temp/trolling/Clean Urine Stash/Joe/notes.txt"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/temp/trolling/Clean%20Urine%20Stash/Brittany%20Luciano/brittany-phone",
-                                        "path": "/home/matt/temp/trolling/Clean Urine Stash/Brittany Luciano/brittany-phone",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/temp/trolling/Clean Urine Stash/Brittany Luciano/brittany-phone"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/go/cfg/.more/notes.md",
-                                        "path": "/home/matt/projects/more/go/cfg/.more/notes.md",
+                                        "external": "file:///home/matt/projects/more/copy-to-clipboard.js",
+                                        "path": "/home/matt/projects/more/copy-to-clipboard.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/go/cfg/.more/notes.md"
+                                    "label": "~/projects/more/copy-to-clipboard.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/.local/bin/cfg",
-                                        "path": "/home/matt/.local/bin/cfg",
+                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile1.py",
+                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile1.py",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/.local/bin/cfg"
+                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile1.py"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/.local/bin/tt",
-                                        "path": "/home/matt/.local/bin/tt",
+                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile2.py",
+                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile2.py",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/.local/bin/tt"
+                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile2.py"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile3.py",
+                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile3.py",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile3.py"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile4.py",
+                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile4.py",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile4.py"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -261,7 +308,7 @@
                                 },
                                 {
                                     "id": "workbench.action.clearRecentFiles",
-                                    "label": "&&Clear Recently Opened"
+                                    "label": "&&Clear Recently Opened..."
                                 }
                             ]
                         }
@@ -286,11 +333,13 @@
                     },
                     {
                         "id": "workbench.action.files.save",
-                        "label": "&&Save"
+                        "label": "&&Save",
+                        "enabled": false
                     },
                     {
                         "id": "workbench.action.files.saveAs",
-                        "label": "Save &&As..."
+                        "label": "Save &&As...",
+                        "enabled": false
                     },
                     {
                         "id": "saveAll",
@@ -426,11 +475,13 @@
                     },
                     {
                         "id": "workbench.action.files.revert",
-                        "label": "Re&&vert File"
+                        "label": "Re&&vert File",
+                        "enabled": false
                     },
                     {
                         "id": "workbench.action.closeActiveEditor",
-                        "label": "&&Close Editor"
+                        "label": "&&Close Editor",
+                        "enabled": false
                     },
                     {
                         "id": "workbench.action.closeFolder",
@@ -479,11 +530,13 @@
                     },
                     {
                         "id": "actions.find",
-                        "label": "&&Find"
+                        "label": "&&Find",
+                        "enabled": false
                     },
                     {
                         "id": "editor.action.startFindReplaceAction",
-                        "label": "&&Replace"
+                        "label": "&&Replace",
+                        "enabled": false
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -649,6 +702,10 @@
                                     "id": "vscode.menubar.separator"
                                 },
                                 {
+                                    "id": "workbench.action.toggleSidebarPosition",
+                                    "label": "&&Move Primary Side Bar Right"
+                                },
+                                {
                                     "id": "submenuitem.ActivityBarPositionMenu",
                                     "label": "Activity Bar Position",
                                     "submenu": {
@@ -664,10 +721,6 @@
                                             }
                                         ]
                                     }
-                                },
-                                {
-                                    "id": "workbench.action.toggleSidebarPosition",
-                                    "label": "&&Move Primary Side Bar Right"
                                 },
                                 {
                                     "id": "submenuitem.PanelPositionMenu",
@@ -731,7 +784,24 @@
                                             },
                                             {
                                                 "id": "workbench.action.hideEditorTabs",
-                                                "label": "Hide"
+                                                "label": "Hidden"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "submenuitem.EditorActionsPositionSubmenu",
+                                    "label": "Editor Actions Position",
+                                    "submenu": {
+                                        "items": [
+                                            {
+                                                "id": "workbench.action.editorActionsDefault",
+                                                "label": "Tab Bar",
+                                                "checked": true
+                                            },
+                                            {
+                                                "id": "workbench.action.hideEditorActions",
+                                                "label": "Hidden"
                                             }
                                         ]
                                     }
@@ -806,6 +876,17 @@
                                 {
                                     "id": "workbench.action.splitEditorInGroup",
                                     "label": "Split in &&Group"
+                                },
+                                {
+                                    "id": "vscode.menubar.separator"
+                                },
+                                {
+                                    "id": "workbench.action.moveEditorToNewWindow",
+                                    "label": "&&Move Editor into New Window"
+                                },
+                                {
+                                    "id": "workbench.action.copyEditorToNewWindow",
+                                    "label": "&&Copy Editor into New Window"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -899,7 +980,8 @@
                     },
                     {
                         "id": "editor.action.toggleWordWrap",
-                        "label": "&&Word Wrap"
+                        "label": "&&Word Wrap",
+                        "enabled": false
                     }
                 ]
             },
@@ -907,7 +989,8 @@
                 "items": [
                     {
                         "id": "workbench.action.navigateBack",
-                        "label": "&&Back"
+                        "label": "&&Back",
+                        "enabled": false
                     },
                     {
                         "id": "workbench.action.navigateForward",
@@ -916,7 +999,8 @@
                     },
                     {
                         "id": "workbench.action.navigateToLastEditLocation",
-                        "label": "&&Last Edit Location"
+                        "label": "&&Last Edit Location",
+                        "enabled": false
                     },
                     {
                         "id": "vscode.menubar.separator"

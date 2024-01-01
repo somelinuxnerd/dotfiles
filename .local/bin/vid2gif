@@ -20,6 +20,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(prog=SCRIPT_NAME, description="Convert video to gif", usage='%(prog)s [OPTIONS] [PATH]', prefix_chars='-', formatter_class=formatter, add_help=False, allow_abbrev=True)
 
     parser.add_argument('-r', '--resolution', metavar='VALUE', type=int, help='Resolution of gif (default: resolution of video)')
+    parser.add_argument('-w', '--width', metavar='VALUE', type=int, default=None, help='Resolution of gif (default: resolution of video)')
     parser.add_argument('-f', '--fps', metavar='FRAMES', type=int, help='Frames per second (default: same as video source)')
     parser.add_argument('-h', '--help', action='help', default=False, help='Show help message and exit.')
     parser.add_argument('path', type=str, nargs='?', help=argparse.SUPPRESS)
