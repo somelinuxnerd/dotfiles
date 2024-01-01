@@ -72,17 +72,30 @@
 --alias audio        "--no-embed-thumbnail --extract-audio --format 'bestaudio/best'"
 # Save audio in flac format
 --alias flac         "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format flac"
-# Save audio in m4a format
---alias m4a          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a"
 # Save audio in wav format
 --alias wav          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format wav"
-
+# Save audio in m4a format
+--alias m4a          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a"
+# Save audio in m4a (96kbps) format
+--alias m4a-96       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 96k"
+# Save audio in m4a (128kbps) format
+--alias m4a-128      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 128k"
+# Save audio in m4a (160kbps) format
+--alias m4a-160      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 160k"
+# Save audio in m4a (192kbps) format
+--alias m4a-192      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 192k"
+# Save audio in m4a (256kbps) format
+--alias m4a-256      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 256k"
+# Save audio in m4a (320kbps) format
+--alias m4a-320      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 320k"
 # Save audio in mp3 format
 --alias mp3          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3"
 # Save audio in mp3 (96kbps) format
 --alias mp3-96       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 96k"
 # Save audio in mp3 (128kbps) format
 --alias mp3-128      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 128k"
+# Save audio in mp3 (160kbps) format
+--alias mp3-160      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 160k"
 # Save audio in mp3 (192kbps) format
 --alias mp3-192      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 192k"
 # Save audio in mp3 (256kbps) format
@@ -98,7 +111,7 @@
 # Download the livestream from the beginning
 --alias live         "--no-warnings --concurrent-fragments 4 --live-from-start"
 # Download the livestream from the current time
---alias livenow      "--no-warnings --concurrent-fragments 4"
+--alias livenow      "--no-warnings --concurrent-fragments 4 --no-live-from-start"
 
 # Download the json metadata file for the video
 --alias info         "--write-info-json"
@@ -106,6 +119,8 @@
 --alias chat         "--write-subs --sub-langs live_chat"
 # Download video comments to the json metadata file for the video
 --alias comments     "--write-comments"
+# Force filenames to be Windows-compatible and restrict filenames to only ASCII characters, and avoid "&" and spaces in filenames
+--alias safenames    "--windows-filenames --restrict-filenames"
 
 # Skip the video download
 --alias nodl      	 "--skip-download"
