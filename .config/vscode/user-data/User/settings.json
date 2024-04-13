@@ -3,6 +3,7 @@
     "workbench.startupEditor": "none",
     "better-comments.tags": [
 
+
         {
             "tag": "!",
             "color": "#FF2D00",
@@ -63,7 +64,7 @@
     "editor.minimap.enabled": false,
     "files.trimTrailingWhitespace": true,
     "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "flake8.args": [
         "--ignore=E501"
@@ -81,7 +82,7 @@
         "editor.defaultFormatter": "yzhang.markdown-all-in-one"
     },
     "files.exclude": {
-        "**/.vscode": true
+        "**/.vscode2": true
     },
     "projectManager.git.baseFolders": [
         "/home/matt/projects/repos"
@@ -89,9 +90,7 @@
     "[html]": {
         "editor.defaultFormatter": "vscode.html-language-features"
     },
-    "json.schemas": [
-
-    ],
+    "json.schemas": [],
     "[shellscript]": {
         "editor.defaultFormatter": "foxundermoon.shell-format"
     },
@@ -161,7 +160,6 @@
     "sync.forceUpload": true,
     "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', 'monospace', monospace",
     "go.toolsManagement.autoUpdate": true,
-    "python.analysis.autoImportCompletions": true,
     "launch": {
 
         "configurations": [],
@@ -190,11 +188,36 @@
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "errorLens.onSave": true,
     "errorLens.problemRangeDecorationEnabled": true,
-    "python.analysis.diagnosticSeverityOverrides": {},
-    "python.analysis.inlayHints.functionReturnTypes": true,
     "outline.showModules": false,
-    "window.zoomLevel": 1,
     "[xml]": {
         "editor.defaultFormatter": "redhat.vscode-xml"
-    }
+    },
+    "editor.autoClosingBrackets": "never",
+    "editor.autoClosingComments": "never",
+    "editor.autoClosingQuotes": "never",
+    "[lua]": {
+        "editor.defaultFormatter": "sumneko.lua"
+    },
+    "redhat.telemetry.enabled": false,
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "color-highlight.markRuler": false,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "never",
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "outline.showProperties": false,
+    "window.zoomLevel": 1,
+    "task.allowAutomaticTasks": "on",
+    "editor.stickyTabStops": true,
+	"editor.detectIndentation": false,
+	"editor.stickyScroll.enabled": false,
+	"color-highlight.languages": [
+		"*",
+		"!python"
+	]
 }

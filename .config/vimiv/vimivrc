@@ -3,12 +3,12 @@
 
 [GENERAL] ######################################################################
 start_fullscreen: no
-start_slideshow: no
+start_slideshow: yes
 slideshow_delay: 10
-shuffle: no
+shuffle: yes
 display_bar: yes
 default_thumbsize: (128, 128)
-geometry: 600x600
+geometry: 500x600
 recursive: no
 rescale_svg: yes
 overzoom: 3

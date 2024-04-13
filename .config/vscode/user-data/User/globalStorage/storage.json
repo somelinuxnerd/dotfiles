@@ -2,15 +2,31 @@
     "userDataProfilesMigration": true,
     "profileAssociations": {
         "workspaces": {
-            "file:///home/matt/projects/workspaces/home.code-workspace": "__default__profile__",
-            "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
             "file:///home/matt/projects/more/go/cfg": "__default__profile__",
             "file:///home/matt/projects/more/go": "__default__profile__",
             "file:///home/matt/projects/workspaces/cfg.code-workspace": "__default__profile__",
             "file:///home/matt/projects/repos/web/browser-tweaks": "__default__profile__",
             "file:///home/matt/projects/more/shell-scripts": "__default__profile__",
             "file:///home/matt/projects/workspaces/dotfiles.code-workspace": "__default__profile__",
-            "file:///home/matt/projects": "__default__profile__"
+            "file:///home/matt/.config/nvim": "__default__profile__",
+            "file:///home/matt/projects/workspaces/home.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/workspaces/neovim.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/more/firefox-librewolf-config/addons/src/rumble-unfucker": "__default__profile__",
+            "file:///home/matt/projects/more": "__default__profile__",
+            "file:///home/matt/projects/repos/web/rumble-unfucker": "__default__profile__",
+            "file:///home/matt/downloads/test": "__default__profile__",
+            "file:///home/matt/projects/workspaces/rumble-unfucker.code-workspace": "__default__profile__",
+            "file:///home/matt/dev": "__default__profile__",
+            "file:///home/matt/code": "__default__profile__",
+            "file:///home/matt/code/more/dotfiles.old": "__default__profile__",
+            "file:///home/matt/.local/bin": "__default__profile__",
+            "file:///home/matt/projects/repos/go": "__default__profile__",
+            "file:///home/matt/projects": "__default__profile__",
+            "file:///home/matt/scripts": "__default__profile__",
+            "file:///home/matt/projects/repos/shell/shell-scripts": "__default__profile__",
+            "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/repos/web/browser-tweaks/userscripts": "__default__profile__",
+            "file:///home/matt/projects/workspaces/shell-scripts.code-workspace": "__default__profile__"
         },
         "emptyWindows": {}
     },
@@ -18,24 +34,28 @@
     "telemetry.sqmId": "",
     "telemetry.machineId": "416adb6d9ccabcd14281bd9008ab9e254187bb51b94f0a2c0239f6fd183e1f37",
     "backupWorkspaces": {
-        "workspaces": [],
-        "folders": [
+        "workspaces": [
             {
-                "folderUri": "file:///home/matt/projects"
+                "id": "9bf1112a14d182f393b7f8fe312abece",
+                "configURIPath": "file:///home/matt/projects/workspaces/shell-scripts.code-workspace"
             }
         ],
+        "folders": [],
         "emptyWindows": []
     },
     "windowsState": {
         "lastActiveWindow": {
-            "folder": "file:///home/matt/projects",
-            "backupPath": "/home/matt/.config/vscode/user-data/Backups/de671a007bb8253354ed35a6023d643b",
+            "workspaceIdentifier": {
+                "id": "9bf1112a14d182f393b7f8fe312abece",
+                "configURIPath": "file:///home/matt/projects/workspaces/shell-scripts.code-workspace"
+            },
+            "backupPath": "/home/matt/.config/vscode/user-data/Backups/9bf1112a14d182f393b7f8fe312abece",
             "uiState": {
-                "mode": 0,
+                "mode": 1,
                 "x": 0,
-                "y": 34,
+                "y": 37,
                 "width": 1920,
-                "height": 1002
+                "height": 1003
             }
         },
         "openedWindows": []
@@ -78,88 +98,32 @@
                             "items": [
                                 {
                                     "id": "workbench.action.reopenClosedEditor",
-                                    "label": "&&Reopen Closed Editor",
-                                    "enabled": false
+                                    "label": "&&Reopen Closed Editor"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
                                 },
                                 {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects",
-                                        "path": "/home/matt/projects",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects"
-                                },
-                                {
                                     "id": "openRecentWorkspace",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/workspaces/dotfiles.code-workspace",
-                                        "path": "/home/matt/projects/workspaces/dotfiles.code-workspace",
+                                        "external": "file:///home/matt/projects/workspaces/shell-scripts.code-workspace",
+                                        "path": "/home/matt/projects/workspaces/shell-scripts.code-workspace",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/workspaces/dotfiles (Workspace)"
+                                    "label": "~/projects/workspaces/shell-scripts (Workspace)"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/shell-scripts",
-                                        "path": "/home/matt/projects/more/shell-scripts",
+                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts",
+                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/shell-scripts"
-                                },
-                                {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks"
-                                },
-                                {
-                                    "id": "openRecentWorkspace",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects/workspaces/cfg.code-workspace",
-                                        "path": "/home/matt/projects/workspaces/cfg.code-workspace",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects/workspaces/cfg (Workspace)"
-                                },
-                                {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/go",
-                                        "path": "/home/matt/projects/more/go",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects/more/go"
-                                },
-                                {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/go/cfg",
-                                        "path": "/home/matt/projects/more/go/cfg",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects/more/go/cfg"
+                                    "label": "~/projects/repos/web/browser-tweaks/userscripts"
                                 },
                                 {
                                     "id": "openRecentWorkspace",
@@ -173,15 +137,81 @@
                                     "label": "~/projects/workspaces/shells (Workspace)"
                                 },
                                 {
-                                    "id": "openRecentWorkspace",
+                                    "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/workspaces/home.code-workspace",
-                                        "path": "/home/matt/projects/workspaces/home.code-workspace",
+                                        "external": "file:///home/matt/projects/repos/shell/shell-scripts",
+                                        "path": "/home/matt/projects/repos/shell/shell-scripts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/workspaces/home (Workspace)"
+                                    "label": "~/projects/repos/shell/shell-scripts"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/scripts",
+                                        "path": "/home/matt/scripts",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/scripts"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects",
+                                        "path": "/home/matt/projects",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/projects/repos/go",
+                                        "path": "/home/matt/projects/repos/go",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/projects/repos/go"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/.local/bin",
+                                        "path": "/home/matt/.local/bin",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/.local/bin"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/code/more/dotfiles.old",
+                                        "path": "/home/matt/code/more/dotfiles.old",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/code/more/dotfiles.old"
+                                },
+                                {
+                                    "id": "openRecentFolder",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/code",
+                                        "path": "/home/matt/code",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/code"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -190,111 +220,111 @@
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js",
+                                        "external": "file:///home/matt/projects/001/shell_helper-functions/select-option-menu.sh",
+                                        "path": "/home/matt/projects/001/shell_helper-functions/select-option-menu.sh",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.2.js"
+                                    "label": "~/projects/001/shell_helper-functions/select-option-menu.sh"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js",
+                                        "external": "file:///home/matt/projects/001/javascript_helper-functions/modify-cookie.js",
+                                        "path": "/home/matt/projects/001/javascript_helper-functions/modify-cookie.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.2.js"
+                                    "label": "~/projects/001/javascript_helper-functions/modify-cookie.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js",
+                                        "external": "file:///home/matt/temp/devtools-console-filters-youtube.txt",
+                                        "path": "/home/matt/temp/devtools-console-filters-youtube.txt",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title..old.1.js"
+                                    "label": "~/temp/devtools-console-filters-youtube.txt"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js",
+                                        "external": "file:///home/matt/projects/001/android-setup/android-notes.md",
+                                        "path": "/home/matt/projects/001/android-setup/android-notes.md",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-guide.user.1.js"
+                                    "label": "~/projects/001/android-setup/android-notes.md"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js",
+                                        "external": "file:///home/matt/downloads/test/fdroid-index/index.xml",
+                                        "path": "/home/matt/downloads/test/fdroid-index/index.xml",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/youtube-page-title.js"
+                                    "label": "~/downloads/test/fdroid-index/index.xml"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/copy-to-clipboard.js",
-                                        "path": "/home/matt/projects/more/copy-to-clipboard.js",
+                                        "external": "file:///home/matt/projects/repos/shell/shell-scripts/temp/phone",
+                                        "path": "/home/matt/projects/repos/shell/shell-scripts/temp/phone",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/copy-to-clipboard.js"
+                                    "label": "~/projects/repos/shell/shell-scripts/temp/phone"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile1.py",
-                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile1.py",
+                                        "external": "file:///home/matt/scripts/cowmilker",
+                                        "path": "/home/matt/scripts/cowmilker",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile1.py"
+                                    "label": "~/scripts/cowmilker"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile2.py",
-                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile2.py",
+                                        "external": "file:///home/matt/temp/com.sec.unifiedwfc%20-%20WiFi%20Calling",
+                                        "path": "/home/matt/temp/com.sec.unifiedwfc - WiFi Calling",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile2.py"
+                                    "label": "~/temp/com.sec.unifiedwfc - WiFi Calling"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile3.py",
-                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile3.py",
+                                        "external": "file:///home/matt/.local/bin/backup",
+                                        "path": "/home/matt/.local/bin/backup",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile3.py"
+                                    "label": "~/.local/bin/backup"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile4.py",
-                                        "path": "/home/matt/projects/more/shell-scripts/work/hostsfile/hostsfile4.py",
+                                        "external": "file:///home/matt/downloads/test.svg",
+                                        "path": "/home/matt/downloads/test.svg",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/more/shell-scripts/work/hostsfile/hostsfile4.py"
+                                    "label": "~/downloads/test.svg"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -354,6 +384,13 @@
                         "label": "Share",
                         "submenu": {
                             "items": [
+                                {
+                                    "id": "github.copyVscodeDevLinkFile",
+                                    "label": "Copy vscode.dev Link"
+                                },
+                                {
+                                    "id": "vscode.menubar.separator"
+                                },
                                 {
                                     "id": "workbench.profiles.actions.exportProfile",
                                     "label": "Export Profile (Default)..."
@@ -485,7 +522,7 @@
                     },
                     {
                         "id": "workbench.action.closeFolder",
-                        "label": "Close &&Folder"
+                        "label": "Close &&Workspace"
                     },
                     {
                         "id": "workbench.action.closeWindow",
@@ -683,7 +720,8 @@
                                 },
                                 {
                                     "id": "workbench.action.toggleSidebarVisibility",
-                                    "label": "&&Primary Side Bar"
+                                    "label": "&&Primary Side Bar",
+                                    "checked": true
                                 },
                                 {
                                     "id": "workbench.action.toggleAuxiliaryBar",
@@ -699,6 +737,10 @@
                                     "label": "&&Panel"
                                 },
                                 {
+                                    "id": "toggle.toggleCustomTitleBar",
+                                    "label": "Custom Title Bar"
+                                },
+                                {
                                     "id": "vscode.menubar.separator"
                                 },
                                 {
@@ -711,9 +753,17 @@
                                     "submenu": {
                                         "items": [
                                             {
-                                                "id": "workbench.action.activityBarLocation.side",
-                                                "label": "&&Side",
+                                                "id": "workbench.action.activityBarLocation.default",
+                                                "label": "&&Default",
                                                 "checked": true
+                                            },
+                                            {
+                                                "id": "workbench.action.activityBarLocation.top",
+                                                "label": "&&Top"
+                                            },
+                                            {
+                                                "id": "workbench.action.activityBarLocation.bottom",
+                                                "label": "&&Bottom"
                                             },
                                             {
                                                 "id": "workbench.action.activityBarLocation.hide",
@@ -800,6 +850,10 @@
                                                 "checked": true
                                             },
                                             {
+                                                "id": "workbench.action.editorActionsTitleBar",
+                                                "label": "Title Bar"
+                                            },
+                                            {
                                                 "id": "workbench.action.hideEditorActions",
                                                 "label": "Hidden"
                                             }
@@ -815,7 +869,7 @@
                                 },
                                 {
                                     "id": "breadcrumbs.toggle",
-                                    "label": "&&Breadcrumbs"
+                                    "label": "Toggle &&Breadcrumbs"
                                 },
                                 {
                                     "id": "editor.action.toggleStickyScroll",
@@ -989,8 +1043,7 @@
                 "items": [
                     {
                         "id": "workbench.action.navigateBack",
-                        "label": "&&Back",
-                        "enabled": false
+                        "label": "&&Back"
                     },
                     {
                         "id": "workbench.action.navigateForward",
@@ -999,8 +1052,7 @@
                     },
                     {
                         "id": "workbench.action.navigateToLastEditLocation",
-                        "label": "&&Last Edit Location",
-                        "enabled": false
+                        "label": "&&Last Edit Location"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -1280,6 +1332,10 @@
                                 {
                                     "id": "editor.debug.action.addLogPoint",
                                     "label": "&&Logpoint..."
+                                },
+                                {
+                                    "id": "editor.debug.action.triggerByBreakpoint",
+                                    "label": "&&Triggered Breakpoint..."
                                 }
                             ]
                         }
@@ -1662,6 +1718,11 @@
                 "isNative": false,
                 "userSettingsLabel": "ctrl+k ctrl+shift+\\"
             },
+            "workbench.action.copyEditorToNewWindow": {
+                "label": "Ctrl+K O",
+                "isNative": false,
+                "userSettingsLabel": "ctrl+k o"
+            },
             "workbench.action.toggleEditorGroupLayout": {
                 "label": "Shift+Alt+0",
                 "userSettingsLabel": "shift+alt+0"
@@ -1870,7 +1931,7 @@
                 "label": "Ctrl+Shift+5",
                 "userSettingsLabel": "ctrl+shift+5"
             },
-            "workbench.action.tasks.build": {
+            "workbench.action.tasks.runTask": {
                 "label": "Ctrl+Shift+B",
                 "userSettingsLabel": "ctrl+shift+b"
             },
@@ -1901,7 +1962,7 @@
             "editorPartMinWidth": 220,
             "titleBarHeight": 0,
             "activityBarWidth": 48,
-            "sideBarWidth": 0,
+            "sideBarWidth": 255,
             "statusBarHeight": 22,
             "windowBorder": false
         }

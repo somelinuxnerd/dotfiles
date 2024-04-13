@@ -22,21 +22,17 @@ own() {
 	fi
 }
 
-node() {
-	if command -v rlwrap node >/dev/null; then
-		env NODE_NO_READLINE=1 rlwrap node "$@"
-	else
-		node "$@"
-	fi
-}
+if command -v rlwrap >/dev/null; then
 
-dash() {
-	if command -v rlwrap dash >/dev/null; then
+	dash() {
 		rlwrap dash "$@"
-	else
-		dash "$@"
-	fi
-}
+	}
+
+	nc() {
+		rlwrap nc "$@"
+	}
+
+fi
 
 
 # ---- Global Aliases ----- #
@@ -176,7 +172,7 @@ dash() {
 	alias pmi='pacman -S --noconfirm'                            		  	# Install package(s) by name
 	alias pmr='pacman -Rns --noconfirm'                          	 	 	# Remove one or more packages
 	alias pmu='pacman -Syu --noconfirm'                           		 	# Upgrade installed packages
-	alias pmro='pacman -Rns $(pacman -Qtdq)'                    	 	  	# Remove orphaned packages
+	alias pmro='pacman -Rns $(pacman -Qdtq)'                    	 	  	# Remove orphaned packages
 	alias pmul='rm -f /var/lib/pacman/db.lck'                      			# Unlock pacman database
 	alias pmsi='pacman -Qs'                                                 # List installed packages
 	alias pmli='pacman -Q'                                              	# List installed packages
@@ -268,6 +264,8 @@ dash() {
 	alias blk='lsblk -f'
 	alias clc='clear && cat'
 
+	alias cdb='cd "$OLDPWD"'
+
 }
 
 
@@ -349,6 +347,8 @@ lg() {
 
 }
 
+alias yts='yt-dlp --quiet --live'
+
 yta() {
 
 	if ! command -v ytarchive >/dev/null; then
@@ -356,7 +356,7 @@ yta() {
 		return 1
 	fi
 
-	ytarchive -o "${HOME}/downloads/videos/youtube.com __ %(channel)s __ %(upload_date)s __ %(title)s" "$1" best
+	ytarchive -o "${HOME}/downloads/videos/youtube.com/%(upload_date)s - %(channel)s - %(title)s" "$1" best
 
 }
 

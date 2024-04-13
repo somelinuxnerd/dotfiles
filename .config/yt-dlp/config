@@ -41,16 +41,7 @@
 --output-na-placeholder "NULL"
 
 # domain/uploader/upload_date - title [id].extension
---output "%(webpage_url_domain&{} __ |)s%(uploader,channel,creator,artist,uploader_id,channel_id&{} __ |)s%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d&{} __ |)s%(title,fulltitle,alt_title&{} __ |)s%(id,display_id,filename)s.%(ext)s"
-
-# Limit the filename length (excluding extension) to the specified number of characters
---trim-filenames 175
-
-# Force filenames to be Windows-compatible
-# --windows-filenames
-
-# Restrict filenames to only ASCII characters, and avoid "&" and spaces in filenames
-# --restrict-filenames
+--output "%(webpage_url_domain)s/%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d)s __ %(uploader,channel,creator,artist,uploader_id,channel_id)s __ %(title,fulltitle,alt_title)s.%(ext)s"
 
 # Aliases
 # -------
@@ -76,6 +67,8 @@
 --alias wav          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format wav"
 # Save audio in m4a format
 --alias m4a          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a"
+# Save audio in m4a (64kbps) format
+--alias m4a-64       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 64k"
 # Save audio in m4a (96kbps) format
 --alias m4a-96       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 96k"
 # Save audio in m4a (128kbps) format
@@ -90,6 +83,8 @@
 --alias m4a-320      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format m4a --audio-quality 320k"
 # Save audio in mp3 format
 --alias mp3          "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3"
+# Save audio in mp3 (64kbps) format
+--alias mp3-64       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 64k"
 # Save audio in mp3 (96kbps) format
 --alias mp3-96       "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 96k"
 # Save audio in mp3 (128kbps) format
@@ -103,8 +98,13 @@
 # Save audio in mp3 (320kbps) format
 --alias mp3-320      "--no-embed-thumbnail --extract-audio --format 'bestaudio/best' --audio-format mp3 --audio-quality 320k"
 
+# Include the video id in the filename
+--alias id           "--output '%(webpage_url_domain)s/%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d)s __ %(uploader,channel,creator,artist,uploader_id,channel_id)s __ %(title,fulltitle,alt_title)s __ %(id,display_id)s.%(ext)s'"
+
 # Download the entire playlist if the url points to one
---alias playlist     "--yes-playlist --output '%(webpage_url_domain&{} __ |)s%(playlist_uploader,uploader,channel,creator,artist,uploader_id,channel_id&{} __ |)s%(playlist&{} __ |)ss%(playlist_id&{} __ |)s%(playlist_index,playlist_autonumber&{} __ |)02d%(upload_date>%Y-%m-%d,release_date>%Y-%m-%d,modified_date>%Y-%m-%d&{} __ |)s%(title,fulltitle,alt_title&{} __ |)s%(id,display_id,filename)s.%(ext)s'"
+--alias playlist     "--config-locations $HOME/.config/yt-dlp/playlist"
+# Download the entire playlist if the url points to one
+--alias playlist-id  "--config-locations $HOME/.config/yt-dlp/playlist-with-id"
 # Download local or remote m3u8 playlists
 --alias m3u8		 "--enable-file-urls --no-part --live-from-start"
 
@@ -115,12 +115,15 @@
 
 # Download the json metadata file for the video
 --alias info         "--write-info-json"
-# Download the livestream chat
---alias chat         "--write-subs --sub-langs live_chat"
+# Write video description to a .description file
+--alias desc         "--write-description"
 # Download video comments to the json metadata file for the video
 --alias comments     "--write-comments"
+# Download the livestream chat
+--alias chat         "--write-subs --sub-langs live_chat"
+
 # Force filenames to be Windows-compatible and restrict filenames to only ASCII characters, and avoid "&" and spaces in filenames
---alias safenames    "--windows-filenames --restrict-filenames"
+--alias safenames    "--windows-filenames --restrict-filenames --trim-filenames 255"
 
 # Skip the video download
 --alias nodl      	 "--skip-download"

@@ -40,5 +40,33 @@
 		"paths": [],
 		"tags": [],
 		"enabled": true
+	},
+	{
+		"name": "Neovim",
+		"rootPath": "/home/matt/projects/workspaces/neovim.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	},
+	{
+		"name": "UserScripts",
+		"rootPath": "/home/matt/projects/repos/web/browser-tweaks/userscripts",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	},
+	{
+		"name": "Rumble Unfucker",
+		"rootPath": "/home/matt/projects/workspaces/rumble-unfucker.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
+	},
+	{
+		"name": "Shell Scripts",
+		"rootPath": "/home/matt/projects/workspaces/shell-scripts.code-workspace",
+		"paths": [],
+		"tags": [],
+		"enabled": true
 	}
 ]

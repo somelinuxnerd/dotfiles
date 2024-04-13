@@ -1,7 +1,6 @@
 # --------------------------------------
 #  Startup File - .zlogin
 # --------------------------------------
-echo .zlogin
 
 # Execute code in the background to not affect the current session
 (
@@ -27,6 +26,7 @@ echo .zlogin
     zcompare "${ZDOTDIR}"/.zprofile
     zcompare "${ZDOTDIR}"/.zshrc
     zcompare "${ZDOTDIR}"/.zlogin
+    zcompare "${ZDOTDIR}"/.zlogout
 
     # Compile zcompdump, if modified, to increase startup speed.
     # zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"

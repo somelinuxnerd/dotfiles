@@ -1,7 +1,6 @@
 
 [audacious]
 advance_on_delete=TRUE
-clear_playlist=FALSE
 cover_name_include=cover,front,album,folder
 equalizer_bands=3.84,2.88,1.92,0.96,0,0,0,0.96,0.96,0.96
 equalizer_preamp=0.96
@@ -12,7 +11,8 @@ show_interface=FALSE
 shuffle=TRUE
 
 [audgui]
-filesel_path=/home/matt/music/library/V/Violent Femmes/Album/[1983] Violent Femmes
+filesel_path=/home/matt/music/playlists
+no_confirm_playlist_delete=TRUE
 
 [audqt]
 theme=dark
@@ -61,6 +61,7 @@ player_height=1006
 player_width=1920
 playlist_columns=playing artist album track title queued length
 playlist_headers_bold=TRUE
+playlist_tabs_visible=0
 
 [skins]
 double_size=TRUE

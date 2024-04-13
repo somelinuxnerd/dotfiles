@@ -2,14 +2,16 @@
 	"bootstrapped": true,
 	"in_process_packages":
 	[
-		"Package Control"
 	],
 	"installed_packages":
 	[
-		"Color Highlight",
-		"Indent XML",
-		"INI",
+		"Formatter",
+		"JsFormat",
+		"LSP",
+		"LSP-typescript",
 		"Package Control",
-		"SideBarEnhancements"
+		"Prettierd Format",
+		"Pretty JSON",
+		"TypeScript"
 	]
 }

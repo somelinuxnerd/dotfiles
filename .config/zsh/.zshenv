@@ -31,6 +31,7 @@ fpath=(
 )
 
 path=(
+	"${HOME}/scripts"(N)
 	"${HOME}/.local/bin"(N)
 	"${XDG_DATA_HOME}/npm/bin"(N)
 	"${GOPATH}/bin"(N)
@@ -58,14 +59,13 @@ fi
 export INPUTRC="${XDG_CONFIG_HOME}"/readline/inputrc
 
 # default text editor
-export VISUAL=nvim
-export EDITOR=nvim
+export VISUAL=nvim EDITOR=nvim
 
 # default terminal emulator
-export TERMINAL=terminator
+export TERMINAL='alacritty'
 
 # default browser list
-export BROWSER=librewolf:mercury-browser:firefox-esr:firefox:thorium-browser:brave:chromium
+export BROWSER=brave:librewolf:firefox-esr:firefox:chromium
 
 # pager
 export PAGER=less
@@ -85,8 +85,8 @@ export LESSHISTFILE=-
 # less keybindings file
 export LESSKEYIN="${XDG_CONFIG_HOME}"/less/lesskey
 
-# rlwrap (readline wrapper) config file
-export RLWRAP_HOME="${XDG_STATE_HOME}"/rlwrap
+# rlwrap (readline wrapper) home directory
+export RLWRAP_HOME="${XDG_CACHE_HOME}"/rlwrap
 
 # zoxide excluded directories
 export _ZO_EXCLUDE_DIRS="${HOME}"/.dotfiles/*:"${HOME}"/downloads/*:"${HOME}"/temp/*
@@ -114,6 +114,9 @@ export NVM_DIR="${XDG_DATA_HOME}"/nvm
 # dotfiles directory
 export DOTFILES_DIR="${XDG_DATA_HOME}"/dotfiles
 export DOTFILES_REMOTE="https://github.com/somelinuxnerd/dotfiles.git"
+
+# node repl history file
+export NODE_REPL_HISTORY="${XDG_CACHE_HOME}"/node_history
 
 
 # Qt
@@ -144,8 +147,7 @@ export DOTFILES_REMOTE="https://github.com/somelinuxnerd/dotfiles.git"
 # kodi data directory
 # export KODI_DATA="${XDG_DATA_HOME}"/kodi
 
-# node history file
-# export NODE_REPL_HISTORY="${XDG_DATA_HOME}"/node_repl_history
+
 
 # mypy cache directory
 # export MYPY_CACHE_DIR="${XDG_CACHE_HOME}"/mypy

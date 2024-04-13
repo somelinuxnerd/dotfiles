@@ -22,8 +22,18 @@ if command -v xrdb >/dev/null && [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/X11/xr
 fi
 
 # Disable touchscreen
-if [ -f "${HOME}"/scripts/touchscreen ]; then
-	sh "${HOME}"/scripts/touchscreen -d &
+if [ -f "${HOME}"/.local/bin/touchscreen ]; then
+	sh "${HOME}"/.local/bin/touchscreen -d &
+fi
+
+# Disable touchpad
+if [ -f "${HOME}"/.local/bin/touchpad ]; then
+	sh "${HOME}"/.local/bin/touchpad -d &
+fi
+
+# Disable keyboard
+if [ -f "${HOME}"/.local/bin/keyboard ]; then
+	sh "${HOME}"/.local/bin/keyboard -d &
 fi
 
 # Start Desktop Session
