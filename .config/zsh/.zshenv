@@ -10,6 +10,8 @@ export XDG_CONFIG_HOME="${HOME}"/.config
 export XDG_DATA_HOME="${HOME}"/.local/share
 export XDG_STATE_HOME="${HOME}"/.local/state
 
+#export GTK_THEME='Skeuos-Blue-Dark'
+
 # xdg user directories
 if [ -r "${XDG_CONFIG_HOME}"/user-dirs.dirs ]; then
 	source "${XDG_CONFIG_HOME}"/user-dirs.dirs

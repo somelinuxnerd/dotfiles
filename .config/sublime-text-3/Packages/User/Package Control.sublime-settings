@@ -6,11 +6,12 @@
 	"installed_packages":
 	[
 		"Formatter",
+		"INI",
 		"JsFormat",
+		"JsPrettier",
 		"LSP",
 		"LSP-typescript",
 		"Package Control",
-		"Prettierd Format",
 		"Pretty JSON",
 		"TypeScript"
 	]

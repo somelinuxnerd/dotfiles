@@ -82,8 +82,8 @@
         "editor.defaultFormatter": "yzhang.markdown-all-in-one"
     },
     "files.exclude": {
-        "**/.vscode2": true
-    },
+		"**/.vscode": true
+	},
     "projectManager.git.baseFolders": [
         "/home/matt/projects/repos"
     ],

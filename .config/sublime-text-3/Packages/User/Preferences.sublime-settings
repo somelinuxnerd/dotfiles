@@ -1,11 +1,10 @@
 {
+	"auto_match_enabled": false,
+	"close_windows_when_empty": true,
 	"color_scheme": "Packages/User/Dracula-Dark.tmTheme",
 	"font_size": 12,
-	"ignored_packages":
-	[
-		"Vintage"
-	],
-	"index_files": false,
+	"ignored_packages": ["Vintage"],
 	"theme": "Adaptive.sublime-theme",
-	"update_check": false
+	"update_check": false,
+	"word_wrap": false,
 }

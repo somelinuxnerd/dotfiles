@@ -15,6 +15,10 @@ mkcd() {
 	cd -P -- "$1" || return 1
 }
 
+calc() {
+    echo "scale=3;$@" | bc -l
+}
+
 # Take ownership of files and/or folders
 own() {
 	if ! chown "$UID":"$GID" "$@" &>/dev/null; then
