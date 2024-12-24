@@ -2,10 +2,10 @@
 Type=Application
 Name=KeePassXC (autologin)
 Comment=Launches KeePassXC and logs in if password is in the keyring
-Exec=/bin/sh -c "$HOME/.local/bin/launch-keepassxc"
+Exec=/bin/sh -c "$HOME/Scripts/launch-keepassxc"
 Icon=keepassxc
 X-GNOME-Autostart-enabled=true
-X-GNOME-Autostart-Delay=10
+X-GNOME-Autostart-Delay=4
 Hidden=false
 NoDisplay=false
-Name[en_US]=Script - KeePassXC Auto-login
+Name[en_US]=KeePassXC Auto-login

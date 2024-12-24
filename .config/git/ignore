@@ -13,11 +13,11 @@ Thumbs.db
 *.swp
 
 # VSCode
-.vscode
+.vscode/
 
 # Python
-.cache
-__pycache__
+.cache/
+__pycache__/
 
 # Environments
 .env
@@ -26,5 +26,8 @@ __pycache__
 venv
 
 # JavaScript
-node_modules
+node_modules/
 package-lock.json
+
+# Unorganized related files
+/000/

@@ -5,7 +5,7 @@
 # HELPDIR=/usr/share/zsh/"${ZSH_VERSION}"/help
 # alias help=run-help
 
-tt() {
+help() {
 
 	get_alias_origin() {
 		whence "$1" | grep -oP '^(\w+\s?){1,2}' | sed -E 's/(^\s+|\s+$)//g'

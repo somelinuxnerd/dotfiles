@@ -1,8 +1,7 @@
 #!/usr/bin/env zsh
-# Updates an existing plugin or installs it if it doesnloads a plugin and downloads it to the plugins
-# directory if it does not already exist.
-# TODO: Figure out how to properly compile plugins on installation
 # shellcheck disable=all
+# Updates an existing plugin or installs it if
+# it doesn't exist in the plugins directory
 
 emulate -L zsh
 

@@ -1,223 +1,184 @@
 {
-    "sync.gist": "a0bd4c2f77f09bbe29249c2b610815a0",
-    "workbench.startupEditor": "none",
-    "better-comments.tags": [
-
-
-        {
-            "tag": "!",
-            "color": "#FF2D00",
-            "strikethrough": false,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        },
-        {
-            "tag": "?",
-            "color": "#3498DB",
-            "strikethrough": false,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        },
-        {
-            "tag": "//",
-            "color": "#474747",
-            "strikethrough": true,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        },
-        {
-            "tag": "todo",
-            "color": "#FF8C00",
-            "strikethrough": false,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        },
-        {
-            "tag": "*",
-            "color": "#98C379",
-            "strikethrough": false,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        },
-        {
-            "tag": "---",
-            "color": "#8888DD",
-            "strikethrough": false,
-            "underline": false,
-            "backgroundColor": "transparent",
-            "bold": false,
-            "italic": false
-        }
-    ],
-    "security.workspace.trust.untrustedFiles": "open",
-    "git.openRepositoryInParentFolders": "never",
-    "editor.minimap.enabled": false,
-    "files.trimTrailingWhitespace": true,
-    "[javascript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    },
-    "flake8.args": [
-        "--ignore=E501"
-    ],
-    "editor.insertSpaces": false,
-    "shellcheck.ignorePatterns": {
-        "**/*zlogin": true,
-        "**/*zlogout": true,
-        "**/*zprofile": true,
-        "**/*zshenv": true,
-        "**/*zshrc": true
-    },
-    "shellcheck.run": "onSave",
-    "[markdown]": {
-        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    },
-    "files.exclude": {
-		"**/.vscode": true
+	"breadcrumbs.filePath": "off",
+	"breadcrumbs.icons": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "always"
 	},
-    "projectManager.git.baseFolders": [
-        "/home/matt/projects/repos"
-    ],
-    "[html]": {
-        "editor.defaultFormatter": "vscode.html-language-features"
-    },
-    "json.schemas": [],
-    "[shellscript]": {
-        "editor.defaultFormatter": "foxundermoon.shell-format"
-    },
-    "explorer.compactFolders": false,
-    "explorer.confirmDelete": false,
-    "shellformat.effectLanguages": [
-        "shellscript",
-        "dockerfile",
-        "dotenv",
-        "hosts",
-        "jvmoptions",
-        "ignore",
-        "gitignore",
-        "properties",
-        "spring-boot-properties",
-        "azcli",
-        "bats"
-    ],
-    "shellformat.path": "/usr/bin/shfmt",
-    "shellformat.flag": "-i 4 -ci -kp",
-    "projectManager.git.ignoredFolders": [
-        "node_modules",
-        "out",
-        "typings",
-        "test",
-        ".haxelib",
-        "__pycache__"
-    ],
-    "projectManager.tags": [
-        "Personal",
-        "Work",
-        "System Configuration",
-        "Software"
-    ],
-    "projectManager.hg.ignoredFolders": [
-        "node_modules",
-        "out",
-        "typings",
-        "test",
-        ".haxelib",
-        "__pycache__"
-    ],
-    "projectManager.svn.ignoredFolders": [
-        "node_modules",
-        "out",
-        "typings",
-        "test",
-        "__pycache__"
-    ],
-    "projectManager.vscode.baseFolders": [
-        "/home/matt/projects/vscode"
-    ],
-    "projectManager.any.ignoredFolders": [
-        "node_modules",
-        "out",
-        "typings",
-        "test",
-        "__pycache__"
-    ],
-    "extensions.supportUntrustedWorkspaces": {
-
-    },
-    "explorer.autoRevealExclude": {
-        "**/__pycache__": true
-    },
-    "sync.forceDownload": true,
-    "sync.forceUpload": true,
-    "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Droid Sans Mono', 'monospace', monospace",
-    "go.toolsManagement.autoUpdate": true,
-    "launch": {
-
-        "configurations": [],
-        "compounds": []
-    },
-    "explorer.confirmDragAndDrop": false,
-    "terminal.integrated.fontSize": 10,
-    "accessibility.dimUnfocused.enabled": true,
-    "accessibility.dimUnfocused.opacity": 1,
-    "accessibility.verbosity.terminal": false,
-    "terminal.integrated.accessibleViewPreserveCursorPosition": true,
-    "terminal.integrated.cursorBlinking": true,
-    "terminal.integrated.ignoreProcessNames": [
-        "starship",
-        "oh-my-posh",
-        "bash",
-        "zsh",
-        "dash"
-    ],
-    "terminal.integrated.tabs.title": "${cwdFolder}",
-    "terminal.integrated.tabStopWidth": 4,
-    "breadcrumbs.enabled": false,
-    "workbench.colorTheme": "Dracula Dark",
-    "debug.console.fontSize": 13,
-    "terminal.integrated.lineHeight": 1.2,
-    "editor.defaultFormatter": "vscode.typescript-language-features",
-    "errorLens.onSave": true,
-    "errorLens.problemRangeDecorationEnabled": true,
-    "outline.showModules": false,
-    "[xml]": {
-        "editor.defaultFormatter": "redhat.vscode-xml"
-    },
-    "editor.autoClosingBrackets": "never",
-    "editor.autoClosingComments": "never",
-    "editor.autoClosingQuotes": "never",
-    "[lua]": {
-        "editor.defaultFormatter": "sumneko.lua"
-    },
-    "redhat.telemetry.enabled": false,
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "color-highlight.markRuler": false,
-    "[json]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "javascript.updateImportsOnFileMove.enabled": "never",
-    "[css]": {
-        "editor.defaultFormatter": "vscode.css-language-features"
-    },
-    "outline.showProperties": false,
-    "window.zoomLevel": 1,
-    "task.allowAutomaticTasks": "on",
-    "editor.stickyTabStops": true,
 	"editor.detectIndentation": false,
+	"editor.fontFamily": "'JetBrainsMono Nerd Font Mono', 'SauceCodePro Nerd Font Mono', 'monospace', monospace",
+	"editor.insertSpaces": false,
+	"editor.minimap.enabled": false,
+	"editor.scrollBeyondLastLine": false,
 	"editor.stickyScroll.enabled": false,
-	"color-highlight.languages": [
-		"*",
-		"!python"
-	]
+	"editor.wordWrapColumn": 120,
+	"explorer.compactFolders": false,
+	"explorer.confirmDelete": false,
+	"explorer.confirmDragAndDrop": false,
+	"files.exclude": {
+		"**/.vscode": true,
+		"**/*.js.map": true
+	},
+	"files.trimTrailingWhitespace": true,
+	"json.schemas": [
+
+
+	],
+	"launch": {
+		"configurations": [],
+		"compounds": []
+	},
+	"security.workspace.trust.untrustedFiles": "open",
+	"telemetry.telemetryLevel": "off",
+	"terminal.integrated.accessibleViewPreserveCursorPosition": true,
+	"terminal.integrated.fontSize": 13,
+	"terminal.integrated.cursorBlinking": true,
+	"terminal.integrated.lineHeight": 1.2,
+	"terminal.integrated.tabs.title": "${cwdFolder}",
+	"terminal.integrated.tabStopWidth": 4,
+	"workbench.colorCustomizations": {},
+	"workbench.colorTheme": "Dracula Dark",
+	"workbench.editor.centeredLayoutFixedWidth": true,
+	"workbench.editor.tabSizing": "fixed",
+	"workbench.iconTheme": "material",
+	"workbench.startupEditor": "newUntitledFile",
+	"workbench.editor.tabSizingFixedMaxWidth": 250,
+	"workbench.editor.tabSizingFixedMinWidth": 110,
+	"[html]": {
+		"editor.defaultFormatter": "vscode.html-language-features"
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[jsonc]": {
+		"editor.defaultFormatter": "vscode.json-language-features"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "vscode.typescript-language-features"
+	},
+	"better-comments.tags": [
+			{
+			"tag": "TODO",
+			"color": "#000000",
+			"backgroundColor": "#FF8C00",
+			"bold": true,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false,
+		},
+		{
+			"tag": "FIXME",
+			"color": "#000000",
+			"backgroundColor": "#FF2D00",
+			"bold": true,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false,
+		},
+		{
+			"tag": "? ",
+			"color": "#000000",
+			"backgroundColor": "#3498DB",
+			"bold": true,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false,
+		},
+		{
+			"tag": "! ",
+			"color": "#000000",
+			"backgroundColor": "#FF2D00",
+			"bold": true,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false,
+		},
+		{
+			"tag": "* ",
+			"color": "#98C379",
+			"backgroundColor": "transparent",
+			"bold": false,
+			"italic": false,
+			"underline": false,
+			"strikethrough": false,
+		}
+	],
+	"docthis.inferTypesFromNames": true,
+	"eslint.run": "onType",
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact",
+	],
+	"fiveServer.highlight": true,
+	"fiveServer.host": "127.0.0.1",
+	"flake8.args": [
+		"--ignore=E501"
+	],
+	"git.openRepositoryInParentFolders": "never",
+	"highlightOnCopy.timeout": 100,
+	"javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+	"javascript.format.semicolons": "insert",
+	"prettier.printWidth": 120,
+	"prettier.tabWidth": 4,
+	"projectManager.any.maxDepthRecursion": 3,
+	"projectManager.git.baseFolders": [
+		"/home/matt/Projects/repos"
+	],
+	"projectManager.git.maxDepthRecursion": 3,
+	"projectManager.groupList": true,
+	"projectManager.hg.maxDepthRecursion": 3,
+	"projectManager.showParentFolderInfoOnDuplicates": true,
+	"projectManager.sortList": "Name",
+	"projectManager.svn.ignoredFolders": [
+		"node_modules",
+		"out",
+		"typings",
+		"test",
+		"__pycache__"
+	],
+	"projectManager.svn.maxDepthRecursion": 3,
+	"projectManager.tags": [],
+	"projectManager.vscode.baseFolders": [
+		"/home/matt/projects"
+	],
+	"projectManager.vscode.maxDepthRecursion": 3,
+	"python.experiments.optOutFrom": [
+		"All"
+	],
+	"redhat.telemetry.enabled": false,
+	"shellcheck.exclude": [
+		"1071"
+	],
+	"shellcheck.ignorePatterns": {
+		"**/.config/zsh/**/*": false
+	},
+	"sync.gist": "a0bd4c2f77f09bbe29249c2b610815a0",
+	"typescript.format.insertSpaceAfterTypeAssertion": true,
+	"typescript.surveys.enabled": false,
+	"typescript.validate.enable": true,
+	"editor.autoClosingBrackets": "never",
+	"editor.autoClosingQuotes": "never",
+	"fiveServer.openTerminal": false,
+	"window.commandCenter": false,
+	"[plaintext]": {
+		"editor.wordWrap": "on"
+	},
+	"basedpyright.analysis.typeCheckingMode": "standard",
+	"basedpyright.analysis.inlayHints.variableTypes": false,
+	"editor.fontSize": 15,
+	"basedpyright.analysis.inlayHints.genericTypes": true,
+	"basedpyright.disableTaggedHints": true,
+	"basedpyright.analysis.inlayHints.callArgumentNames": false,
+	"python.terminal.launchArgs": [],
+	"python.analysis.autoImportCompletions": true,
+	"python.analysis.inlayHints.pytestParameters": true,
+	"python.analysis.inlayHints.functionReturnTypes": true,
+	"python.analysis.inlayHints.variableTypes": true,
+	"python.analysis.includeAliasesFromUserFiles": true,
+	"bookmarks.saveBookmarksInProject": true,
+	"workbench.editor.preventPinnedEditorClose": "keyboard",
 }

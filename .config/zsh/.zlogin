@@ -1,37 +1,42 @@
-# --------------------------------------
-#  Startup File - .zlogin
-# --------------------------------------
+# ------------------------------------------ #
+#  Startup File - .zlogin                    #
+# ------------------------------------------ #
 
-# Execute code in the background to not affect the current session
 (
 
-    setopt LOCAL_OPTIONS EXTENDED_GLOB
+	setopt LOCAL_OPTIONS EXTENDED_GLOB
 
-    # Function to determine the need of a zcompile. If the .zwc file
-    # does not exist, or the base file is newer, we need to compile.
-    # These jobs are asynchronous, and will not impact the interactive shell
-    zcompare() {
-        if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
-            if [[ -d "$1" ]]; then
-                zcompile "$1" "$1"/*
-            else
-                zcompile "$1"
-            fi
-        fi
-    }
+	is_newer() {
+		[[ -s $1 && ( ! -s $2 || $1 -nt $2 ) ]]
+	}
 
-    zcompare "${ZDOTDIR}"/comps
-    zcompare "${ZDOTDIR}"/funcs
-    zcompare "${ZDOTDIR}"/.zshenv
-    zcompare "${ZDOTDIR}"/.zprofile
-    zcompare "${ZDOTDIR}"/.zshrc
-    zcompare "${ZDOTDIR}"/.zlogin
-    zcompare "${ZDOTDIR}"/.zlogout
+	# Compile all startup files and .zshrc snippet files in zshrc.d directory
+	for file in .zshenv .zprofile .zlogin .zlogout; do
+		if is_newer "${file}" "${file}.zwc"; then
+			echo "Updated: $file, Compiling: $ZDOTDIR/$file"
+			zcompile "$file"
+		fi
+	done
 
-    # Compile zcompdump, if modified, to increase startup speed.
-    # zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-    # if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
-    #     zrecompile -pq "$zcompdump"
-    # fi
+	for file in ${ZDOTDIR}/zshrc.d/*(.N); do
+		if is_newer "$file" "$ZDOTDIR/.zshrc.zwc"; then
+			echo "Updated: $file, Compiling: $ZDOTDIR/.zshrc"
+			zcompile $ZDOTDIR/.zshrc
+			break
+		fi
+	done
+
+	for file in ${ZDOTDIR}/func.d/*(.N); do
+		if is_newer "$file" "$ZDOTDIR/func.d.zwc"; then
+			echo "Updated: $file, Compiling: $ZDOTDIR/func.d"
+			zcompile $ZDOTDIR/func.d $ZDOTDIR/func.d/*
+			break
+		fi
+	done
+
+	if is_newer "${XDG_CACHE_HOME}"/zsh/compdump "${XDG_CACHE_HOME}"/zsh/compdump.zwc; then
+		echo "compile compdump: $XDG_CACHE_HOME/zsh/compdump"
+		zcompile "${XDG_CACHE_HOME}"/zsh/compdump
+	fi
 
 ) &!

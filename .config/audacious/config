@@ -7,15 +7,14 @@ equalizer_preamp=0.96
 filepopup_delay=10
 generic_title_format=${title}${?artist: - ${artist}}
 net_buffer_kb=160
+recurse_for_cover=TRUE
+recurse_for_cover_depth=1
+show_filepopup_for_tuple=FALSE
 show_interface=FALSE
-shuffle=TRUE
 
 [audgui]
-filesel_path=/home/matt/music/playlists
+filesel_path=/home/matt/music/library/F/Fall Out Boy/Album
 no_confirm_playlist_delete=TRUE
-
-[audqt]
-theme=dark
 
 [crossfade]
 length=1
@@ -52,35 +51,36 @@ NumHotkeys=8
 custom_duration_enabled=TRUE
 
 [pipewire]
-volume_left=5
-volume_right=5
+volume_left=35
+volume_right=35
 
 [qtui]
 column_widths=25,25,420,318,50,238,175,85,100,25,75,275,275,275,75,275,175
 player_height=1006
-player_width=1920
+player_width=1918
 playlist_columns=playing artist album track title queued length
 playlist_headers_bold=TRUE
 playlist_tabs_visible=0
 
 [skins]
+always_on_top=TRUE
 double_size=TRUE
-equalizer_shaded=TRUE
 equalizer_visible=TRUE
-equalizer_x=1370
-equalizer_y=232
+equalizer_x=451
+equalizer_y=252
 mainwin_font=Sans 10
-player_x=1370
-player_y=0
+player_x=451
 playlist_font=Sans Bold 12
+playlist_height=203
 playlist_visible=TRUE
-playlist_x=1370
-playlist_y=260
+playlist_x=451
+playlist_y=484
 skin=/usr/share/audacious/Skins/Refugee
 
 [skins-layout]
 albumart-qt=1501,2,288,192
 eq_presets=715,219,288,192
+song-info-qt=1501,2,288,192
 
 [statusicon]
 close_to_tray=TRUE

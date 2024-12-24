@@ -23,10 +23,42 @@
             "file:///home/matt/projects": "__default__profile__",
             "file:///home/matt/scripts": "__default__profile__",
             "file:///home/matt/projects/repos/shell/shell-scripts": "__default__profile__",
-            "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
-            "file:///home/matt/projects/workspaces/shell-scripts.code-workspace": "__default__profile__",
             "file:///home/matt/projects/repos/web/browser-tweaks": "__default__profile__",
-            "file:///home/matt/projects/repos/web/browser-tweaks/userscripts": "__default__profile__"
+            "file:///home/matt/projects/repos/web/browser-tweaks/userscripts": "__default__profile__",
+            "file:///home/matt/downloads/yt/www.youtube.com/s/player/7d1f7724": "__default__profile__",
+            "file:///home/matt/projects/workspaces/fonts.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/repos/zsh-custom/Src": "__default__profile__",
+            "file:///home/matt/projects/repos/zsh-custom": "__default__profile__",
+            "file:///home/matt/projects/repos/browser-tweaks/userstyles": "__default__profile__",
+            "file:///home/matt/projects/repos": "__default__profile__",
+            "file:///home/matt/projects/workspaces/shells.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/repos/zsh-custom-test": "__default__profile__",
+            "file:///home/matt/.local/share/cinnamon/applets/MuteToggler%40jebeaudet.com": "__default__profile__",
+            "file:///home/matt/.local/share/cinnamon/applets": "__default__profile__",
+            "file:///home/matt/projects/repos/nsxiv/repo": "__default__profile__",
+            "file:///home/matt/projects/workspaces/shell-scripts.code-workspace": "__default__profile__",
+            "file:///home/matt/.config/alacritty": "__default__profile__",
+            "file:///home/matt/.config/zellij": "__default__profile__",
+            "file:///home/matt/repos/nowplaying": "__default__profile__",
+            "file:///home/matt/projects/workspaces/scripts.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/workspaces/userstyles.code-workspace": "__default__profile__",
+            "file:///home/matt/projects/repos/browser-tweaks": "__default__profile__",
+            "file:///usr/share/cinnamon": "__default__profile__",
+            "file:///home/matt/.local/share/themes/Skeuos-Blue-Dark/cinnamon": "__default__profile__",
+            "file:///home/matt/Downloads/package": "__default__profile__",
+            "file:///home/matt/Projects/workspaces/shells.code-workspace": "__default__profile__",
+            "file:///home/matt/.config/zsh": "__default__profile__",
+            "file:///home/matt/Projects/workspaces/scripts.code-workspace": "__default__profile__",
+            "file:///home/matt/Projects/repos/rumble-unfucker": "__default__profile__",
+            "file:///home/matt/Projects/repos/firefox-librewolf-config/addons/src/rumble-unfucker": "__default__profile__",
+            "file:///home/matt/Projects/repos/browser-tweaks/userscripts/src": "__default__profile__",
+            "file:///home/matt/Projects/repos/browser-tweaks/userscripts": "__default__profile__",
+            "file:///home/matt/Projects": "__default__profile__",
+            "file:///home/matt/Projects/repos": "__default__profile__",
+            "file:///home/matt/Projects/workspaces/userscripts.code-workspace": "__default__profile__",
+            "file:///home/matt/Projects/workspaces/cfg.code-workspace": "__default__profile__",
+            "file:///home/matt/Projects/repos/userscripts": "__default__profile__",
+            "file:///home/matt/.config/vscode/user-data/Workspaces/1734130325742/workspace.json": "__default__profile__"
         },
         "emptyWindows": {}
     },
@@ -34,24 +66,28 @@
     "telemetry.sqmId": "",
     "telemetry.machineId": "416adb6d9ccabcd14281bd9008ab9e254187bb51b94f0a2c0239f6fd183e1f37",
     "backupWorkspaces": {
-        "workspaces": [],
-        "folders": [
+        "workspaces": [
             {
-                "folderUri": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts"
+                "id": "e096e826cb687c5c5cbf093cc410b0d8",
+                "configURIPath": "file:///home/matt/.config/vscode/user-data/Workspaces/1734130325742/workspace.json"
             }
         ],
+        "folders": [],
         "emptyWindows": []
     },
     "windowsState": {
         "lastActiveWindow": {
-            "folder": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts",
-            "backupPath": "/home/matt/.config/vscode/user-data/Backups/e096b22151b24e27a0dcbfbfa7273f8b",
+            "workspaceIdentifier": {
+                "id": "e096e826cb687c5c5cbf093cc410b0d8",
+                "configURIPath": "file:///home/matt/.config/vscode/user-data/Workspaces/1734130325742/workspace.json"
+            },
+            "backupPath": "/home/matt/.config/vscode/user-data/Backups/e096e826cb687c5c5cbf093cc410b0d8",
             "uiState": {
-                "mode": 0,
+                "mode": 1,
                 "x": 0,
-                "y": 37,
+                "y": 35,
                 "width": 1920,
-                "height": 1003
+                "height": 997
             }
         },
         "openedWindows": []
@@ -71,6 +107,18 @@
                     {
                         "id": "workbench.action.newWindow",
                         "label": "New &&Window"
+                    },
+                    {
+                        "id": "submenuitem.OpenProfile",
+                        "label": "New Window with Profile",
+                        "submenu": {
+                            "items": [
+                                {
+                                    "id": "workbench.profiles.actions.createProfile",
+                                    "label": "New Profile..."
+                                }
+                            ]
+                        }
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -94,7 +142,8 @@
                             "items": [
                                 {
                                     "id": "workbench.action.reopenClosedEditor",
-                                    "label": "&&Reopen Closed Editor"
+                                    "label": "&&Reopen Closed Editor",
+                                    "enabled": false
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -103,111 +152,111 @@
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts",
+                                        "external": "file:///home/matt/Projects/repos/userscripts",
+                                        "path": "/home/matt/Projects/repos/userscripts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts"
-                                },
-                                {
-                                    "id": "openRecentFolder",
-                                    "uri": {
-                                        "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks",
-                                        "scheme": "file"
-                                    },
-                                    "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks"
+                                    "label": "~/Projects/repos/userscripts"
                                 },
                                 {
                                     "id": "openRecentWorkspace",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/workspaces/shell-scripts.code-workspace",
-                                        "path": "/home/matt/projects/workspaces/shell-scripts.code-workspace",
+                                        "external": "file:///home/matt/Projects/workspaces/cfg.code-workspace",
+                                        "path": "/home/matt/Projects/workspaces/cfg.code-workspace",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/workspaces/shell-scripts (Workspace)"
+                                    "label": "~/Projects/workspaces/cfg (Workspace)"
                                 },
                                 {
                                     "id": "openRecentWorkspace",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/workspaces/shells.code-workspace",
-                                        "path": "/home/matt/projects/workspaces/shells.code-workspace",
+                                        "external": "file:///home/matt/Projects/workspaces/userscripts.code-workspace",
+                                        "path": "/home/matt/Projects/workspaces/userscripts.code-workspace",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/workspaces/shells (Workspace)"
+                                    "label": "~/Projects/workspaces/userscripts (Workspace)"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/shell/shell-scripts",
-                                        "path": "/home/matt/projects/repos/shell/shell-scripts",
+                                        "external": "file:///home/matt/Projects/repos/browser-tweaks/userscripts",
+                                        "path": "/home/matt/Projects/repos/browser-tweaks/userscripts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/shell/shell-scripts"
+                                    "label": "~/Projects/repos/browser-tweaks/userscripts"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/scripts",
-                                        "path": "/home/matt/scripts",
+                                        "external": "file:///home/matt/Projects/repos",
+                                        "path": "/home/matt/Projects/repos",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/scripts"
+                                    "label": "~/Projects/repos"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects",
-                                        "path": "/home/matt/projects",
+                                        "external": "file:///home/matt/Projects",
+                                        "path": "/home/matt/Projects",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects"
+                                    "label": "~/Projects"
+                                },
+                                {
+                                    "id": "openRecentWorkspace",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/matt/Projects/workspaces/scripts.code-workspace",
+                                        "path": "/home/matt/Projects/workspaces/scripts.code-workspace",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/Projects/workspaces/scripts (Workspace)"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/go",
-                                        "path": "/home/matt/projects/repos/go",
+                                        "external": "file:///home/matt/.config/zsh",
+                                        "path": "/home/matt/.config/zsh",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/go"
+                                    "label": "~/.config/zsh"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/.local/bin",
-                                        "path": "/home/matt/.local/bin",
+                                        "external": "file:///home/matt/Projects/repos/browser-tweaks/userscripts/src",
+                                        "path": "/home/matt/Projects/repos/browser-tweaks/userscripts/src",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/.local/bin"
+                                    "label": "~/Projects/repos/browser-tweaks/userscripts/src"
                                 },
                                 {
                                     "id": "openRecentFolder",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/code/more/dotfiles.old",
-                                        "path": "/home/matt/code/more/dotfiles.old",
+                                        "external": "file:///home/matt/Projects/repos/firefox-librewolf-config/addons/src/rumble-unfucker",
+                                        "path": "/home/matt/Projects/repos/firefox-librewolf-config/addons/src/rumble-unfucker",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/code/more/dotfiles.old"
+                                    "label": "~/Projects/repos/firefox-librewolf-config/addons/src/rumble-unfucker"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -216,111 +265,111 @@
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts",
+                                        "external": "file:///home/matt/Documents/System/sublime-text/sublime-text-4/build-4189/arch-linux-pkgbuild_cracked/pkg.sh",
+                                        "path": "/home/matt/Documents/System/sublime-text/sublime-text-4/build-4189/arch-linux-pkgbuild_cracked/pkg.sh",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts"
+                                    "label": "~/Documents/System/sublime-text/sublime-text-4/build-4189/arch-linux-pkgbuild_cracked/pkg.sh"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts.bak",
-                                        "path": "/home/matt/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts.bak",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/src/more.ts",
+                                        "path": "/home/matt/Projects/repos/userscripts/src/more.ts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/repos/web/browser-tweaks/userscripts/src/youtube_guide.user.ts.bak"
+                                    "label": "~/Projects/repos/userscripts/src/more.ts"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/Untitled-1.md",
-                                        "path": "/home/matt/projects/Untitled-1.md",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/notes.ts",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/notes.ts",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/Untitled-1.md"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/notes.ts"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/001/android-debloat-01.sh",
-                                        "path": "/home/matt/projects/001/android-debloat-01.sh",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-03.js",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-03.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/001/android-debloat-01.sh"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-03.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/001/single-double-click-03.js",
-                                        "path": "/home/matt/projects/001/single-double-click-03.js",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-02.js",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-02.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/001/single-double-click-03.js"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-02.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/001/shell_helper-functions/select-option-menu.sh",
-                                        "path": "/home/matt/projects/001/shell_helper-functions/select-option-menu.sh",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-01.js",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-01.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/001/shell_helper-functions/select-option-menu.sh"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/website-javascript/inline-01.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/001/javascript_helper-functions/modify-cookie.js",
-                                        "path": "/home/matt/projects/001/javascript_helper-functions/modify-cookie.js",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/notes.md",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/notes.md",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/001/javascript_helper-functions/modify-cookie.js"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/notes.md"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/temp/devtools-console-filters-youtube.txt",
-                                        "path": "/home/matt/temp/devtools-console-filters-youtube.txt",
+                                        "external": "file:///home/matt/Projects/repos/userscripts/000/rumble-player/notes.md.md",
+                                        "path": "/home/matt/Projects/repos/userscripts/000/rumble-player/notes.md.md",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/temp/devtools-console-filters-youtube.txt"
+                                    "label": "~/Projects/repos/userscripts/000/rumble-player/notes.md.md"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/projects/001/android-setup/android-notes.md",
-                                        "path": "/home/matt/projects/001/android-setup/android-notes.md",
+                                        "external": "file:///home/matt/Projects/snippets/web/function-with-default-options.js",
+                                        "path": "/home/matt/Projects/snippets/web/function-with-default-options.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/projects/001/android-setup/android-notes.md"
+                                    "label": "~/Projects/snippets/web/function-with-default-options.js"
                                 },
                                 {
                                     "id": "openRecentFile",
                                     "uri": {
                                         "$mid": 1,
-                                        "external": "file:///home/matt/downloads/test/fdroid-index/index.xml",
-                                        "path": "/home/matt/downloads/test/fdroid-index/index.xml",
+                                        "external": "file:///home/matt/Projects/snippets/web/events/wait-for-event-on-element.js",
+                                        "path": "/home/matt/Projects/snippets/web/events/wait-for-event-on-element.js",
                                         "scheme": "file"
                                     },
                                     "enabled": true,
-                                    "label": "~/downloads/test/fdroid-index/index.xml"
+                                    "label": "~/Projects/snippets/web/events/wait-for-event-on-element.js"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -359,13 +408,11 @@
                     },
                     {
                         "id": "workbench.action.files.save",
-                        "label": "&&Save",
-                        "enabled": false
+                        "label": "&&Save"
                     },
                     {
                         "id": "workbench.action.files.saveAs",
-                        "label": "Save &&As...",
-                        "enabled": false
+                        "label": "Save &&As..."
                     },
                     {
                         "id": "saveAll",
@@ -383,10 +430,6 @@
                                 {
                                     "id": "workbench.profiles.actions.exportProfile",
                                     "label": "Export Profile (Default)..."
-                                },
-                                {
-                                    "id": "workbench.profiles.actions.importProfile",
-                                    "label": "Import Profile..."
                                 }
                             ]
                         }
@@ -404,47 +447,8 @@
                         "submenu": {
                             "items": [
                                 {
-                                    "id": "submenuitem.Profiles",
-                                    "label": "Profiles (Default)",
-                                    "submenu": {
-                                        "items": [
-                                            {
-                                                "id": "workbench.profiles.actions.profileEntry.__default__profile__",
-                                                "label": "Default",
-                                                "checked": true
-                                            },
-                                            {
-                                                "id": "vscode.menubar.separator"
-                                            },
-                                            {
-                                                "id": "workbench.profiles.actions.showProfileContents",
-                                                "label": "Show Profile Contents"
-                                            },
-                                            {
-                                                "id": "vscode.menubar.separator"
-                                            },
-                                            {
-                                                "id": "workbench.profiles.actions.createProfile",
-                                                "label": "Create Profile..."
-                                            },
-                                            {
-                                                "id": "workbench.profiles.actions.deleteProfile",
-                                                "label": "Delete Profile...",
-                                                "enabled": false
-                                            },
-                                            {
-                                                "id": "vscode.menubar.separator"
-                                            },
-                                            {
-                                                "id": "workbench.profiles.actions.exportProfile",
-                                                "label": "Export Profile..."
-                                            },
-                                            {
-                                                "id": "workbench.profiles.actions.importProfile",
-                                                "label": "Import Profile..."
-                                            }
-                                        ]
-                                    }
+                                    "id": "workbench.profiles.actions.manageProfiles",
+                                    "label": "&&Profiles"
                                 },
                                 {
                                     "id": "workbench.action.openSettings",
@@ -460,11 +464,11 @@
                                 },
                                 {
                                     "id": "workbench.action.openSnippets",
-                                    "label": "Configure User Snippets"
+                                    "label": "Configure Snippets"
                                 },
                                 {
                                     "id": "workbench.action.tasks.openUserTasks",
-                                    "label": "User Tasks"
+                                    "label": "Tasks"
                                 },
                                 {
                                     "id": "submenuitem.ThemesSubMenu",
@@ -501,17 +505,15 @@
                     },
                     {
                         "id": "workbench.action.files.revert",
-                        "label": "Re&&vert File",
-                        "enabled": false
+                        "label": "Re&&vert File"
                     },
                     {
                         "id": "workbench.action.closeActiveEditor",
-                        "label": "&&Close Editor",
-                        "enabled": false
+                        "label": "&&Close Editor"
                     },
                     {
                         "id": "workbench.action.closeFolder",
-                        "label": "Close &&Folder"
+                        "label": "Close &&Workspace"
                     },
                     {
                         "id": "workbench.action.closeWindow",
@@ -556,13 +558,11 @@
                     },
                     {
                         "id": "actions.find",
-                        "label": "&&Find",
-                        "enabled": false
+                        "label": "&&Find"
                     },
                     {
                         "id": "editor.action.startFindReplaceAction",
-                        "label": "&&Replace",
-                        "enabled": false
+                        "label": "&&Replace"
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -767,9 +767,8 @@
                                     "submenu": {
                                         "items": [
                                             {
-                                                "id": "workbench.action.positionPanelBottom",
-                                                "label": "Bottom",
-                                                "checked": true
+                                                "id": "workbench.action.positionPanelTop",
+                                                "label": "Top"
                                             },
                                             {
                                                 "id": "workbench.action.positionPanelLeft",
@@ -778,6 +777,11 @@
                                             {
                                                 "id": "workbench.action.positionPanelRight",
                                                 "label": "Right"
+                                            },
+                                            {
+                                                "id": "workbench.action.positionPanelBottom",
+                                                "label": "Bottom",
+                                                "checked": true
                                             }
                                         ]
                                     }
@@ -789,8 +793,7 @@
                                         "items": [
                                             {
                                                 "id": "workbench.action.alignPanelCenter",
-                                                "label": "Center",
-                                                "checked": true
+                                                "label": "Center"
                                             },
                                             {
                                                 "id": "workbench.action.alignPanelJustify",
@@ -802,7 +805,8 @@
                                             },
                                             {
                                                 "id": "workbench.action.alignPanelRight",
-                                                "label": "Right"
+                                                "label": "Right",
+                                                "checked": true
                                             }
                                         ]
                                     }
@@ -858,7 +862,8 @@
                                 },
                                 {
                                     "id": "breadcrumbs.toggle",
-                                    "label": "Toggle &&Breadcrumbs"
+                                    "label": "Toggle &&Breadcrumbs",
+                                    "checked": true
                                 },
                                 {
                                     "id": "editor.action.toggleStickyScroll",
@@ -1023,8 +1028,7 @@
                     },
                     {
                         "id": "editor.action.toggleWordWrap",
-                        "label": "&&Word Wrap",
-                        "enabled": false
+                        "label": "&&Word Wrap"
                     }
                 ]
             },
@@ -1438,6 +1442,10 @@
                         "label": "Show &&Release Notes"
                     },
                     {
+                        "id": "workbench.action.getStartedWithAccessibilityFeatures",
+                        "label": "Get Started with Accessibility Features"
+                    },
+                    {
                         "id": "vscode.menubar.separator"
                     },
                     {
@@ -1747,8 +1755,8 @@
                 "userSettingsLabel": "ctrl+shift+y"
             },
             "workbench.action.terminal.toggleTerminal": {
-                "label": "Ctrl+`",
-                "userSettingsLabel": "ctrl+`"
+                "label": "Ctrl+J",
+                "userSettingsLabel": "ctrl+j"
             },
             "editor.action.toggleWordWrap": {
                 "label": "Alt+Z",
@@ -1935,7 +1943,7 @@
     "theme": "vs-dark",
     "themeBackground": "#151723",
     "windowSplash": {
-        "zoomLevel": 1,
+        "zoomLevel": 0,
         "baseTheme": "vs-dark",
         "colorInfo": {
             "foreground": "#f8f8f2",
@@ -1952,9 +1960,10 @@
             "editorPartMinWidth": 220,
             "titleBarHeight": 0,
             "activityBarWidth": 48,
-            "sideBarWidth": 286,
+            "sideBarWidth": 232,
             "statusBarHeight": 22,
             "windowBorder": false
         }
-    }
+    },
+    "telemetry.devDeviceId": "0ba9bc3b-50cc-4398-b3ef-c7d9c3084db1"
 }

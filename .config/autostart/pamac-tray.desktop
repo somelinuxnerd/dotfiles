@@ -9,3 +9,4 @@ NotShowIn=KDE;GNOME;
 X-GNOME-Autostart-enabled=false
 X-GNOME-Autostart-Delay=45
 Comment[en_US]=Package manager frontend for Pacman and the AUR
+Hidden=true

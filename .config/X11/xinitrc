@@ -5,10 +5,10 @@ if command -v xmodmap >/dev/null; then
 	if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/X11/xmodmap ]; then
 		xmodmap "${XDG_CONFIG_HOME:-$HOME/.config}"/X11/xmodmap &
 	else
-		xmodmap -e 'clear lock' -e 'keycode 66 = Escape Caps_Lock NoSymbol NoSymbol' &
+		xmodmap -e 'clear lock' -e 'keycode 66 = NoSymbol Caps_Lock NoSymbol NoSymbol' &
 	fi
 elif command -v setxkbmap >/dev/null; then
-	setxkbmap -option "caps:escape_shifted_capslock" &
+	setxkbmap -option "terminate:ctrl_alt_bksp,caps:escape_shifted_capslock" &
 fi
 
 # Set keyboard repeat rate
@@ -22,19 +22,19 @@ if command -v xrdb >/dev/null && [ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/X11/xr
 fi
 
 # Disable touchscreen
-if [ -f "${HOME}"/.local/bin/touchscreen ]; then
-	sh "${HOME}"/.local/bin/touchscreen -d &
+if command -v touchscreen >/dev/null; then
+	touchscreen -d &
 fi
 
 # Disable touchpad
-if [ -f "${HOME}"/.local/bin/touchpad ]; then
-	sh "${HOME}"/.local/bin/touchpad -d &
-fi
+#if command -v touchpad >/dev/null; then
+#	touchpad -d &
+#fi
 
 # Disable keyboard
-if [ -f "${HOME}"/.local/bin/keyboard ]; then
-	sh "${HOME}"/.local/bin/keyboard -d &
-fi
+#if command -v keyboard >/dev/null; then
+#	keyboard -d &
+#fi
 
 # Start Desktop Session
 if command -v cinnamon-session >/dev/null; then
@@ -42,3 +42,40 @@ if command -v cinnamon-session >/dev/null; then
 elif command -v startxfce4 >/dev/null; then
 	exec startxfce4
 fi
+
+
+
+
+
+# if [ -d /etc/X11/xinit/xinitrc.d ]; then
+# 	for f in /etc/X11/xinit/xinitrc.d/*; do
+# 		[ -x "$f" ] && . "$f"
+# 	done
+# 	unset f
+# fi
+
+# exec enlightenment_start
+# exec i3
+# exec mate-session
+# exec xmonad
+# exec startlxqt
+# exec startlxde
+# exec awesome
+# exec bspwm
+# exec gnome-session
+# exec gnome-session --session=gnome-classic
+# exec startplasma-x11
+# exec startplasma-wayland
+# exec startxfce4
+# exec startfluxbox
+# exec openbox-session
+# exec cinnamon-session
+# exec pekwm
+# exec catwm
+# exec dwm
+# exec startede
+# exec icewm-session
+# exec jwm
+# exec monsterwm
+# exec notion
+# exec startdde       # deepin-session

@@ -1,3 +1,0 @@
-#compdef cg
-
-_command_names -e

@@ -23,7 +23,7 @@
 [diff]
     colorMoved = default
 [web]
-	browser = librewolf
+	browser = brave
 [credential "https://github.com"]
 	helper =
 	helper = !/usr/bin/gh auth git-credential
@@ -37,16 +37,19 @@
 	ac = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\"' -
 	acp = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\" && git push --set-upstream origin main' -
 	acpf = !sh -c 'git add \"${1:-}\" && git commit --allow-empty-message --message=\"${2:-}\" && git push --set-upstream origin main --force' -
-	au = add --update
-	auc = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\"' -
-	aucp = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main' -
-	aucpf = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main --force' -
 	c = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\"' -
 	cp = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main' -
 	cpf = !sh -c 'git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main --force' -
 	p = push --set-upstream origin main
 	pf = push --force --set-upstream origin main
-	rmhist = !sh -c 'git checkout --orphan temp_branch && git add --all && git commit --allow-empty-message --message=\"${1:-}\" && git branch --delete --force main && git branch --move main && git push --force origin main' -
+	u = add --update
+	uc = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\"' -
+	ucp = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main' -
+	ucpf = !sh -c 'git add --update && git commit --allow-empty-message --message=\"${1:-}\" && git push --set-upstream origin main --force' -
+
+	# remove a branch's commit history. arguments are commit message and branch name.
+	rmhist = !sh -c 'git checkout --orphan temp_branch && git add --all && git commit --allow-empty-message --message=\"${1:-}\" && git branch --delete --force "${2:-main}" && git branch --move "${2:-main}" && git push --force origin "${2:-main}"' -
+
 [filter "lfs"]
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process

@@ -3,7 +3,7 @@
 {"_id":"barColor","value":false}
 {"_id":"baseTheme","value":"catppuccinMocha"}
 {"_id":"blurThumbnails","value":false}
-{"_id":"bounds","value":{"x":0,"y":34,"width":1920,"height":1006,"maximized":true,"fullScreen":false}}
+{"_id":"bounds","value":{"x":0,"y":34,"width":1920,"height":998,"maximized":true,"fullScreen":false}}
 {"_id":"checkForBlogPosts","value":false}
 {"_id":"checkForUpdates","value":true}
 {"_id":"commentAutoLoadEnabled","value":false}

@@ -25,8 +25,6 @@ shopt -s progcomp_alias					# If programmable completion is enabled, Bash treats
 shopt -s promptvars						# Prompt strings undergo parameter expansion, command substitution, arithmetic expansion, and quote removal after being expanded as described below (see Controlling the Prompt). This option is enabled by default.
 # shopt -s sourcepath						# The source builtin uses the value of PATH to find the directory containing the file supplied as an argument. This option is enabled by default.
 
-mkdir -p "${XDG_STATE_HOME}"/bash
-
 prepend_path() {
     [[ :$PATH: == *:"$1":* ]] && return
     [[ -d "$1" ]] && PATH="${1}${PATH:+:$PATH}"

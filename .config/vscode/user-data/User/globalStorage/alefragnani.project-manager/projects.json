@@ -1,70 +1,28 @@
 [
 	{
-		"name": "Shells",
-		"rootPath": "/home/matt/projects/workspaces/shells.code-workspace",
+		"name": "neovim",
+		"rootPath": "/home/matt/Projects/workspaces/neovim.code-workspace",
 		"paths": [],
 		"tags": [],
 		"enabled": true
 	},
 	{
-		"name": "Fonts",
-		"rootPath": "/home/matt/projects/workspaces/fonts.code-workspace",
+		"name": "scripts",
+		"rootPath": "/home/matt/Projects/workspaces/scripts.code-workspace",
 		"paths": [],
 		"tags": [],
 		"enabled": true
 	},
 	{
-		"name": "Dotfiles",
-		"rootPath": "/home/matt/projects/workspaces/dotfiles.code-workspace",
+		"name": "userscripts",
+		"rootPath": "/home/matt/Projects/repos/userscripts",
 		"paths": [],
 		"tags": [],
 		"enabled": true
 	},
 	{
-		"name": "Projects",
-		"rootPath": "/home/matt/projects",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "Home",
-		"rootPath": "/home/matt/projects/workspaces/home.code-workspace",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "CFG",
-		"rootPath": "/home/matt/projects/workspaces/cfg.code-workspace",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "Neovim",
-		"rootPath": "/home/matt/projects/workspaces/neovim.code-workspace",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "UserScripts",
-		"rootPath": "/home/matt/projects/repos/web/browser-tweaks/userscripts",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "Rumble Unfucker",
-		"rootPath": "/home/matt/projects/workspaces/rumble-unfucker.code-workspace",
-		"paths": [],
-		"tags": [],
-		"enabled": true
-	},
-	{
-		"name": "Shell Scripts",
-		"rootPath": "/home/matt/projects/workspaces/shell-scripts.code-workspace",
+		"name": "zsh",
+		"rootPath": "/home/matt/.config/zsh",
 		"paths": [],
 		"tags": [],
 		"enabled": true
